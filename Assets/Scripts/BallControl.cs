@@ -1,22 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BallControl : MonoBehaviour
 {
-    public float power = 10f;
-    public float maxDrag = 5f;
-    public float moveSpeed = 7f;
+    public float power;
+    public float maxDrag;
+    public float moveSpeed;
 
     public Rigidbody2D rb;
     public LineRenderer lr;
-    public AudioSource audioClip;
+    public AudioSource hitAudio;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
     private bool notMoving;
     private bool ready;
-    private float stoppedMoving = 0f;
+    private float stoppedMoving;
     private bool notMovingUp;
 
     Vector3 difference = Vector3.zero;
@@ -39,6 +40,7 @@ public class BallControl : MonoBehaviour
 
     private void Update()
     {
+        // Logic for moving ball when not moving
         if (rb.velocity.magnitude <= 0.25f)
         {
             notMoving = true;
@@ -46,6 +48,7 @@ public class BallControl : MonoBehaviour
         }
         else { notMoving = false; }
 
+        // Prevents moving ball left and right infinitely
         if (rb.velocity.y <= 0.5f)
         {
             notMovingUp = true;
@@ -57,7 +60,7 @@ public class BallControl : MonoBehaviour
         {
             touch = Input.GetTouch(0);
 
-            // Only move when ball is not moving, uses voodoo magic, do not change or it will break
+            // Only move when ball is not moving, uses voodoo magic, do not touch or it will break
             if (notMoving)
             {
                 if (touch.phase == TouchPhase.Began)
@@ -82,7 +85,6 @@ public class BallControl : MonoBehaviour
 
                 if (touch.phase == TouchPhase.Ended)
                 {
-                    audioClip.Play();
                     DragRelease();
                     //hitEffect.Play();
                 }
@@ -91,7 +93,7 @@ public class BallControl : MonoBehaviour
             // Move left and right while moving
             if (!notMovingUp && stoppedMoving < 1f && !GameManager.isPaused)
             {
-                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Began)
+                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
                     Move();
                 }
@@ -122,8 +124,12 @@ public class BallControl : MonoBehaviour
 
     private void DragRelease()
     {
+        if (lr.positionCount == 2)
+        {
+            hitAudio.Play();
+        }
+
         lr.positionCount = 0;
-        
         Vector3 dragReleasePos = Camera.main.ScreenToWorldPoint(touch.position);
         dragReleasePos.z = 0f;
 

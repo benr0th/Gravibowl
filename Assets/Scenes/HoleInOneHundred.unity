@@ -921,12 +921,12 @@ MonoBehaviour:
   hole: {fileID: 1290699128902087487, guid: cc38e79a61b9eac41ac88292a3bc7da7, type: 3}
   spawnHolePos: {x: 0, y: 0, z: 0}
   spawnPowerUpPos: {x: 0, y: 0, z: 0}
-  yMin: 4
-  yMax: 5
+  yMin: 5
+  yMax: 6
   isPaused: 0
   distanceTraveled: 0
-  grabbedPowerUpTime: 0
   grabbedPowerUp: 0
+  maxPSpeed: 15
 --- !u!4 &248981026
 Transform:
   m_ObjectHideFlags: 0
@@ -1533,7 +1533,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: f52e556b5a42b4446b7d240d8dd086e5, type: 3}
+  m_audioClip: {fileID: 8300000, guid: dc1eea0b44a67c54cb4b4d4e06274a6d, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.93
   m_Pitch: 1
@@ -2454,7 +2454,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.38
+  m_Radius: 0.8
 --- !u!212 &1864434081
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2496,12 +2496,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: 66a86cf6bef4bb34e9025754cc041e6f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a4d0c1190ed7b954ab38e088812f75e2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.63, y: 0.64}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2516,7 +2516,7 @@ Transform:
   m_GameObject: {fileID: 1864434078}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -4.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1.1}
+  m_LocalScale: {x: 0.21000001, y: 0.21000001, z: 0.42000002}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -2537,9 +2537,10 @@ MonoBehaviour:
   power: 20
   maxDrag: 5
   moveSpeed: 7
+  pauseCheck: 1
   rb: {fileID: 1864434079}
   lr: {fileID: 1864434084}
-  audioClip: {fileID: 941972527}
+  hitAudio: {fileID: 941972527}
 --- !u!120 &1864434084
 LineRenderer:
   m_ObjectHideFlags: 0

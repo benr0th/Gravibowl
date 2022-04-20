@@ -36,6 +36,7 @@ public class CameraControl : MonoBehaviour
                 SwitchBg();
             }
 
+            // Bounds follow camera, causes glitch - need to change
             if (target.position.y > leftWall.position.y)
             {
                 leftWall.position = new Vector3(leftWall.position.x, transform.position.y, transform.position.z);
@@ -51,11 +52,6 @@ public class CameraControl : MonoBehaviour
                 bottomWall.position = new Vector3(bottomWall.position.x, transform.position.y - 5.5f, transform.position.z);
             }
 
-            //if (target.position.y > bg.position.y)
-            //{
-            //    bg.position = new Vector3(bg.position.x, transform.position.y, bg.position.z);
-            //}
-
             //if (target.position.y > effect.position.y)
             //{
             //    effect.position = new Vector3(effect.position.x, target.position.y, effect.position.z);
@@ -65,8 +61,6 @@ public class CameraControl : MonoBehaviour
 
     private void SwitchBg()
     {
-        Transform temp = bg1;
-        bg1 = bg2;
-        bg2 = temp;
+        (bg2, bg1) = (bg1, bg2);
     }
 }

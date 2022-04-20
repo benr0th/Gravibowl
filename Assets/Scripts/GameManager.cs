@@ -16,8 +16,10 @@ public class GameManager : MonoBehaviour
     public Vector3 spawnHolePos;
     public Vector3 spawnPowerUpPos;
 
-    public float yMin = 5f;
-    public float yMax = 6f;
+    [SerializeField]
+    private float yMin;
+    [SerializeField]
+    private float yMax;
     private bool upDiff;
     public bool isPaused;
 
@@ -25,10 +27,25 @@ public class GameManager : MonoBehaviour
     private float ballStartPos;
     private float ballCurrentPos;
 
-    public float grabbedPowerUpTime = 4f;
+    private float grabbedPowerUpTime = 4f;
     public bool grabbedPowerUp;
     private bool spawnPowerUp;
     private int powerUpRoll;
+    [SerializeField]
+    private float maxPSpeed;
+
+    //public bool IsPaused
+    //{
+    //    get { return isPaused; }
+    //    set
+    //    {
+    //        if (isPaused == false && value == true)
+    //        {
+    //            Debug.Log("pause");
+    //        }
+    //        isPaused = value;
+    //    }
+    //}
 
     private void Awake()
     {
@@ -41,19 +58,21 @@ public class GameManager : MonoBehaviour
     {
         spawnHolePos = new Vector3();
         ballStartPos = ball.transform.position.y;
+        isPaused = false;
     }
 
     private void Update()
     {
         yMin = Mathf.Clamp(yMin, 0.2f, 100f);
         yMax = Mathf.Clamp(yMax, 0.2f, 100f);
-
+        
         // Power up stuff
         if (grabbedPowerUp)
         {
             grabbedPowerUp = true;
+            // Power up timer
             grabbedPowerUpTime -= Time.deltaTime;
-            
+            // Bring speed back to normal after grabbing
             Time.timeScale += (1f / 0.05f) * Time.unscaledDeltaTime;
             Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
 
@@ -62,13 +81,15 @@ public class GameManager : MonoBehaviour
         } else { grabbedPowerUp = false; }
         if (grabbedPowerUpTime <= 0f)
         {
+            // When power up runs out
             grabbedPowerUp = false;
             grabbedPowerUpTime = 4f;
             ui.powerUpText.enabled = false;
         }
 
         if (ball != null)
-        { 
+        {
+            float ballSpeed = ball.rb.velocity.y;
             ballCurrentPos = ball.transform.position.y;
             distanceTraveled = Mathf.FloorToInt(ballCurrentPos - ballStartPos);
 
@@ -89,14 +110,16 @@ public class GameManager : MonoBehaviour
             }
 
             // Spawn power up
-            if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp)
+            if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp
+                && ballSpeed > maxPSpeed)
             {
                 spawnPowerUp = false;
                 spawnPowerUpPos.y = ballCurrentPos + 3f;
                 spawnPowerUpPos.x = Random.Range(-2.05f, 2.05f);
                 powerUpRoll = Random.Range(1, 11);
-                if (powerUpRoll == 10)
+                if (powerUpRoll <= 10)
                 {
+                    // Slo-mo because moving so fast
                     Time.timeScale = 0.05f;
                     Time.fixedDeltaTime = Time.timeScale * .02f;
                     Instantiate(hitPowerUp, spawnPowerUpPos, Quaternion.identity);
@@ -107,18 +130,19 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
-        if (!isPaused)
+        isPaused = !isPaused;
+
+        if (isPaused)
         {
             Time.timeScale = 0;
-            isPaused = true;
             ui.retryButton.gameObject.SetActive(true);
             ui.quitGame.gameObject.SetActive(true);
         } else
         {
             Time.timeScale = 1;
-            isPaused = false;
             ui.retryButton.gameObject.SetActive(false);
             ui.quitGame.gameObject.SetActive(false);
+
         }
     }
 
