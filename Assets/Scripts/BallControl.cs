@@ -14,8 +14,8 @@ public class BallControl : MonoBehaviour
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
-    public bool notMoving;
-    public bool ready;
+    private bool notMoving;
+    private bool ready;
     private float stoppedMoving = 0f;
     private bool notMovingUp;
 
@@ -89,9 +89,9 @@ public class BallControl : MonoBehaviour
             }
 
             // Move left and right while moving
-            if (!notMovingUp && stoppedMoving < 1f)
+            if (!notMovingUp && stoppedMoving < 1f && !GameManager.isPaused)
             {
-                if (touch.phase == TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Began)
                 {
                     Move();
                 }

@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public float yMin = 5f;
     public float yMax = 6f;
     private bool upDiff;
-    private bool isPaused;
+    public bool isPaused;
 
     public int distanceTraveled;
     private float ballStartPos;
@@ -94,8 +94,8 @@ public class GameManager : MonoBehaviour
                 spawnPowerUp = false;
                 spawnPowerUpPos.y = ballCurrentPos + 3f;
                 spawnPowerUpPos.x = Random.Range(-2.05f, 2.05f);
-                powerUpRoll = Random.Range(1, 6);
-                if (powerUpRoll <= 5)
+                powerUpRoll = Random.Range(1, 11);
+                if (powerUpRoll == 10)
                 {
                     Time.timeScale = 0.05f;
                     Time.fixedDeltaTime = Time.timeScale * .02f;
@@ -107,18 +107,18 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
-        if (isPaused)
-        {
-            Time.timeScale = 1;
-            isPaused = false;
-            ui.retryButton.gameObject.SetActive(false);
-            ui.quitGame.gameObject.SetActive(false);
-        } else
+        if (!isPaused)
         {
             Time.timeScale = 0;
             isPaused = true;
             ui.retryButton.gameObject.SetActive(true);
             ui.quitGame.gameObject.SetActive(true);
+        } else
+        {
+            Time.timeScale = 1;
+            isPaused = false;
+            ui.retryButton.gameObject.SetActive(false);
+            ui.quitGame.gameObject.SetActive(false);
         }
     }
 
