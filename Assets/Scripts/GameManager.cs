@@ -16,18 +16,23 @@ public class GameManager : MonoBehaviour
     public Vector3 spawnHolePos;
     public Vector3 spawnPowerUpPos;
 
+    public bool gameOver;
+
     [SerializeField]
     private float yMin;
     [SerializeField]
     private float yMax;
     private bool upDiff;
     public bool isPaused;
+    public bool slowMo;
 
     public int distanceTraveled;
+    public int coins;
     private float ballStartPos;
     private float ballCurrentPos;
 
-    private float grabbedPowerUpTime = 4f;
+    [HideInInspector]
+    public float grabbedPowerUpTime = 4f;
     public bool grabbedPowerUp;
     private bool spawnPowerUp;
     private int powerUpRoll;
@@ -50,15 +55,13 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         ui = GameObject.Find("UI").GetComponent<UIController>();
-        spawnPowerUp = false;
-        upDiff = false;
     }
 
     private void Start()
     {
         spawnHolePos = new Vector3();
         ballStartPos = ball.transform.position.y;
-        isPaused = false;
+        coins = PlayerPrefs.GetInt("Coins");
     }
 
     private void Update()
@@ -67,27 +70,26 @@ public class GameManager : MonoBehaviour
         yMax = Mathf.Clamp(yMax, 0.2f, 100f);
         
         // Power up stuff
-        if (grabbedPowerUp)
+        if (grabbedPowerUp && !isPaused)
         {
             grabbedPowerUp = true;
             // Power up timer
             grabbedPowerUpTime -= Time.deltaTime;
             // Bring speed back to normal after grabbing
+            slowMo = false;
             Time.timeScale += (1f / 0.05f) * Time.unscaledDeltaTime;
             Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
 
             ui.powerUpText.enabled = true;
             ui.powerUpText.text = "Keep Swiping Down!\n" + grabbedPowerUpTime.ToString("f2");
-        } else { grabbedPowerUp = false; }
+        }
         if (grabbedPowerUpTime <= 0f)
         {
             // When power up runs out
-            grabbedPowerUp = false;
-            grabbedPowerUpTime = 4f;
-            ui.powerUpText.enabled = false;
+            EndPowerUp();
         }
 
-        if (ball != null)
+        if (ball != null && hitPowerUp != null)
         {
             float ballSpeed = ball.rb.velocity.y;
             ballCurrentPos = ball.transform.position.y;
@@ -110,7 +112,8 @@ public class GameManager : MonoBehaviour
             }
 
             // Spawn power up
-            if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp
+            /*
+            if (distanceTraveled % 50 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp
                 && ballSpeed > maxPSpeed)
             {
                 spawnPowerUp = false;
@@ -120,11 +123,13 @@ public class GameManager : MonoBehaviour
                 if (powerUpRoll <= 10)
                 {
                     // Slo-mo because moving so fast
+                    slowMo = true;
                     Time.timeScale = 0.05f;
                     Time.fixedDeltaTime = Time.timeScale * .02f;
                     Instantiate(hitPowerUp, spawnPowerUpPos, Quaternion.identity);
                 }
-            } else if (distanceTraveled % 100 != 0 && !spawnPowerUp) { spawnPowerUp = true; }
+            } else if (distanceTraveled % 50 != 0 && !spawnPowerUp) { spawnPowerUp = true; }
+            */
         }     
     }
 
@@ -139,11 +144,22 @@ public class GameManager : MonoBehaviour
             ui.quitGame.gameObject.SetActive(true);
         } else
         {
-            Time.timeScale = 1;
+            if (slowMo)
+            {
+                Time.timeScale = 0.05f;
+                Time.fixedDeltaTime = Time.timeScale * .02f;
+            } else { Time.timeScale = 1; }
             ui.retryButton.gameObject.SetActive(false);
             ui.quitGame.gameObject.SetActive(false);
 
         }
+    }
+
+    public void EndPowerUp()
+    {
+        grabbedPowerUp = false;
+        grabbedPowerUpTime = 4f;
+        ui.powerUpText.enabled = false;
     }
 
     public void Retry()
@@ -160,6 +176,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        gameOver = true;
         gameOverScreen.Setup();
     }
 

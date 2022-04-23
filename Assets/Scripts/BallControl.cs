@@ -19,6 +19,7 @@ public class BallControl : MonoBehaviour
     private bool ready;
     private float stoppedMoving;
     private bool notMovingUp;
+    public bool inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos;
@@ -33,9 +34,6 @@ public class BallControl : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        notMoving = false;
-        notMovingUp = false;
-        ready = false;
     }
 
     private void Update()
@@ -53,10 +51,18 @@ public class BallControl : MonoBehaviour
         {
             notMovingUp = true;
             stoppedMoving += Time.deltaTime;
-            rb.velocity = Vector2.zero;
+            //rb.velocity = Vector2.zero;
         } else { stoppedMoving = 0f; notMovingUp = false; }
 
-        if (Input.touchCount > 0)
+        if (GameManager.isPaused)
+        {
+            if (rb.velocity.y <= 0.5f)
+            {
+                rb.velocity = Vector2.zero;
+            }
+        }
+
+        if (Input.touchCount > 0 && !GameManager.isPaused)
         {
             touch = Input.GetTouch(0);
 
@@ -71,7 +77,8 @@ public class BallControl : MonoBehaviour
             else { ready = false; }
 
             // Drag and shoot
-            if (ready || GameManager.grabbedPowerUp)
+            if (ready || GameManager.grabbedPowerUp && inputEnabled == true
+                && touch.position.y < Screen.height / 1.1f)
             {
                 if (touch.phase == TouchPhase.Began)
                 {
@@ -86,18 +93,23 @@ public class BallControl : MonoBehaviour
                 if (touch.phase == TouchPhase.Ended)
                 {
                     DragRelease();
-                    //hitEffect.Play();
                 }
             }
 
             // Move left and right while moving
-            if (!notMovingUp && stoppedMoving < 1f && !GameManager.isPaused)
+            if (!notMovingUp && stoppedMoving < 1f && touch.position.y < Screen.height / 1.2f)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
                     Move();
                 }
             }
+        }
+
+        // Prevents bug when holding screen while grabbing power up - possible to make neater
+        if (touch.phase == TouchPhase.Ended)
+        {
+            inputEnabled = true;
         }
     }
 
@@ -124,9 +136,11 @@ public class BallControl : MonoBehaviour
 
     private void DragRelease()
     {
+        // Only play sound effect after hitting ball
         if (lr.positionCount == 2)
         {
             hitAudio.Play();
+            //hitEffect.Play();
         }
 
         lr.positionCount = 0;

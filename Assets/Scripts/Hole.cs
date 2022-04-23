@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class Hole : MonoBehaviour
 {
-    [SerializeField]
-    private float maxSpeedForHole;
+    public float maxSpeedForHole;
 
     UIController ui;
     GameManager GameManager;
@@ -23,6 +22,7 @@ public class Hole : MonoBehaviour
         if (other.CompareTag("Ball") && other.GetComponent<Rigidbody2D>().velocity.y < maxSpeedForHole)
         {
             Destroy(other.gameObject);
+            GameManager.EndPowerUp();
             GameManager.GameOver();
         }
     }

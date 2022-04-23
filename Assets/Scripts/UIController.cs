@@ -7,10 +7,13 @@ using TMPro;
 public class UIController : MonoBehaviour
 {
     GameManager GameManager;
-    public Text distanceText;
-    public Text highScore;
-    public Text gameOverText;
+    public TMPro.TextMeshProUGUI distanceText;
+    public TMPro.TextMeshProUGUI highScore;
+    public TMPro.TextMeshProUGUI gameOverText;
     public TMPro.TextMeshProUGUI powerUpText;
+    public TMPro.TextMeshProUGUI coinsTextGameOver;
+    public TMPro.TextMeshProUGUI coinsText;
+
     public Button retryButton;
     public Button resetScore;
     public Button quitGame;
@@ -24,16 +27,31 @@ public class UIController : MonoBehaviour
         retryButton.gameObject.SetActive(false);
         quitGame.gameObject.SetActive(false);
         powerUpText.enabled = false;
+        coinsTextGameOver.enabled = false;
     }
 
     private void Start()
     {
         highScore.text = "High Score\n" + PlayerPrefs.GetInt("HighScore", 0).ToString();
+        coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+
     }
 
     private void Update()
     {
         distanceText.text = GameManager.distanceTraveled + "m";
+        if (GameManager.gameOver)
+        {
+            Invoke(nameof(AddCoins), 0.7f);
+        }
+    }
+
+    private void AddCoins()
+    {
+
+        PlayerPrefs.SetInt("Coins", GameManager.coins);
+        coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
     }
 
 }
