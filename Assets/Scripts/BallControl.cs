@@ -136,11 +136,16 @@ public class BallControl : MonoBehaviour
 
     private void DragRelease()
     {
-        // Only play sound effect after hitting ball
+        // Only after hitting ball
         if (lr.positionCount == 2)
         {
             hitAudio.Play();
             //hitEffect.Play();
+            if (GameManager.hasRespawned)
+            {
+                Physics.IgnoreLayerCollision(10, 3, false);
+                GameManager.hasRespawned = false;
+            }
         }
 
         lr.positionCount = 0;

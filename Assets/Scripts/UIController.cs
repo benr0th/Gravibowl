@@ -19,6 +19,7 @@ public class UIController : MonoBehaviour
     public Button quitGame;
     public Button pauseGame;
     public Button coinAd;
+    public Button continueAd;
 
     private void Awake()
     {
@@ -36,6 +37,8 @@ public class UIController : MonoBehaviour
         highScore.text = "High Score\n" + PlayerPrefs.GetInt("HighScore", 0).ToString();
         coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        coinAd.onClick.AddListener(CoinClick);
+        continueAd.onClick.AddListener(ContinueClick);
 
     }
 
@@ -44,4 +47,14 @@ public class UIController : MonoBehaviour
         distanceText.text = GameManager.distanceTraveled + "m";
     }
 
+    void CoinClick()
+    {
+        GameManager.coinAdClicked = true;
+    }
+
+    void ContinueClick()
+    {
+        GameManager.continueAdClicked = true;
+    }
+    
 }

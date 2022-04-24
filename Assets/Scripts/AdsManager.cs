@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Services.Core;
 using Unity.Services.Mediation;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine;
 public class AdsManager : MonoBehaviour
 {
     IRewardedAd ad;
+    List<IRewardedAd> ads = new List<IRewardedAd>();
     GameManager GameManager;
     [SerializeField] GameOverScreen GameOverScreen;
     [SerializeField] UIController ui;
@@ -14,7 +16,7 @@ public class AdsManager : MonoBehaviour
     string adUnitId = "Rewarded_iOS";
     string gameId = "4722742";
 #else
-    string adUnitId = "Rewarded_Android";
+    string[] adUnitIds = { "Rewarded_Android", "Rewarded_Android_2" };
     string gameId = "4722743";
 #endif
 
@@ -43,34 +45,52 @@ public class AdsManager : MonoBehaviour
     public void SetupAd()
     {
         //Create
-        ad = MediationService.Instance.CreateRewardedAd(adUnitId);
+        foreach (var adUnitId in adUnitIds)
+        {
+            ad = MediationService.Instance.CreateRewardedAd(adUnitId);
+            ads.Add(ad);
+        }
+        //ad = MediationService.Instance.CreateRewardedAd(adUnitId);
+        foreach (var ad in ads)
+        {
+            //Subscribe to events
+            ad.OnLoaded += AdLoaded;
+            ad.OnFailedLoad += AdFailedLoad;
 
-        //Subscribe to events
-        ad.OnLoaded += AdLoaded;
-        ad.OnFailedLoad += AdFailedLoad;
-
-        ad.OnShowed += AdShown;
-        ad.OnFailedShow += AdFailedShow;
-        ad.OnClosed += AdClosed;
-        ad.OnClicked += AdClicked;
-        ad.OnUserRewarded += UserRewarded;
-
+            ad.OnShowed += AdShown;
+            ad.OnFailedShow += AdFailedShow;
+            ad.OnClosed += AdClosed;
+            ad.OnClicked += AdClicked;
+            ad.OnUserRewarded += UserRewarded;
+        }
+        
         // Impression Event
         MediationService.Instance.ImpressionEventPublisher.OnImpression += ImpressionEvent;
     }
 
-    public void ShowAd()
+    public void ShowAdCoin()
     {
-        if (ad.AdState == AdState.Loaded)
+        if (ads[0].AdState == AdState.Loaded)
         {
-            ad.Show();
+            ads[0].Show();
+        }
+    }
+
+    public void ShowAdContinue()
+    {
+        if (ads[1].AdState == AdState.Loaded)
+        {
+            ads[1].Show();
         }
     }
 
     void InitializationComplete()
     {
         SetupAd();
-        ad.Load();
+        foreach (var ad in ads)
+        {
+            ad.Load();
+        }
     }
 
     void InitializationFailed(Exception e)
@@ -97,8 +117,10 @@ public class AdsManager : MonoBehaviour
     void AdClosed(object sender, EventArgs e)
     {
         // Pre-load the next ad
+
         ad.Load();
         Debug.Log("Ad has closed");
+
         // Execute logic after an ad has been closed.
     }
 
@@ -121,10 +143,20 @@ public class AdsManager : MonoBehaviour
 
     void UserRewarded(object sender, RewardEventArgs e)
     {
-        GameManager.coins += GameManager.distanceTraveled / 2;
-        PlayerPrefs.SetInt("Coins", GameManager.coins);
-        GameOverScreen.Invoke("AddCoins", 0.5f);
-        ui.coinAd.gameObject.SetActive(false);
+        if (GameManager.coinAdClicked)
+        {
+            GameManager.coins += GameManager.distanceTraveled / 2;
+            PlayerPrefs.SetInt("Coins", GameManager.coins);
+            GameOverScreen.Invoke("AddCoins", 0.5f);
+            GameManager.coinAdClicked = false;
+            ui.coinAd.gameObject.SetActive(false);
+        }
+        if (GameManager.continueAdClicked)
+        {
+            GameManager.Respawn();
+            GameManager.continueAdClicked = false;
+            ui.continueAd.gameObject.SetActive(false);
+        }
     }
 
 }

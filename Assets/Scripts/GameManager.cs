@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] InfHitPowerUp hitPowerUp;
     [SerializeField] GameOverScreen gameOverScreen;
-    public AdsManager AdsManager;
+    //public AdsManagerCoin AdsManagerCoin;
+    //public AdsManagerContinue AdsManagerContinue;
     UIController ui;
 
     public GameObject hole;
@@ -18,6 +19,9 @@ public class GameManager : MonoBehaviour
     public Vector3 spawnPowerUpPos;
 
     public bool gameOver;
+    public bool coinAdClicked;
+    public bool continueAdClicked;
+    public bool hasRespawned;
 
     [SerializeField] private float yMin;
     [SerializeField] private float yMax;
@@ -165,11 +169,13 @@ public class GameManager : MonoBehaviour
     public void Respawn()
     {
         ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        hasRespawned = true;
         gameOver = false;
         gameOverScreen.gameObject.SetActive(false);
         ui.pauseGame.gameObject.SetActive(true);
         ui.coinsTextGameOver.enabled = false;
         ui.coinsText.gameObject.SetActive(true);
+        Physics.IgnoreLayerCollision(10, 3);
         ball.gameObject.SetActive(true);
         ball.transform.position = new Vector3(0, ballLastPos.y);
     }

@@ -11,7 +11,6 @@ public class GameOverScreen : MonoBehaviour
     [SerializeField] GameObject floatingCoinsPrefab;
     [SerializeField] AudioSource coinSound;
 
-
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
