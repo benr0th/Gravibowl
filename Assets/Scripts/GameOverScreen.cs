@@ -7,13 +7,14 @@ using TMPro;
 public class GameOverScreen : MonoBehaviour
 {
     GameManager GameManager;
-    UIController ui;
-    public GameObject floatingCoinsPrefab;
+    [SerializeField] UIController ui;
+    [SerializeField] GameObject floatingCoinsPrefab;
+    [SerializeField] AudioSource coinSound;
+
 
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        ui = GameObject.Find("UI").GetComponent<UIController>();
         gameObject.SetActive(false);
     }
 
@@ -23,25 +24,28 @@ public class GameOverScreen : MonoBehaviour
         ui.pauseGame.gameObject.SetActive(false);
         ui.coinsTextGameOver.enabled = true;
         ui.coinsText.gameObject.SetActive(false);
-        GameManager.coins += GameManager.distanceTraveled;
+        GameManager.coins += GameManager.distanceTraveled / 2;
+        PlayerPrefs.SetInt("Coins", GameManager.coins);
 
         if (GameManager.distanceTraveled > PlayerPrefs.GetInt("HighScore", 0))
         {
             PlayerPrefs.SetInt("HighScore", GameManager.distanceTraveled);
             ui.highScore.text = "High Score\n" + GameManager.distanceTraveled.ToString();
         }
+
         if (floatingCoinsPrefab)
         {
-            Invoke(nameof(CoinFloat), 0.7f);
-            
+            Invoke(nameof(AddCoins), 0.5f);
         }
     }
 
-    void CoinFloat()
+    public void AddCoins()
     {
+        coinSound.Play();
+        ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         GameObject prefab = Instantiate(floatingCoinsPrefab, 
             new Vector3(transform.position.x + 0.5f, transform.position.y),Quaternion.identity);
-        prefab.GetComponentInChildren<TMP_Text>().text = "+" + GameManager.distanceTraveled.ToString();
+        prefab.GetComponentInChildren<TMP_Text>().text = "+" + (GameManager.distanceTraveled / 2).ToString();
         Destroy(prefab, 1f);
     }
 }

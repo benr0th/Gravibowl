@@ -18,6 +18,7 @@ public class UIController : MonoBehaviour
     public Button resetScore;
     public Button quitGame;
     public Button pauseGame;
+    public Button coinAd;
 
     private void Awake()
     {
@@ -41,17 +42,6 @@ public class UIController : MonoBehaviour
     private void Update()
     {
         distanceText.text = GameManager.distanceTraveled + "m";
-        if (GameManager.gameOver)
-        {
-            Invoke(nameof(AddCoins), 0.7f);
-        }
-    }
-
-    private void AddCoins()
-    {
-
-        PlayerPrefs.SetInt("Coins", GameManager.coins);
-        coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
     }
 
 }

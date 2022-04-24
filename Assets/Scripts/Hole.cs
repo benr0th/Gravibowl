@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class Hole : MonoBehaviour
 {
-    public float maxSpeedForHole;
+    [SerializeField] float maxSpeedForHole;
+    public bool isDead;
 
     UIController ui;
     GameManager GameManager;
@@ -21,7 +23,8 @@ public class Hole : MonoBehaviour
     {
         if (other.CompareTag("Ball") && other.GetComponent<Rigidbody2D>().velocity.y < maxSpeedForHole)
         {
-            Destroy(other.gameObject);
+            isDead = true;
+            other.gameObject.SetActive(false);
             GameManager.EndPowerUp();
             GameManager.GameOver();
         }

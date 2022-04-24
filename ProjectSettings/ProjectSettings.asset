@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: MyCompany
+  companyName: BRoth Studios
   productName: Hole In One Hundred
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -829,7 +829,14 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Build: 0
+    Collab: 0
+    Game Performance: 0
+    Legacy Analytics: 1
+    Purchasing: 0
+    UDP: 0
+    Unity Ads: 1
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -843,11 +850,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 
+  cloudProjectId: 868e32f5-bfa3-4c9b-80b1-d7dfb70d58ca
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: Hole In One Hundred
+  organizationId: atomicbentobox
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 

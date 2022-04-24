@@ -11,7 +11,7 @@ public class BallControl : MonoBehaviour
 
     public Rigidbody2D rb;
     public LineRenderer lr;
-    public AudioSource hitAudio;
+    [SerializeField] AudioSource hitAudio;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 

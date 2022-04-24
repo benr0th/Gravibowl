@@ -6,10 +6,11 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public BallControl ball;
-    public Camera cam;
-    public InfHitPowerUp hitPowerUp;
-    public GameOverScreen gameOverScreen;
+    [SerializeField] BallControl ball;
+    [SerializeField] Camera cam;
+    [SerializeField] InfHitPowerUp hitPowerUp;
+    [SerializeField] GameOverScreen gameOverScreen;
+    public AdsManager AdsManager;
     UIController ui;
 
     public GameObject hole;
@@ -18,18 +19,17 @@ public class GameManager : MonoBehaviour
 
     public bool gameOver;
 
-    [SerializeField]
-    private float yMin;
-    [SerializeField]
-    private float yMax;
+    [SerializeField] private float yMin;
+    [SerializeField] private float yMax;
     private bool upDiff;
     public bool isPaused;
     public bool slowMo;
 
     public int distanceTraveled;
     public int coins;
-    private float ballStartPos;
-    private float ballCurrentPos;
+    float ballStartPos;
+    float ballCurrentPos;
+    public Vector3 ballLastPos;
 
     [HideInInspector]
     public float grabbedPowerUpTime = 4f;
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     {
         spawnHolePos = new Vector3();
         ballStartPos = ball.transform.position.y;
-        coins = PlayerPrefs.GetInt("Coins");
+        coins = PlayerPrefs.GetInt("Coins", 0);
     }
 
     private void Update()
@@ -162,6 +162,18 @@ public class GameManager : MonoBehaviour
         ui.powerUpText.enabled = false;
     }
 
+    public void Respawn()
+    {
+        ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        gameOver = false;
+        gameOverScreen.gameObject.SetActive(false);
+        ui.pauseGame.gameObject.SetActive(true);
+        ui.coinsTextGameOver.enabled = false;
+        ui.coinsText.gameObject.SetActive(true);
+        ball.gameObject.SetActive(true);
+        ball.transform.position = new Vector3(0, ballLastPos.y);
+    }
+
     public void Retry()
     {
         Time.timeScale = 1;
@@ -177,6 +189,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         gameOver = true;
+        ballLastPos = ball.transform.position;
         gameOverScreen.Setup();
     }
 
