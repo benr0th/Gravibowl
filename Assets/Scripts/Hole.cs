@@ -7,7 +7,6 @@ using UnityEditor;
 public class Hole : MonoBehaviour
 {
     [SerializeField] float maxSpeedForHole;
-
     UIController ui;
     GameManager GameManager;
 

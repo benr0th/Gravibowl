@@ -5,9 +5,7 @@ using UnityEngine.EventSystems;
 
 public class BallControl : MonoBehaviour
 {
-    public float power;
-    public float maxDrag;
-    public float moveSpeed;
+    [SerializeField] float power, maxDrag, moveSpeed;
 
     public Rigidbody2D rb;
     public LineRenderer lr;
@@ -16,15 +14,12 @@ public class BallControl : MonoBehaviour
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
-    private bool notMoving;
-    private bool ready;
-    private float stoppedMoving;
-    private bool notMovingUp;
+    bool notMoving, notMovingUp, ready;
+    float stoppedMoving;
     public bool inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
-    Vector3 draggingPos;
-    Vector3 dragStartPos;
+    Vector3 draggingPos, dragStartPos;
     Touch touch;
 
     private void Awake()

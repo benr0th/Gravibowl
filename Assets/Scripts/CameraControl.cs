@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    public Transform target;
+    public Transform target, bg1, bg2;
     public Transform leftWall;
     public Transform rightWall;
     public Transform bottomWall;
 
-    public Transform bg1;
-    public Transform bg2;
-
-    private float size;
+    float size;
 
     private void Start()
     {

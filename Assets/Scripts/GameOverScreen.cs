@@ -7,7 +7,7 @@ public class GameOverScreen : MonoBehaviour
     [SerializeField] UIController ui;
     [SerializeField] GameObject floatingCoinsPrefab;
     [SerializeField] AudioSource coinSound;
-    int coinsGained;
+    public int coinsGained;
 
     private void Awake()
     {

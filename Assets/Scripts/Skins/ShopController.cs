@@ -17,6 +17,6 @@ public class ShopController : MonoBehaviour
         selectedSkin.sprite = skinManager.GetSelectedSkin().sprite;
     }
 
-    public void LoadMainMenu() => SceneManager.LoadScene("Menu");
+    public void MainMenu() => SceneManager.LoadScene("Menu");
     public void BackToGame() => SceneManager.LoadScene("HoleInOneHundred");
 }

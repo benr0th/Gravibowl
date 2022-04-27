@@ -10,39 +10,24 @@ public class GameManager : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] InfHitPowerUp hitPowerUp;
     [SerializeField] GameOverScreen gameOverScreen;
-    //public AdsManagerCoin AdsManagerCoin;
-    //public AdsManagerContinue AdsManagerContinue;
     UIController ui;
 
     public GameObject hole;
-    public Vector3 spawnHolePos;
-    public Vector3 spawnPowerUpPos;
+    public Vector3 spawnHolePos, spawnPowerUpPos, ballLastPos;
 
-    public bool gameOver;
-    public bool coinAdClicked;
-    public bool continueAdClicked;
-    public bool hasRespawned;
+    public bool gameOver, hasRespawned,
+                coinAdClicked, continueAdClicked,
+                isPaused, slowMo, grabbedPowerUp, doEquipOnBuy;
 
-    [SerializeField] private float yMin;
-    [SerializeField] private float yMax;
-    private bool upDiff;
-    public bool isPaused;
-    public bool slowMo;
+    [SerializeField] float yMin, yMax, maxPSpeed;
+    bool upDiff, spawnPowerUp;
 
-    public int distanceTraveled;
-    public int distanceTraveledLast;
-    public int coins;
-    float ballStartPos;
-    float ballCurrentPos;
-    public Vector3 ballLastPos;
+    public int distanceTraveled, distanceTraveledLast, coins;
+    float ballStartPos, ballCurrentPos;
 
     [HideInInspector]
     public float grabbedPowerUpTime = 4f;
-    public bool grabbedPowerUp;
-    private bool spawnPowerUp;
-    private int powerUpRoll;
-    [SerializeField]
-    private float maxPSpeed;
+    int powerUpRoll;
 
     //public bool IsPaused
     //{
@@ -67,6 +52,10 @@ public class GameManager : MonoBehaviour
         spawnHolePos = new Vector3();
         ballStartPos = ball.transform.position.y;
         coins = PlayerPrefs.GetInt("Coins", 0);
+        if (PlayerPrefs.GetInt("Mute") == 1)
+        {
+            AudioListener.volume = 0;
+        } else { AudioListener.volume = 1; }
     }
 
     private void Update()

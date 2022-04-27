@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 2b71f738708136946acbb74529ca4266
   - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: f789320d2a899b643b3ff3f95d66b556
+  - enabled: 1
     path: Assets/Scenes/HoleInOneHundred.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Shop.unity
+    guid: d41362a95e74dfc4fb5b31c7354760f2
   m_configObjects: {}

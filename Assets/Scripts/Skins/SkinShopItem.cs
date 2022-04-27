@@ -40,6 +40,10 @@ public class SkinShopItem : MonoBehaviour
                 PlayerPrefs.SetInt("Coins", coins - skin.cost);
                 skinManager.Unlock(skinIndex);
                 buyButtonText.text = "Equip";
+                if (PlayerPrefs.GetInt("EquipOnBuy") == 1)
+                {
+                    skinManager.SelectSkin(skinIndex);
+                }
             }
             else
             {

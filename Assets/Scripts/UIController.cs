@@ -7,19 +7,11 @@ using TMPro;
 public class UIController : MonoBehaviour
 {
     GameManager GameManager;
-    public TMPro.TextMeshProUGUI distanceText;
-    public TMPro.TextMeshProUGUI highScore;
-    public TMPro.TextMeshProUGUI gameOverText;
-    public TMPro.TextMeshProUGUI powerUpText;
-    public TMPro.TextMeshProUGUI coinsTextGameOver;
-    public TMPro.TextMeshProUGUI coinsText;
+    public TMPro.TextMeshProUGUI distanceText, highScore, gameOverText,
+                                 powerUpText, coinsText, coinsTextGameOver;
 
-    public Button retryButton;
-    public Button resetScore;
-    public Button quitGame;
-    public Button pauseGame;
-    public Button coinAd;
-    public Button continueAd;
+    public Button retryButton, resetScore, quitGame,
+                  pauseGame, coinAd, continueAd;
 
     private void Awake()
     {
@@ -37,8 +29,6 @@ public class UIController : MonoBehaviour
         highScore.text = "High Score\n" + PlayerPrefs.GetInt("HighScore", 0).ToString();
         coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
-        coinAd.onClick.AddListener(CoinClick);
-        continueAd.onClick.AddListener(ContinueClick);
     }
 
     private void Update()
@@ -46,14 +36,15 @@ public class UIController : MonoBehaviour
         distanceText.text = GameManager.distanceTraveled + "m";
     }
 
-    void CoinClick()
+    public void AdClick(Button buttonClicked)
     {
-        GameManager.coinAdClicked = true;
-    }
-
-    void ContinueClick()
-    {
-        GameManager.continueAdClicked = true;
+        if (buttonClicked == coinAd)
+        {
+            GameManager.coinAdClicked = true;
+        } else if (buttonClicked == continueAd)
+        {
+            GameManager.continueAdClicked = true;
+        }
     }
     
 }

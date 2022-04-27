@@ -143,7 +143,7 @@ public class AdsManager : MonoBehaviour
     {
         if (GameManager.coinAdClicked)
         {
-            GameManager.coins += GameManager.distanceTraveled / 2;
+            GameManager.coins += GameOverScreen.coinsGained;
             PlayerPrefs.SetInt("Coins", GameManager.coins);
             GameOverScreen.Invoke("AddCoins", 0.5f);
             GameManager.coinAdClicked = false;

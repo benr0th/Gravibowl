@@ -1555,7 +1555,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 575926823}
         m_TargetAssemblyTypeName: ShopController, Assembly-CSharp
-        m_MethodName: LoadMainMenu
+        m_MethodName: MainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
