@@ -12,6 +12,7 @@ public class BallControl : MonoBehaviour
     public Rigidbody2D rb;
     public LineRenderer lr;
     [SerializeField] AudioSource hitAudio;
+    [SerializeField] SkinManager skinManager;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
@@ -33,6 +34,7 @@ public class BallControl : MonoBehaviour
 
     private void Start()
     {
+        GetComponent<SpriteRenderer>().sprite = skinManager.GetSelectedSkin().sprite;
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -144,7 +146,6 @@ public class BallControl : MonoBehaviour
             if (GameManager.hasRespawned)
             {
                 Physics.IgnoreLayerCollision(10, 3, false);
-                GameManager.hasRespawned = false;
             }
         }
 

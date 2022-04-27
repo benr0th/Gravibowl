@@ -8,9 +8,9 @@ public class CameraControl : MonoBehaviour
     public Transform leftWall;
     public Transform rightWall;
     public Transform bottomWall;
+
     public Transform bg1;
     public Transform bg2;
-    public Transform effect;
 
     private float size;
 
@@ -51,11 +51,6 @@ public class CameraControl : MonoBehaviour
             {
                 bottomWall.position = new Vector3(bottomWall.position.x, transform.position.y - 5.5f, transform.position.z);
             }
-
-            //if (target.position.y > effect.position.y)
-            //{
-            //    effect.position = new Vector3(effect.position.x, target.position.y, effect.position.z);
-            //}
         }
     }
 

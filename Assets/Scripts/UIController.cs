@@ -39,7 +39,6 @@ public class UIController : MonoBehaviour
         coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         coinAd.onClick.AddListener(CoinClick);
         continueAd.onClick.AddListener(ContinueClick);
-
     }
 
     private void Update()

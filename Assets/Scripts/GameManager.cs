@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     public bool slowMo;
 
     public int distanceTraveled;
+    public int distanceTraveledLast;
     public int coins;
     float ballStartPos;
     float ballCurrentPos;
@@ -69,10 +70,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update()
-    {
-        yMin = Mathf.Clamp(yMin, 0.2f, 100f);
-        yMax = Mathf.Clamp(yMax, 0.2f, 100f);
-        
+    {   
         // Power up stuff
         if (grabbedPowerUp && !isPaused)
         {
@@ -103,6 +101,8 @@ public class GameManager : MonoBehaviour
             if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && upDiff)
             {
                 upDiff = false;
+                yMin = Mathf.Clamp(yMin, 0.2f, 100f);
+                yMax = Mathf.Clamp(yMax, 0.2f, 100f);
                 yMin -= 0.2f;
                 yMax -= 0.2f;
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }

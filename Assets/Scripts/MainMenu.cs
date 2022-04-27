@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    public void PlayGame()
-    {
-        SceneManager.LoadScene("HoleInOneHundred");
-    }
+    public void PlayGame() => SceneManager.LoadScene("HoleInOneHundred");
+
+    public void SkinShop() => SceneManager.LoadScene("Shop");
+
 }

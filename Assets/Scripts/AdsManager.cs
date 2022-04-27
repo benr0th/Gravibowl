@@ -13,7 +13,7 @@ public class AdsManager : MonoBehaviour
     [SerializeField] UIController ui;
 
 #if UNITY_IOS
-    string adUnitId = "Rewarded_iOS";
+    string[] adUnitIds = { "Rewarded_iOS", "Rewarded_iOS_2" };
     string gameId = "4722742";
 #else
     string[] adUnitIds = { "Rewarded_Android", "Rewarded_Android_2" };
@@ -50,7 +50,7 @@ public class AdsManager : MonoBehaviour
             ad = MediationService.Instance.CreateRewardedAd(adUnitId);
             ads.Add(ad);
         }
-        //ad = MediationService.Instance.CreateRewardedAd(adUnitId);
+
         foreach (var ad in ads)
         {
             //Subscribe to events
@@ -117,10 +117,8 @@ public class AdsManager : MonoBehaviour
     void AdClosed(object sender, EventArgs e)
     {
         // Pre-load the next ad
-
         ad.Load();
         Debug.Log("Ad has closed");
-
         // Execute logic after an ad has been closed.
     }
 
