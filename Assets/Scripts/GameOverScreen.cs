@@ -49,7 +49,7 @@ public class GameOverScreen : MonoBehaviour
         coinSound.Play();
         ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         GameObject prefab = Instantiate(floatingCoinsPrefab,
-            new Vector3(transform.position.x + 0.5f, transform.position.y), Quaternion.identity);
+            new Vector3(transform.position.x + 0.5f, transform.position.y + 0.3f), Quaternion.identity);
         prefab.GetComponentInChildren<TMP_Text>().text = "+" + coinsGained.ToString();
         Destroy(prefab, 1f);
     }

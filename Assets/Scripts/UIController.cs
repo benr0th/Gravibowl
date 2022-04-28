@@ -16,12 +16,7 @@ public class UIController : MonoBehaviour
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
-        pauseGame.gameObject.SetActive(true);
-        retryButton.gameObject.SetActive(false);
-        quitGame.gameObject.SetActive(false);
-        powerUpText.enabled = false;
-        coinsTextGameOver.enabled = false;
+        SceneSetup();
     }
 
     private void Start()
@@ -47,4 +42,12 @@ public class UIController : MonoBehaviour
         }
     }
     
+    void SceneSetup()
+    {
+        pauseGame.gameObject.SetActive(true);
+        retryButton.gameObject.SetActive(false);
+        quitGame.gameObject.SetActive(false);
+        powerUpText.enabled = false;
+        coinsTextGameOver.enabled = false;
+    }
 }

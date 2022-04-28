@@ -801,11 +801,11 @@ MonoBehaviour:
   doEquipOnBuy: 0
   yMin: 5
   yMax: 6
+  maxPSpeed: 18
   distanceTraveled: 0
   distanceTraveledLast: 0
   coins: 0
   grabbedPowerUpTime: 4
-  maxPSpeed: 18
 --- !u!4 &248981026
 Transform:
   m_ObjectHideFlags: 0
@@ -1581,6 +1581,7 @@ MonoBehaviour:
   ui: {fileID: 1541187265}
   floatingCoinsPrefab: {fileID: 5466809016378535132, guid: 34e75804b0189124aa73ceef3f8b0aa5, type: 3}
   coinSound: {fileID: 387260124}
+  coinsGained: 0
 --- !u!1 &822798499
 GameObject:
   m_ObjectHideFlags: 0
@@ -2027,7 +2028,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dc1eea0b44a67c54cb4b4d4e06274a6d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.93
+  m_Volume: 0.187
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -4523,9 +4524,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec6de54c2feba04a8f5ba3822fbe6a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  power: 10
+  power: 20
   maxDrag: 5
   moveSpeed: 7
+  puttForce: 2
   rb: {fileID: 7862264093735996381}
   lr: {fileID: 7862264093735996390}
   hitAudio: {fileID: 941972527}

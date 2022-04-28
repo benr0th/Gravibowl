@@ -26,6 +26,12 @@ public class CameraControl : MonoBehaviour
                 transform.position = new Vector3(transform.position.x, target.position.y, transform.position.z);
             }
 
+            //if (target.position.y > transform.position.y)
+            //{
+            //    transform.position = Vector3.Lerp(transform.position,
+            //        new Vector3(transform.position.x, target.position.y, transform.position.z), 1f);
+            //}
+
             // Scrolling background
             if (transform.position.y >= bg2.position.y)
             {
@@ -51,8 +57,6 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-    private void SwitchBg()
-    {
-        (bg2, bg1) = (bg1, bg2);
-    }
+    void SwitchBg() => (bg2, bg1) = (bg1, bg2);
+
 }

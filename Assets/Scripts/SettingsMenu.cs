@@ -9,59 +9,27 @@ public class SettingsMenu : MonoBehaviour
 {
     bool doEquipOnBuy;
     bool muteAudio;
-    [SerializeField] Button equipButton, muteButton;
-    [SerializeField] Sprite checkedBox, uncheckedBox;
+    [SerializeField] Toggle equipToggle, muteToggle;
 
     private void Start()
     {
         CheckEquipSetting();
         CheckMuteSetting();
-        equipButton.image.sprite = doEquipOnBuy ? checkedBox : uncheckedBox;
-        muteButton.image.sprite = muteAudio ? checkedBox : uncheckedBox;
+        equipToggle.isOn = doEquipOnBuy ? true : false;
+        muteToggle.isOn = muteAudio ? true : false;
+
     }
 
-    private void Update()
+    public void EquipOnBuy(bool doEquipToggle)
     {
-        CheckEquipSetting();
-        CheckMuteSetting();
+        int setting = doEquipToggle ? 1 : 0;
+        PlayerPrefs.SetInt("EquipOnBuy", setting);
     }
 
-    public void EquipOnBuy()
+    public void MuteAudio(bool muteToggle)
     {
-        if (!doEquipOnBuy)
-        {
-            CheckboxToggleOn(equipButton);
-            PlayerPrefs.SetInt("EquipOnBuy", 1);
-        }
-        else
-        {
-            CheckboxToggleOff(equipButton);
-            PlayerPrefs.SetInt("EquipOnBuy", 0);
-        }
-    }
-
-    public void MuteAudio()
-    {
-        if (!muteAudio)
-        {
-            CheckboxToggleOn(muteButton);
-            PlayerPrefs.SetInt("Mute", 1);
-        }
-        else
-        {
-            CheckboxToggleOff(muteButton);
-            PlayerPrefs.SetInt("Mute", 0);
-        }
-    }
-
-    void CheckboxToggleOn(Button button)
-    {
-        button.image.sprite = checkedBox;
-    }
-
-    void CheckboxToggleOff(Button button)
-    {
-        button.image.sprite = uncheckedBox;
+        int setting = muteToggle ? 1 : 0;
+        PlayerPrefs.SetInt("Mute", setting);
     }
 
     void CheckEquipSetting() => doEquipOnBuy = PlayerPrefs.GetInt("EquipOnBuy") == 1;

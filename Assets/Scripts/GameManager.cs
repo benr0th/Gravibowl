@@ -23,10 +23,7 @@ public class GameManager : MonoBehaviour
     bool upDiff, spawnPowerUp;
 
     public int distanceTraveled, distanceTraveledLast, coins;
-    float ballStartPos, ballCurrentPos;
-
-    [HideInInspector]
-    public float grabbedPowerUpTime = 4f;
+    float ballStartPos, ballCurrentPos, grabbedPowerUpTime = 4f;
     int powerUpRoll;
 
     //public bool IsPaused

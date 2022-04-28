@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class BallControl : MonoBehaviour
 {
-    [SerializeField] float power, maxDrag, moveSpeed;
+    [SerializeField] float power, maxDrag, moveSpeed, puttForce;
 
     public Rigidbody2D rb;
     public LineRenderer lr;
@@ -14,12 +14,12 @@ public class BallControl : MonoBehaviour
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
-    bool notMoving, notMovingUp, ready;
-    float stoppedMoving;
+    bool notMoving, notMovingUp, ready, hasTarget;
+    float stoppedMoving, magnetSpeed;
     public bool inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
-    Vector3 draggingPos, dragStartPos;
+    Vector3 draggingPos, dragStartPos, targetPos;
     Touch touch;
 
     private void Awake()
@@ -31,6 +31,15 @@ public class BallControl : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().sprite = skinManager.GetSelectedSkin().sprite;
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void FixedUpdate()
+    {
+        if (hasTarget)
+        {
+            Vector2 targetDirection = (targetPos - transform.position).normalized;
+            rb.velocity = new Vector2(targetDirection.x, targetDirection.y) * magnetSpeed;
+        }
     }
 
     private void Update()
@@ -94,6 +103,7 @@ public class BallControl : MonoBehaviour
             }
 
             // Move left and right while moving
+            /*
             if (!notMovingUp && stoppedMoving < 1f && touch.position.y < Screen.height / 1.2f)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
@@ -101,6 +111,7 @@ public class BallControl : MonoBehaviour
                     Move();
                 }
             }
+            */
         }
 
         // Prevents bug when holding screen while grabbing power up - possible to make neater
@@ -110,12 +121,7 @@ public class BallControl : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-
-    }
-
-    private void DragStart()
+    void DragStart()
     {
         dragStartPos = Camera.main.ScreenToWorldPoint(touch.position);
         dragStartPos.z = 0f;
@@ -123,7 +129,7 @@ public class BallControl : MonoBehaviour
         lr.SetPosition(0, dragStartPos);
     }
 
-    private void Dragging()
+    void Dragging()
     {
         draggingPos = Camera.main.ScreenToWorldPoint(touch.position);
         draggingPos.z = 0f;
@@ -131,7 +137,7 @@ public class BallControl : MonoBehaviour
         lr.SetPosition(1, draggingPos);
     }
 
-    private void DragRelease()
+    void DragRelease()
     {
         // Only after hitting ball
         if (lr.positionCount == 2)
@@ -150,11 +156,16 @@ public class BallControl : MonoBehaviour
 
         Vector3 force = (dragStartPos - dragReleasePos);
         Vector3 clampedForce = Vector3.ClampMagnitude(force, maxDrag) * power;
-
+        
         rb.AddForce(clampedForce, ForceMode2D.Impulse);
     }
 
-    private void Move()
+    void Magnetize()
+    {
+
+    }
+
+    void Move()
     {
         Vector2 vel = rb.velocity;
         draggingPos = Camera.main.ScreenToWorldPoint(touch.position);
@@ -164,7 +175,7 @@ public class BallControl : MonoBehaviour
         rb.velocity = vel;
 
         transform.position = Vector3.Lerp(transform.position,
-                new Vector3(draggingPos.x, transform.position.y, 0f), 0.3f);
+                new Vector3(draggingPos.x, transform.position.y, 0f), 0.5f);
 
         /* Alternative moving methods
         transform.position = new Vector3(draggingPos.x, transform.position.y, transform.position.z);
@@ -177,5 +188,11 @@ public class BallControl : MonoBehaviour
         vel.x = difference.x * moveSpeed;
         rb.velocity = vel;
         */
+    }
+
+    public void SetTarget(Vector3 position)
+    {
+        targetPos = position;
+        hasTarget = true;
     }
 }
