@@ -13,6 +13,8 @@ public class UIController : MonoBehaviour
     public Button retryButton, resetScore, quitGame,
                   pauseGame, coinAd, continueAd;
 
+    public Slider magnetGauge;
+
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -44,7 +46,6 @@ public class UIController : MonoBehaviour
     
     void SceneSetup()
     {
-        pauseGame.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(false);
         quitGame.gameObject.SetActive(false);
         powerUpText.enabled = false;

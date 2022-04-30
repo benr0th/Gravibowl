@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject hole;
     public Vector3 spawnHolePos, spawnPowerUpPos, ballLastPos;
 
-    public bool gameOver, hasRespawned,
+    public bool gameOver, hasRespawned, inHole,
                 coinAdClicked, continueAdClicked,
                 isPaused, slowMo, grabbedPowerUp, doEquipOnBuy;
 
@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour
     bool upDiff, spawnPowerUp;
 
     public int distanceTraveled, distanceTraveledLast, coins;
-    float ballStartPos, ballCurrentPos, grabbedPowerUpTime = 4f;
+    public float ballStartPos;
+    float ballCurrentPos, grabbedPowerUpTime = 4f;
     int powerUpRoll;
 
     //public bool IsPaused
@@ -50,9 +51,10 @@ public class GameManager : MonoBehaviour
         ballStartPos = ball.transform.position.y;
         coins = PlayerPrefs.GetInt("Coins", 0);
         if (PlayerPrefs.GetInt("Mute") == 1)
-        {
             AudioListener.volume = 0;
-        } else { AudioListener.volume = 1; }
+        else
+            AudioListener.volume = 1;
+        StartCoroutine(GameOverTrigger());
     }
 
     private void Update()
@@ -77,20 +79,20 @@ public class GameManager : MonoBehaviour
             EndPowerUp();
         }
 
-        if (ball != null && hitPowerUp != null)
+        if (ball != null)
         {
             float ballSpeed = ball.rb.velocity.y;
             ballCurrentPos = ball.transform.position.y;
             distanceTraveled = Mathf.FloorToInt(ballCurrentPos - ballStartPos);
 
-            // Increases hole spawn as distance increases
+            // Decreases hole spawn as distance increases
             if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && upDiff)
             {
                 upDiff = false;
-                yMin = Mathf.Clamp(yMin, 0.2f, 100f);
-                yMax = Mathf.Clamp(yMax, 0.2f, 100f);
-                yMin -= 0.2f;
-                yMax -= 0.2f;
+                yMin = Mathf.Clamp(yMin, 0.5f, 10f);
+                yMax = Mathf.Clamp(yMax, 0.5f, 10f);
+                yMin += 0.3f;
+                yMax += 0.3f;
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
 
             // Spawns holes
@@ -120,6 +122,7 @@ public class GameManager : MonoBehaviour
                 }
             } else if (distanceTraveled % 50 != 0 && !spawnPowerUp) { spawnPowerUp = true; }
             */
+
         }     
     }
 
@@ -132,6 +135,8 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0;
             ui.retryButton.gameObject.SetActive(true);
             ui.quitGame.gameObject.SetActive(true);
+            ball.enabled = false;
+            ball.isTouching = false;
         } else
         {
             if (slowMo)
@@ -141,7 +146,7 @@ public class GameManager : MonoBehaviour
             } else { Time.timeScale = 1; }
             ui.retryButton.gameObject.SetActive(false);
             ui.quitGame.gameObject.SetActive(false);
-
+            ball.enabled = true;
         }
     }
 
@@ -154,6 +159,7 @@ public class GameManager : MonoBehaviour
 
     public void Respawn()
     {
+        StartCoroutine(GameOverTrigger());
         ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         hasRespawned = true;
         gameOver = false;
@@ -183,6 +189,12 @@ public class GameManager : MonoBehaviour
         gameOver = true;
         ballLastPos = ball.transform.position;
         gameOverScreen.Setup();
+    }
+
+    IEnumerator GameOverTrigger()
+    {
+        yield return new WaitUntil(() => ball.stoppedMoving > 5);
+        GameOver();
     }
 
     public void Quit()

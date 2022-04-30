@@ -2,21 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BallControl : MonoBehaviour
 {
-    [SerializeField] float power, maxDrag, moveSpeed, puttForce;
-
     public Rigidbody2D rb;
-    public LineRenderer lr;
+    [SerializeField] LineRenderer lr;
     [SerializeField] AudioSource hitAudio;
     [SerializeField] SkinManager skinManager;
+    [SerializeField] MagnetGauge magnetGauge;
+    [SerializeField] float power, maxDrag, moveSpeed, magnetSpeed;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
     bool notMoving, notMovingUp, ready, hasTarget;
-    float stoppedMoving, magnetSpeed;
-    public bool inputEnabled = true;
+    public float stoppedMoving;
+    public bool isTouching, notAtStart, inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos, targetPos;
@@ -35,38 +36,38 @@ public class BallControl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (hasTarget)
+        // Magnet ability
+        if (hasTarget && Vector3.Distance(targetPos, transform.position) < 3)
         {
-            Vector2 targetDirection = (targetPos - transform.position).normalized;
-            rb.velocity = new Vector2(targetDirection.x, targetDirection.y) * magnetSpeed;
+            //Vector2 targetDirection = (targetPos - transform.position).normalized;
+            //rb.velocity += targetDirection * magnetSpeed * Time.fixedDeltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, 
+                magnetSpeed * Time.fixedDeltaTime);
         }
     }
 
     private void Update()
     {
+        notAtStart = transform.position.y != GameManager.ballStartPos;
         // Logic for moving ball when not moving
-        if (rb.velocity.magnitude <= 0.25f)
+        if (rb.velocity.magnitude <= 0.25f && !GameManager.inHole)
         {
             notMoving = true;
             rb.velocity = Vector2.zero;
+            if (notAtStart)
+                stoppedMoving += Time.deltaTime;
         }
-        else { notMoving = false; }
+        else { notMoving = false; stoppedMoving = 0f; }
 
         // Prevents moving ball left and right infinitely
+        /*
         if (rb.velocity.y <= 0.5f)
         {
             notMovingUp = true;
             stoppedMoving += Time.deltaTime;
             //rb.velocity = Vector2.zero;
         } else { stoppedMoving = 0f; notMovingUp = false; }
-
-        if (GameManager.isPaused)
-        {
-            if (rb.velocity.y <= 0.5f)
-            {
-                rb.velocity = Vector2.zero;
-            }
-        }
+        */
 
         if (Input.touchCount > 0 && !GameManager.isPaused)
         {
@@ -83,7 +84,7 @@ public class BallControl : MonoBehaviour
             else { ready = false; }
 
             // Drag and shoot
-            if (ready || GameManager.grabbedPowerUp && inputEnabled == true
+            if (ready && !notAtStart || GameManager.grabbedPowerUp && inputEnabled == true
                 && touch.position.y < Screen.height / 1.1f)
             {
                 if (touch.phase == TouchPhase.Began)
@@ -112,13 +113,25 @@ public class BallControl : MonoBehaviour
                 }
             }
             */
+
+            //Magnetize when touching
+            if (touch.position.y < Screen.height / 1.2f && notAtStart && !GameManager.gameOver)
+            {
+                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
+                {
+                    magnetGauge.UseMagnet(0.1f);
+                    isTouching = true;
+                }
+            }
+
+            // Prevents bug when holding screen while grabbing power up - possible to make neater
+            if (touch.phase == TouchPhase.Ended)
+            {
+                isTouching = false;
+                inputEnabled = true;
+            }
         }
 
-        // Prevents bug when holding screen while grabbing power up - possible to make neater
-        if (touch.phase == TouchPhase.Ended)
-        {
-            inputEnabled = true;
-        }
     }
 
     void DragStart()
@@ -158,11 +171,6 @@ public class BallControl : MonoBehaviour
         Vector3 clampedForce = Vector3.ClampMagnitude(force, maxDrag) * power;
         
         rb.AddForce(clampedForce, ForceMode2D.Impulse);
-    }
-
-    void Magnetize()
-    {
-
     }
 
     void Move()
