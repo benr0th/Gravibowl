@@ -21,6 +21,7 @@ public class GameOverScreen : MonoBehaviour
         ui.pauseGame.gameObject.SetActive(false);
         ui.coinsTextGameOver.enabled = true;
         ui.coinsText.gameObject.SetActive(false);
+        ui.abilityButton.enabled = false;
         
         if (GameManager.distanceTraveled > PlayerPrefs.GetInt("HighScore", 0))
         {

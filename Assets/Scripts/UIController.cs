@@ -11,7 +11,8 @@ public class UIController : MonoBehaviour
                                  powerUpText, coinsText, coinsTextGameOver;
 
     public Button retryButton, resetScore, quitGame,
-                  pauseGame, coinAd, continueAd;
+                  pauseGame, coinAd, continueAd,
+                  abilityButton;
 
     public Slider magnetGauge;
 

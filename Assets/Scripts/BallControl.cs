@@ -37,7 +37,7 @@ public class BallControl : MonoBehaviour
     private void FixedUpdate()
     {
         // Magnet ability
-        if (hasTarget && Vector3.Distance(targetPos, transform.position) < 3)
+        if (hasTarget && Vector3.Distance(targetPos, transform.position) <= 3)
         {
             //Vector2 targetDirection = (targetPos - transform.position).normalized;
             //rb.velocity += targetDirection * magnetSpeed * Time.fixedDeltaTime;
@@ -57,7 +57,7 @@ public class BallControl : MonoBehaviour
             if (notAtStart)
                 stoppedMoving += Time.deltaTime;
         }
-        else { notMoving = false; stoppedMoving = 0f; }
+        else { notMoving = false; stoppedMoving = 0; }
 
         // Prevents moving ball left and right infinitely
         /*
@@ -115,11 +115,12 @@ public class BallControl : MonoBehaviour
             */
 
             //Magnetize when touching
-            if (touch.position.y < Screen.height / 1.2f && notAtStart && !GameManager.gameOver)
+            if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
+                && notAtStart && !GameManager.gameOver)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
-                    magnetGauge.UseMagnet(0.1f);
+                    magnetGauge.UseMagnet(100f);
                     isTouching = true;
                 }
             }

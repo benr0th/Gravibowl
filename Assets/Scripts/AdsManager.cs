@@ -50,10 +50,9 @@ public class AdsManager : MonoBehaviour
             ad = MediationService.Instance.CreateRewardedAd(adUnitId);
             ads.Add(ad);
         }
-
+        //Subscribe to events
         foreach (var ad in ads)
         {
-            //Subscribe to events
             ad.OnLoaded += AdLoaded;
             ad.OnFailedLoad += AdFailedLoad;
 
@@ -63,7 +62,6 @@ public class AdsManager : MonoBehaviour
             ad.OnClicked += AdClicked;
             ad.OnUserRewarded += UserRewarded;
         }
-        
         // Impression Event
         MediationService.Instance.ImpressionEventPublisher.OnImpression += ImpressionEvent;
     }
@@ -71,26 +69,20 @@ public class AdsManager : MonoBehaviour
     public void ShowAdCoin()
     {
         if (ads[0].AdState == AdState.Loaded)
-        {
             ads[0].Show();
-        }
     }
 
     public void ShowAdContinue()
     {
         if (ads[1].AdState == AdState.Loaded)
-        {
             ads[1].Show();
-        }
     }
 
     void InitializationComplete()
     {
         SetupAd();
         foreach (var ad in ads)
-        {
             ad.Load();
-        }
     }
 
     void InitializationFailed(Exception e)

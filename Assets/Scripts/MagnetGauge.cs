@@ -29,7 +29,7 @@ public class MagnetGauge : MonoBehaviour
 
     private void Update()
     {
-        if (currentMagnet - 5f >= 0)
+        if (currentMagnet - 1f >= 0)
             outOfMagnet = false;
         else
             outOfMagnet = true;
@@ -37,9 +37,9 @@ public class MagnetGauge : MonoBehaviour
 
     public void UseMagnet(float amount)
     {
-        if (currentMagnet - amount >= 0)
+        if (currentMagnet - 1f >= 0)
         {
-            currentMagnet -= amount;
+            currentMagnet -= amount * Time.deltaTime;
             magnetBar.value = currentMagnet;
             if (regen != null)
                 StopCoroutine(regen);

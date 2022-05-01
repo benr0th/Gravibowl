@@ -12,11 +12,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameOverScreen gameOverScreen;
     UIController ui;
 
-    public GameObject hole;
+    public GameObject holePrefab;
     public Vector3 spawnHolePos, spawnPowerUpPos, ballLastPos;
 
     public bool gameOver, hasRespawned, inHole,
-                coinAdClicked, continueAdClicked,
+                coinAdClicked, continueAdClicked, superLaunchActive,
                 isPaused, slowMo, grabbedPowerUp, doEquipOnBuy;
 
     [SerializeField] float yMin, yMax, maxPSpeed;
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
             {
                 spawnHolePos.y += Random.Range(yMin, yMax);
                 spawnHolePos.x = Random.Range(-2.05f, 2.05f);
-                Instantiate(hole, spawnHolePos, Quaternion.identity);
+                Instantiate(holePrefab, spawnHolePos, Quaternion.identity);
             }
 
             // Spawn power up
@@ -136,6 +136,7 @@ public class GameManager : MonoBehaviour
             ui.retryButton.gameObject.SetActive(true);
             ui.quitGame.gameObject.SetActive(true);
             ball.enabled = false;
+            ui.abilityButton.enabled = false;
             ball.isTouching = false;
         } else
         {
@@ -147,6 +148,7 @@ public class GameManager : MonoBehaviour
             ui.retryButton.gameObject.SetActive(false);
             ui.quitGame.gameObject.SetActive(false);
             ball.enabled = true;
+            ui.abilityButton.enabled = true;
         }
     }
 
@@ -167,6 +169,8 @@ public class GameManager : MonoBehaviour
         ui.pauseGame.gameObject.SetActive(true);
         ui.coinsTextGameOver.enabled = false;
         ui.coinsText.gameObject.SetActive(true);
+        ui.abilityButton.enabled = true;
+        ball.stoppedMoving = 0;
         Physics.IgnoreLayerCollision(10, 3);
         ball.gameObject.SetActive(true);
         ball.transform.position = new Vector3(0, ballLastPos.y);
