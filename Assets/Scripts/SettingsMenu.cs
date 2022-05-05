@@ -7,17 +7,13 @@ using UnityEngine.Audio;
 
 public class SettingsMenu : MonoBehaviour
 {
-    bool doEquipOnBuy;
-    bool muteAudio;
-    [SerializeField] Toggle equipToggle, muteToggle;
+    bool doEquipOnBuy, muteAudio, noScreenShake;
+    [SerializeField] Toggle equipToggle, muteToggle, shakeToggle;
 
     private void Start()
     {
-        CheckEquipSetting();
-        CheckMuteSetting();
-        equipToggle.isOn = doEquipOnBuy ? true : false;
-        muteToggle.isOn = muteAudio ? true : false;
-
+        CheckSettings();
+        CheckToggleStatus();
     }
 
     public void EquipOnBuy(bool doEquipToggle)
@@ -32,7 +28,25 @@ public class SettingsMenu : MonoBehaviour
         PlayerPrefs.SetInt("Mute", setting);
     }
 
-    void CheckEquipSetting() => doEquipOnBuy = PlayerPrefs.GetInt("EquipOnBuy") == 1;
-    void CheckMuteSetting() => muteAudio = PlayerPrefs.GetInt("Mute") == 1;
-    public void MainMenu() => SceneManager.LoadScene("Menu");
+    public void NoScreenShake(bool noScreenShake)
+    {
+        int setting = noScreenShake ? 1 : 0;
+        PlayerPrefs.SetInt("NoScreenShake", setting);
+    }
+
+    void CheckSettings()
+    {
+        doEquipOnBuy = PlayerPrefs.GetInt("EquipOnBuy") == 1;
+        muteAudio = PlayerPrefs.GetInt("Mute") == 1;
+        noScreenShake = PlayerPrefs.GetInt("NoScreenShake") == 1;
+    }
+
+    void CheckToggleStatus()
+    {
+        equipToggle.isOn = doEquipOnBuy ? true : false;
+        muteToggle.isOn = muteAudio ? true : false;
+        shakeToggle.isOn = noScreenShake ? true : false;
+    }
+
+    public void MainMenu() => SceneManager.LoadSceneAsync("Menu");
 }

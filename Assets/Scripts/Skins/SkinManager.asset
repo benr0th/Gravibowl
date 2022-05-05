@@ -15,5 +15,17 @@ MonoBehaviour:
   skins:
   - cost: 0
     sprite: {fileID: 21300000, guid: a4d0c1190ed7b954ab38e088812f75e2, type: 3}
-  - cost: 0
-    sprite: {fileID: 21300000, guid: ec4860ad34ff6ac4a88bc5120130682a, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 76630d4cd5be1cd4eb6fbad2696dac77, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 3e7e8b7df046d48448b9cd12e969a089, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 058e89650d643dd468cd8fb87bc488f0, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 02dcec76826692c4b81e7a5abcd630ec, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 297c5ca3934c8a54ea3c527e1813938e, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 297c5ca3934c8a54ea3c527e1813938e, type: 3}
+  - cost: 500
+    sprite: {fileID: 21300000, guid: 297c5ca3934c8a54ea3c527e1813938e, type: 3}

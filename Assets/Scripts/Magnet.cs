@@ -6,7 +6,7 @@ public class Magnet : MonoBehaviour
 {
     BallControl ball;
     MagnetGauge magnetGauge;
-    public bool isMagnetized;
+    public bool isMagnetized, canMagnetize = true;
 
     private void Awake()
     {
@@ -16,7 +16,8 @@ public class Magnet : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<BallControl>(out BallControl ballControl) && ball.isTouching)
+        if (collision.gameObject.TryGetComponent<BallControl>(out BallControl ballControl) && ball.isTouching
+            && canMagnetize)
         {
             if (!magnetGauge.outOfMagnet)
             {

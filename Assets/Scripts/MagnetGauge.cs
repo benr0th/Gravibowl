@@ -9,7 +9,7 @@ public class MagnetGauge : MonoBehaviour
     float maxMagnet = 100;
     float currentMagnet;
     public bool outOfMagnet;
-    WaitForSeconds regenTick = new WaitForSeconds(0.05f);
+    WaitForSeconds regenTick = new WaitForSeconds(0.1f);
     Coroutine regen;
     /* singleton
     public static MagnetGauge instance;
@@ -57,7 +57,7 @@ public class MagnetGauge : MonoBehaviour
         yield return new WaitForSeconds(1.3f);
         while (currentMagnet < maxMagnet)
         {
-            currentMagnet += 5;
+            currentMagnet += 4f;
             magnetBar.value = currentMagnet;
             yield return regenTick;
         }

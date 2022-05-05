@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class BallControl : MonoBehaviour
 {
     public Rigidbody2D rb;
     [SerializeField] LineRenderer lr;
-    [SerializeField] AudioSource hitAudio;
     [SerializeField] SkinManager skinManager;
     [SerializeField] MagnetGauge magnetGauge;
-    [SerializeField] float power, maxDrag, moveSpeed, magnetSpeed;
+    [SerializeField] float power, maxDrag, moveSpeed;
+    AudioSource hitAudio;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
-    bool notMoving, notMovingUp, ready, hasTarget;
-    public float stoppedMoving;
-    public bool isTouching, notAtStart, inputEnabled = true;
+    bool notMoving, notMovingUp;
+    public float stoppedMoving, magnetSpeed;
+    public bool isTouching, notAtStart, ready, hasTarget, inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos, targetPos;
@@ -25,7 +26,8 @@ public class BallControl : MonoBehaviour
 
     private void Awake()
     {
-        GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();    
+        GameManager = GameObject.Find("GameManager").GetComponent<GameManager>(); 
+        hitAudio = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -41,8 +43,9 @@ public class BallControl : MonoBehaviour
         {
             //Vector2 targetDirection = (targetPos - transform.position).normalized;
             //rb.velocity += targetDirection * magnetSpeed * Time.fixedDeltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, 
+            transform.position = Vector3.MoveTowards(transform.position, targetPos,
                 magnetSpeed * Time.fixedDeltaTime);
+            //transform.DOMove(targetPos, magnetSpeed * Time.fixedDeltaTime);
         }
     }
 
@@ -54,7 +57,7 @@ public class BallControl : MonoBehaviour
         {
             notMoving = true;
             rb.velocity = Vector2.zero;
-            if (notAtStart)
+            if (notAtStart && !GameManager.canHitAgain)
                 stoppedMoving += Time.deltaTime;
         }
         else { notMoving = false; stoppedMoving = 0; }
@@ -69,7 +72,8 @@ public class BallControl : MonoBehaviour
         } else { stoppedMoving = 0f; notMovingUp = false; }
         */
 
-        if (Input.touchCount > 0 && !GameManager.isPaused)
+        if (Input.touchCount > 0 && !GameManager.isPaused 
+            && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
             touch = Input.GetTouch(0);
 
@@ -83,9 +87,10 @@ public class BallControl : MonoBehaviour
             }
             else { ready = false; }
 
+            // Code for power up logic - GameManager.grabbedPowerUp && inputEnabled == true
+
             // Drag and shoot
-            if (ready && !notAtStart || GameManager.grabbedPowerUp && inputEnabled == true
-                && touch.position.y < Screen.height / 1.1f)
+            if (ready && !notAtStart || ready && GameManager.canHitAgain)
             {
                 if (touch.phase == TouchPhase.Began)
                 {
@@ -116,7 +121,7 @@ public class BallControl : MonoBehaviour
 
             //Magnetize when touching
             if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
-                && notAtStart && !GameManager.gameOver)
+                && notAtStart && !GameManager.gameOver && !GameManager.canHitAgain)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
@@ -160,7 +165,8 @@ public class BallControl : MonoBehaviour
             //hitEffect.Play();
             if (GameManager.hasRespawned)
             {
-                Physics.IgnoreLayerCollision(10, 3, false);
+                //Physics.IgnoreLayerCollision(10, 3, false);
+                GameManager.canHitAgain = false;
             }
         }
 

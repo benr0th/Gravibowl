@@ -6,18 +6,17 @@ public class GameOverScreen : MonoBehaviour
     GameManager GameManager;
     [SerializeField] UIController ui;
     [SerializeField] GameObject floatingCoinsPrefab;
-    [SerializeField] AudioSource coinSound;
+    AudioSource coinSound;
     public int coinsGained;
 
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        gameObject.SetActive(false);
+        coinSound = GetComponent<AudioSource>();
     }
 
     public void Setup()
     {
-        gameObject.SetActive(true);
         ui.pauseGame.gameObject.SetActive(false);
         ui.coinsTextGameOver.enabled = true;
         ui.coinsText.gameObject.SetActive(false);

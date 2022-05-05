@@ -18,4 +18,15 @@ public class LaunchAbility : Ability
 
     }
 
+    //IEnumerator LaunchPowerChanger()
+    //{
+    //    float launchP = hole.GetComponentInChildren<Hole>().launchPower.y;
+    //    bool launched = hole.GetComponentInChildren<Hole>().hasLaunched;
+    //    launchP = 100;
+    //    Debug.Log("launchP=" + launchP);
+    //    yield return new WaitUntil(() => launched);
+    //    launchP = hole.GetComponentInChildren<Hole>().originalLaunchPower;
+    //    launched = false;
+    //    Debug.Log("launchP=" + launchP);
+    //}
 }

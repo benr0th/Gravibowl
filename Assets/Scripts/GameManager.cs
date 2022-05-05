@@ -15,12 +15,12 @@ public class GameManager : MonoBehaviour
     public GameObject holePrefab;
     public Vector3 spawnHolePos, spawnPowerUpPos, ballLastPos;
 
-    public bool gameOver, hasRespawned, inHole,
+    public bool gameOver, hasRespawned, inHole, canHitAgain,
                 coinAdClicked, continueAdClicked, superLaunchActive,
                 isPaused, slowMo, grabbedPowerUp, doEquipOnBuy;
 
     [SerializeField] float yMin, yMax, maxPSpeed;
-    bool upDiff, spawnPowerUp;
+    bool upDiff, spawnPowerUp, switchSide;
 
     public int distanceTraveled, distanceTraveledLast, coins;
     public float ballStartPos;
@@ -91,15 +91,19 @@ public class GameManager : MonoBehaviour
                 upDiff = false;
                 yMin = Mathf.Clamp(yMin, 0.5f, 10f);
                 yMax = Mathf.Clamp(yMax, 0.5f, 10f);
-                yMin += 0.3f;
-                yMax += 0.3f;
+                yMin += 0.2f;
+                yMax += 0.2f;
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
-
+            // hold onto spawnHolePos.x = Random.Range(-2.05f, 2.05f);
             // Spawns holes
             if (ballCurrentPos > spawnHolePos.y - 4f)
             {
+                switchSide = !switchSide;
                 spawnHolePos.y += Random.Range(yMin, yMax);
-                spawnHolePos.x = Random.Range(-2.05f, 2.05f);
+                if (switchSide)
+                    spawnHolePos.x = Random.Range(0, 2.05f);
+                else
+                    spawnHolePos.x = Random.Range(-2.05f, 0);
                 Instantiate(holePrefab, spawnHolePos, Quaternion.identity);
             }
 
@@ -133,8 +137,7 @@ public class GameManager : MonoBehaviour
         if (isPaused)
         {
             Time.timeScale = 0;
-            ui.retryButton.gameObject.SetActive(true);
-            ui.quitGame.gameObject.SetActive(true);
+            ui.pauseScreen.SetActive(true);
             ball.enabled = false;
             ui.abilityButton.enabled = false;
             ball.isTouching = false;
@@ -145,8 +148,7 @@ public class GameManager : MonoBehaviour
                 Time.timeScale = 0.05f;
                 Time.fixedDeltaTime = Time.timeScale * .02f;
             } else { Time.timeScale = 1; }
-            ui.retryButton.gameObject.SetActive(false);
-            ui.quitGame.gameObject.SetActive(false);
+            ui.pauseScreen.SetActive(false);
             ball.enabled = true;
             ui.abilityButton.enabled = true;
         }
@@ -161,25 +163,27 @@ public class GameManager : MonoBehaviour
 
     public void Respawn()
     {
+        ball.stoppedMoving = 0;
+        ball.transform.position = ballLastPos;
         StartCoroutine(GameOverTrigger());
         ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        canHitAgain = true;
         hasRespawned = true;
         gameOver = false;
-        gameOverScreen.gameObject.SetActive(false);
+        ball.ready = false;
+        ui.gameOverScreen.SetActive(false);
         ui.pauseGame.gameObject.SetActive(true);
         ui.coinsTextGameOver.enabled = false;
         ui.coinsText.gameObject.SetActive(true);
         ui.abilityButton.enabled = true;
-        ball.stoppedMoving = 0;
-        Physics.IgnoreLayerCollision(10, 3);
+        //Physics.IgnoreLayerCollision(10, 3);
         ball.gameObject.SetActive(true);
-        ball.transform.position = new Vector3(0, ballLastPos.y);
     }
 
     public void Retry()
     {
         Time.timeScale = 1;
-        SceneManager.LoadScene("HoleInOneHundred");
+        SceneManager.LoadSceneAsync("Game");
     }
 
     public void ResetScore()
@@ -192,18 +196,19 @@ public class GameManager : MonoBehaviour
     {
         gameOver = true;
         ballLastPos = ball.transform.position;
+        ui.gameOverScreen.SetActive(true);
         gameOverScreen.Setup();
     }
 
     IEnumerator GameOverTrigger()
     {
-        yield return new WaitUntil(() => ball.stoppedMoving > 5);
+        yield return new WaitUntil(() => ball.stoppedMoving > 3);
         GameOver();
     }
 
     public void Quit()
     {
         Time.timeScale = 1;
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadSceneAsync("Menu");
     }
 }

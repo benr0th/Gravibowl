@@ -16,6 +16,8 @@ public class UIController : MonoBehaviour
 
     public Slider magnetGauge;
 
+    public GameObject gameOverScreen, pauseScreen;
+
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -47,8 +49,7 @@ public class UIController : MonoBehaviour
     
     void SceneSetup()
     {
-        retryButton.gameObject.SetActive(false);
-        quitGame.gameObject.SetActive(false);
+        pauseScreen.gameObject.SetActive(false);
         powerUpText.enabled = false;
         coinsTextGameOver.enabled = false;
     }

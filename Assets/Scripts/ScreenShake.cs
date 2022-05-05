@@ -16,10 +16,6 @@ public class ScreenShake : MonoBehaviour
 
     void Update()
     {
-        //if (GameManager.inHole && GameManager.superLaunchActive && !GameManager.hasLaunched)
-        //{
-        //    StartCoroutine(Shaking());
-        //}
     }
 
     public IEnumerator Shaking()
