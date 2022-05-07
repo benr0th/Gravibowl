@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update()
-    {   
+    {
         // Power up stuff
         if (grabbedPowerUp && !isPaused)
         {
@@ -96,16 +96,16 @@ public class GameManager : MonoBehaviour
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
             // hold onto spawnHolePos.x = Random.Range(-2.05f, 2.05f);
             // Spawns holes
-            if (ballCurrentPos > spawnHolePos.y - 4f)
-            {
-                switchSide = !switchSide;
-                spawnHolePos.y += Random.Range(yMin, yMax);
-                if (switchSide)
-                    spawnHolePos.x = Random.Range(0, 2.05f);
-                else
-                    spawnHolePos.x = Random.Range(-2.05f, 0);
-                Instantiate(holePrefab, spawnHolePos, Quaternion.identity);
-            }
+            //if (ballCurrentPos > spawnHolePos.y - 4f)
+            //{
+            //    switchSide = !switchSide;
+            //    spawnHolePos.y += Random.Range(yMin, yMax);
+            //    if (switchSide)
+            //        spawnHolePos.x = Random.Range(0, 2.05f);
+            //    else
+            //        spawnHolePos.x = Random.Range(-2.05f, 0);
+            //    Instantiate(holePrefab, spawnHolePos, Quaternion.identity);
+            //}
 
             // Spawn power up
             /*
@@ -202,7 +202,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameOverTrigger()
     {
-        yield return new WaitUntil(() => ball.stoppedMoving > 3);
+        yield return new WaitUntil(() => ball.stoppedMoving > 100);
         GameOver();
     }
 

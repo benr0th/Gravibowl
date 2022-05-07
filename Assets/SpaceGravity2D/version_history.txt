@@ -1,0 +1,55 @@
+1.4:
+- Generated code documentation added.
+- New demo scene.
+- Minor performance increase.
+- Fixed some small bugs.
+
+1.3:
+- Full 3D Support.
+- Double precision calculations.
+- CelestialBody no longer require Rigidbody component.
+- Added CelestialBodySingle component, which allows to make static orbiting motion without SimulationControl
+- Removed colliding logic due to instability.
+- Added some 3d-related tools and properties.
+- A lot of minor changes and bugs fixes.
+- New demo scene.
+
+1.2.5:
+-Scene view velocity and orbits display now works correctly from editor startup and playmode transition.
+-Added orbits display component to allow customize orbits for different bodies.
+-Added prediciton system target component to allow configurate and disable prediction display for some bodies.
+-Added few more methods for controlling celestial bodies.
+-- SetPostion
+-- ApplyForce
+-Added periapsis/apoapsis distance properties to CelestialBody and display in inspector. 
+-Minor bugs fixes.
+
+1.2.0:
+-added verlet and runge-kutta n-body algorithms
+-celestial body inspector functions extended:
+-- editable velocity magnitude
+-- editable eccentricity
+-- editable mean anomaly
+-- editable eccentric anomaly
+-- editable argument of periapsis
+-added basic orbits prediction component
+-celestial body inspector multiple objects editing improved
+-velocity arrows minor improvments
+-demo scenes remaked
+-added celestial body component icon
+-removed keplerian to newtonian motion transition timer
+-collisions logic remaked
+-removed minimal collision velocity
+-a lot of minor fixes
+-removed some old scripts and prefabs
+
+1.1.0:
+-Improved collisions processing
+-New demo scenes added
+-Scripting usage extended
+-Continuous proper attractor searching
+-Editor extensions improved
+-Bugs fixes
+
+1.0.0:
+-initial release;

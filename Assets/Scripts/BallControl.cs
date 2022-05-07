@@ -17,11 +17,12 @@ public class BallControl : MonoBehaviour
     //public ParticleSystem hitEffect = null;
 
     bool notMoving, notMovingUp;
-    public float stoppedMoving, magnetSpeed;
+    public float stoppedMoving, magnetSpeed, rotateSpeed;
     public bool isTouching, notAtStart, ready, hasTarget, inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
-    Vector3 draggingPos, dragStartPos, targetPos;
+    Vector3 draggingPos, dragStartPos;
+    public Vector3 targetPos;
     Touch touch;
 
     private void Awake()
@@ -38,21 +39,28 @@ public class BallControl : MonoBehaviour
 
     private void FixedUpdate()
     {
+        rotateSpeed = Mathf.Clamp(rotateSpeed, 5, 20);
         // Magnet ability
         if (hasTarget && Vector3.Distance(targetPos, transform.position) <= 3)
         {
             //Vector2 targetDirection = (targetPos - transform.position).normalized;
             //rb.velocity += targetDirection * magnetSpeed * Time.fixedDeltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, targetPos,
-                magnetSpeed * Time.fixedDeltaTime);
             //transform.DOMove(targetPos, magnetSpeed * Time.fixedDeltaTime);
+            //transform.position = Vector3.MoveTowards(transform.position, targetPos,
+            //    magnetSpeed * Time.fixedDeltaTime);
+
+            //rotateSpeed += Time.fixedDeltaTime * 5;
+            //transform.RotateAround(targetPos, Vector3.back, rotateSpeed);
+            //rb.AddForce(Vector2.up * Time.deltaTime, ForceMode2D.Force);
         }
     }
 
     private void Update()
     {
         notAtStart = transform.position.y != GameManager.ballStartPos;
+        #region legacy logic
         // Logic for moving ball when not moving
+        /*
         if (rb.velocity.magnitude <= 0.25f && !GameManager.inHole)
         {
             notMoving = true;
@@ -61,6 +69,7 @@ public class BallControl : MonoBehaviour
                 stoppedMoving += Time.deltaTime;
         }
         else { notMoving = false; stoppedMoving = 0; }
+        */
 
         // Prevents moving ball left and right infinitely
         /*
@@ -71,13 +80,14 @@ public class BallControl : MonoBehaviour
             //rb.velocity = Vector2.zero;
         } else { stoppedMoving = 0f; notMovingUp = false; }
         */
-
+        #endregion
         if (Input.touchCount > 0 && !GameManager.isPaused 
             && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
             touch = Input.GetTouch(0);
-
+            #region drag&shoot mechanism (legacy)
             // Only move when ball is not moving, uses voodoo magic, do not touch or it will break
+            /*
             if (notMoving)
             {
                 if (touch.phase == TouchPhase.Began)
@@ -86,10 +96,11 @@ public class BallControl : MonoBehaviour
                 }
             }
             else { ready = false; }
-
+            */
             // Code for power up logic - GameManager.grabbedPowerUp && inputEnabled == true
 
             // Drag and shoot
+            /*
             if (ready && !notAtStart || ready && GameManager.canHitAgain)
             {
                 if (touch.phase == TouchPhase.Began)
@@ -107,6 +118,7 @@ public class BallControl : MonoBehaviour
                     DragRelease();
                 }
             }
+            */
 
             // Move left and right while moving
             /*
@@ -118,10 +130,10 @@ public class BallControl : MonoBehaviour
                 }
             }
             */
-
-            //Magnetize when touching
+            #endregion
+            // When touching
             if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
-                && notAtStart && !GameManager.gameOver && !GameManager.canHitAgain)
+                /*&& notAtStart */&& !GameManager.gameOver && !GameManager.canHitAgain)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {

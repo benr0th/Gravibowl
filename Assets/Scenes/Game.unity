@@ -678,7 +678,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &151075581
 Transform:
   m_ObjectHideFlags: 0
@@ -2659,7 +2659,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1171160525
 Transform:
   m_ObjectHideFlags: 0
@@ -4578,7 +4578,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1963677770
 Transform:
   m_ObjectHideFlags: 0
@@ -5202,6 +5202,7 @@ GameObject:
   - component: {fileID: 7862264093735996393}
   - component: {fileID: 7862264093735996385}
   - component: {fileID: 7862264093735996391}
+  - component: {fileID: 7862264093735996394}
   m_Layer: 6
   m_Name: Ball
   m_TagString: Ball
@@ -5265,13 +5266,15 @@ MonoBehaviour:
   power: 5
   maxDrag: 5
   moveSpeed: 7
-  magnetSpeed: 5
   stoppedMoving: 0
+  magnetSpeed: 5
+  rotateSpeed: 0
   isTouching: 0
   notAtStart: 0
   ready: 0
   hasTarget: 0
   inputEnabled: 1
+  targetPos: {x: 0, y: 0, z: 0}
 --- !u!58 &7862264093735996386
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5666,3 +5669,14 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!247 &7862264093735996394
+ConstantForce2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7862264093735996380}
+  m_Enabled: 1
+  m_Force: {x: 0, y: 0}
+  m_RelativeForce: {x: 0, y: 0}
+  m_Torque: 0

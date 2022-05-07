@@ -48,7 +48,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 2
+  m_Radius: 1.76
 --- !u!114 &1574750364528175678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +74,9 @@ GameObject:
   - component: {fileID: 4477402439332779101}
   - component: {fileID: 4477402439332779100}
   - component: {fileID: 563845823482855451}
+  - component: {fileID: 6441742325962589320}
+  - component: {fileID: 6174156840693683566}
+  - component: {fileID: 5758815045130684080}
   m_Layer: 7
   m_Name: Hole
   m_TagString: Hole
@@ -90,7 +93,7 @@ Transform:
   m_GameObject: {fileID: 4477402439332779098}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.85, y: 0.85, z: 1.7}
+  m_LocalScale: {x: 0.53, y: 0.53, z: 1.06}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1229443352767024740}
@@ -139,7 +142,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 5551a5db1f2c9a543b30f1894b6aa210, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8ff5851d96e353540b1e6d34f6dafe7b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -162,6 +165,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3079aa3302b5a5e4a9802ed0beec9aba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &6441742325962589320
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4477402439332779098}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 30
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7
+--- !u!58 &6174156840693683566
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4477402439332779098}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.62
+--- !u!249 &5758815045130684080
+AreaEffector2D:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4477402439332779098}
+  m_Enabled: 0
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGlobalAngle: 0
+  m_ForceAngle: 0
+  m_ForceMagnitude: -100
+  m_ForceVariation: 0
+  m_ForceTarget: 1
+  m_Drag: 0
+  m_AngularDrag: 0
 --- !u!1 &5147038457063178810
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +271,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.65
 --- !u!82 &4782406632085034060
 AudioSource:
   m_ObjectHideFlags: 0
@@ -321,6 +381,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeedForHole: 10
+  gravForce: 0
   launchPower: {x: 0, y: 30}
   magnet: {fileID: 1574750364528175678}
+  planetRb: {fileID: 6441742325962589320}
   originalLaunchPower: 0
+  G: 6.67
+  soiRadius: 4
