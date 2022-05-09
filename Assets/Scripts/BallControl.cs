@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class BallControl : MonoBehaviour
 {
@@ -14,32 +15,41 @@ public class BallControl : MonoBehaviour
     [SerializeField] float power, maxDrag, moveSpeed;
     AudioSource hitAudio;
     GameManager GameManager;
+    Hole hole;
     //public ParticleSystem hitEffect = null;
 
-    bool notMoving, notMovingUp;
+    bool notMoving, notMovingUp, launchButtonPressed;
     public float stoppedMoving, magnetSpeed, rotateSpeed;
     public bool isTouching, notAtStart, ready, hasTarget, inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos;
     public Vector3 targetPos;
+
     Touch touch;
 
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>(); 
         hitAudio = GetComponent<AudioSource>();
+        GetComponent<SpriteRenderer>().sprite = skinManager.GetSelectedSkin().sprite;
+        rb = GetComponent<Rigidbody2D>();
+        
     }
 
     private void Start()
     {
-        GetComponent<SpriteRenderer>().sprite = skinManager.GetSelectedSkin().sprite;
-        rb = GetComponent<Rigidbody2D>();
+        transform.position = new Vector3(0.07f, -0.57f).normalized * 0.5f;
+        //transform.position = new Vector3(0.15f, -1.12f).normalized * 1.13f;
     }
-
+    /*
+     vel=(12.76, 2.22)
+    velMag=12.95249
+    distance=0.6406599
+    */
     private void FixedUpdate()
     {
-        rotateSpeed = Mathf.Clamp(rotateSpeed, 5, 20);
+
         // Magnet ability
         if (hasTarget && Vector3.Distance(targetPos, transform.position) <= 3)
         {
@@ -53,6 +63,24 @@ public class BallControl : MonoBehaviour
             //transform.RotateAround(targetPos, Vector3.back, rotateSpeed);
             //rb.AddForce(Vector2.up * Time.deltaTime, ForceMode2D.Force);
         }
+        if (isTouching)
+        {
+            // Force of object
+            //rb.AddRelativeForce(new Vector2(0, 4));
+            GetComponent<ConstantForce2D>().relativeForce = new Vector2(0, 5);
+            /*vel=(12.65, 4.45)
+            velMag=13.40864
+            PosVector=(0.07, -0.57, 0.00)
+            PosFloat=0.5714426
+            normalized=(0.12, -0.99, 0.00)
+            */
+            rb.velocity = transform.up.normalized * 13.0058f;
+
+        }
+        else
+            GetComponent<ConstantForce2D>().relativeForce = Vector2.zero;
+
+
     }
 
     private void Update()
@@ -71,17 +99,17 @@ public class BallControl : MonoBehaviour
         else { notMoving = false; stoppedMoving = 0; }
         */
 
-        // Prevents moving ball left and right infinitely
-        /*
-        if (rb.velocity.y <= 0.5f)
-        {
-            notMovingUp = true;
-            stoppedMoving += Time.deltaTime;
-            //rb.velocity = Vector2.zero;
-        } else { stoppedMoving = 0f; notMovingUp = false; }
-        */
-        #endregion
-        if (Input.touchCount > 0 && !GameManager.isPaused 
+            // Prevents moving ball left and right infinitely
+            /*
+            if (rb.velocity.y <= 0.5f)
+            {
+                notMovingUp = true;
+                stoppedMoving += Time.deltaTime;
+                //rb.velocity = Vector2.zero;
+            } else { stoppedMoving = 0f; notMovingUp = false; }
+            */
+#endregion
+            if (Input.touchCount > 0 && !GameManager.isPaused 
             && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
             touch = Input.GetTouch(0);
@@ -138,7 +166,7 @@ public class BallControl : MonoBehaviour
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
                     magnetGauge.UseMagnet(100f);
-                    isTouching = true;
+                    isTouching = true; 
                 }
             }
 
@@ -221,5 +249,11 @@ public class BallControl : MonoBehaviour
     {
         targetPos = position;
         hasTarget = true;
+    }
+
+    public void LaunchButton()
+    {
+        GameManager.checkpointHits = 0;
+        SceneManager.LoadSceneAsync("Game");
     }
 }

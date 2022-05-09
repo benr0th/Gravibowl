@@ -59,17 +59,26 @@ public class Hole : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.checkpointHits > 2)
+            Debug.Log($"orbit achieved!\nvel={ball.rb.velocity}\nvelMag={ball.rb.velocity.magnitude}" +
+                $"\nPosVector={transform.position - ball.transform.position}" +
+                $"\nPosFloat={(transform.position - ball.transform.position).magnitude}" +
+                $"\nnormalized={(transform.position - ball.transform.position).normalized}");
         float orbitalDistance = Vector3.Distance(transform.position, ball.transform.position);
         if (ball.isTouching)
         {
             if (orbitalDistance < soiRadius)
             {
-                Debug.Log($"orbiting {transform.position}");
+                //Debug.Log($"orbiting {transform.position}");
                 Orbit();
+                // Side faces planet, so force will be in correct direction
+                if (transform.position.x >= 0)
+                    ball.transform.right = transform.position - ball.transform.position;
+                else
+                    ball.transform.right = (transform.position - ball.transform.position) * -1;
             }
-            // Force of object
-            ball.rb.AddRelativeForce(new Vector2(0, 13));
-        } 
+            
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -82,7 +91,7 @@ public class Hole : MonoBehaviour
             //ball.transform.RotateAround(ball.targetPos, Vector3.back, ball.rotateSpeed);
             
         }
-
+        GameManager.checkpointHits++;
 
     }
 
@@ -95,14 +104,13 @@ public class Hole : MonoBehaviour
         Vector2 force = direction.normalized * forceMagnitude;
         ball.rb.AddForce(force);
         // Centrifugal force
+        /*
         float cForceMagnitude = ball.rb.mass * (ball.rb.velocity.sqrMagnitude / direction.magnitude);
         Vector2 cForce = -direction.normalized * cForceMagnitude;
         ball.rb.AddForce(cForce);
-        // Side faces planet, so force will be in correct direction
-        if (transform.position.x >= 0)
-            ball.transform.right = transform.position - ball.transform.position;
-        else
-            ball.transform.right = (transform.position - ball.transform.position) * -1;
+        */
+        
+
     }
 
     void LockOn()

@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float yMin, yMax, maxPSpeed;
     bool upDiff, spawnPowerUp, switchSide;
 
-    public int distanceTraveled, distanceTraveledLast, coins;
+    public int distanceTraveled, distanceTraveledLast, coins, checkpointHits;
     public float ballStartPos;
     float ballCurrentPos, grabbedPowerUpTime = 4f;
     int powerUpRoll;
@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
             //        spawnHolePos.x = Random.Range(-2.05f, 0);
             //    Instantiate(holePrefab, spawnHolePos, Quaternion.identity);
             //}
-
+            #region Spawn Power up code
             // Spawn power up
             /*
             if (distanceTraveled % 50 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp
@@ -126,8 +126,9 @@ public class GameManager : MonoBehaviour
                 }
             } else if (distanceTraveled % 50 != 0 && !spawnPowerUp) { spawnPowerUp = true; }
             */
+            #endregion
 
-        }     
+        }
     }
 
     public void Pause()
@@ -211,4 +212,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadSceneAsync("Menu");
     }
+
+
 }

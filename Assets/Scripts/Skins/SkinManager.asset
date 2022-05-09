@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skins:
   - cost: 0
-    sprite: {fileID: 21300000, guid: a4d0c1190ed7b954ab38e088812f75e2, type: 3}
+    sprite: {fileID: 21300000, guid: b4916f76580c5864abc4160d4e8da63e, type: 3}
   - cost: 500
     sprite: {fileID: 21300000, guid: 76630d4cd5be1cd4eb6fbad2696dac77, type: 3}
   - cost: 500
