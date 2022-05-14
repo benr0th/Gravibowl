@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Hole
   - Ball
+  - Ship
   layers:
   - Default
   - TransparentFX

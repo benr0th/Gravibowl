@@ -8,6 +8,7 @@ public class CameraControl : MonoBehaviour
     public Transform leftWall;
     public Transform rightWall;
     public Transform bottomWall;
+    public Transform blackHole;
 
     float size;
 
@@ -20,7 +21,7 @@ public class CameraControl : MonoBehaviour
     {
         if (target != null)
         {
-            // Camera follows ball
+            // Camera follows ship
             if (target.position.y > transform.position.y)
             {
                 transform.position = new Vector3(transform.position.x, target.position.y, transform.position.z);
@@ -41,19 +42,17 @@ public class CameraControl : MonoBehaviour
 
             // Bounds follow camera, causes glitch - need to change
             if (target.position.y > leftWall.position.y)
-            {
                 leftWall.position = new Vector3(leftWall.position.x, transform.position.y, transform.position.z);
-            }
 
             if (target.position.y > rightWall.position.y)
-            {
                 rightWall.position = new Vector3(rightWall.position.x, transform.position.y, transform.position.z);
-            }
 
             if (target.position.y > bottomWall.position.y)
-            {
                 bottomWall.position = new Vector3(bottomWall.position.x, transform.position.y - 5.5f, transform.position.z);
-            }
+
+            // Black hole follows camera
+            if (transform.position.y - 5.31f > blackHole.position.y)
+                blackHole.position = new Vector3(blackHole.position.x, transform.position.y - 5.31f, transform.position.z);
         }
     }
 

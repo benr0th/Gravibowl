@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 
-public class BallControl : MonoBehaviour
+public class ShipControl : MonoBehaviour
 {
     public Rigidbody2D rb;
     [SerializeField] LineRenderer lr;
@@ -15,12 +15,11 @@ public class BallControl : MonoBehaviour
     [SerializeField] float power, maxDrag, moveSpeed;
     AudioSource hitAudio;
     GameManager GameManager;
-    Hole hole;
     //public ParticleSystem hitEffect = null;
 
     bool notMoving, notMovingUp, launchButtonPressed;
     public float stoppedMoving, magnetSpeed, rotateSpeed;
-    public bool isTouching, notAtStart, ready, hasTarget, inputEnabled = true;
+    public bool isTouching, notAtStart, ready, hasTarget, orbitVel, inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos;
@@ -39,31 +38,26 @@ public class BallControl : MonoBehaviour
 
     private void Start()
     {
-        transform.position = new Vector3(0.07f, -0.57f).normalized * 0.5f;
+        //transform.position = new Vector3(0.07f, -0.57f).normalized * 0.5f;
         //transform.position = new Vector3(0.15f, -1.12f).normalized * 1.13f;
     }
-    /*
-     vel=(12.76, 2.22)
-    velMag=12.95249
-    distance=0.6406599
-    */
+
     private void FixedUpdate()
     {
-
+        #region magnet (legacy)
+        /*
         // Magnet ability
         if (hasTarget && Vector3.Distance(targetPos, transform.position) <= 3)
         {
-            //Vector2 targetDirection = (targetPos - transform.position).normalized;
-            //rb.velocity += targetDirection * magnetSpeed * Time.fixedDeltaTime;
-            //transform.DOMove(targetPos, magnetSpeed * Time.fixedDeltaTime);
-            //transform.position = Vector3.MoveTowards(transform.position, targetPos,
-            //    magnetSpeed * Time.fixedDeltaTime);
-
-            //rotateSpeed += Time.fixedDeltaTime * 5;
-            //transform.RotateAround(targetPos, Vector3.back, rotateSpeed);
-            //rb.AddForce(Vector2.up * Time.deltaTime, ForceMode2D.Force);
+            Vector2 targetDirection = (targetPos - transform.position).normalized;
+            rb.velocity += targetDirection * magnetSpeed * Time.fixedDeltaTime;
+            transform.DOMove(targetPos, magnetSpeed * Time.fixedDeltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPos,
+                magnetSpeed * Time.fixedDeltaTime);
         }
-        if (isTouching)
+        */
+        #endregion
+        if (isTouching && !GameManager.exitOrbit)
         {
             // Force of object
             //rb.AddRelativeForce(new Vector2(0, 4));
@@ -74,7 +68,9 @@ public class BallControl : MonoBehaviour
             PosFloat=0.5714426
             normalized=(0.12, -0.99, 0.00)
             */
-            rb.velocity = transform.up.normalized * 13.0058f;
+            if (orbitVel)
+                //    //rb.velocity = transform.up.normalized * 13.0058f;
+                rb.velocity = transform.up.normalized * 7f;
 
         }
         else
@@ -85,7 +81,7 @@ public class BallControl : MonoBehaviour
 
     private void Update()
     {
-        notAtStart = transform.position.y != GameManager.ballStartPos;
+        notAtStart = transform.position.y != GameManager.shipStartPos;
         #region legacy logic
         // Logic for moving ball when not moving
         /*
@@ -99,20 +95,38 @@ public class BallControl : MonoBehaviour
         else { notMoving = false; stoppedMoving = 0; }
         */
 
-            // Prevents moving ball left and right infinitely
-            /*
-            if (rb.velocity.y <= 0.5f)
-            {
-                notMovingUp = true;
-                stoppedMoving += Time.deltaTime;
-                //rb.velocity = Vector2.zero;
-            } else { stoppedMoving = 0f; notMovingUp = false; }
-            */
-#endregion
-            if (Input.touchCount > 0 && !GameManager.isPaused 
-            && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+        // Prevents moving ball left and right infinitely
+        /*
+        if (rb.velocity.y <= 0.5f)
+        {
+            notMovingUp = true;
+            stoppedMoving += Time.deltaTime;
+            //rb.velocity = Vector2.zero;
+        } else { stoppedMoving = 0f; notMovingUp = false; }
+        */
+        #endregion
+        if (Input.touchCount > 0 && !GameManager.isPaused 
+        && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
             touch = Input.GetTouch(0);
+            
+            // When touching
+            if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
+                /*&& notAtStart */&& !GameManager.gameOver && !GameManager.canHitAgain)
+            {
+                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
+                {
+                    magnetGauge.UseMagnet(100f);
+                    isTouching = true; 
+                }
+            }
+
+            // Prevents bug when holding screen while grabbing power up - possible to make neater
+            if (touch.phase == TouchPhase.Ended)
+            {
+                //isTouching = false;
+                inputEnabled = true;
+            }
             #region drag&shoot mechanism (legacy)
             // Only move when ball is not moving, uses voodoo magic, do not touch or it will break
             /*
@@ -159,65 +173,8 @@ public class BallControl : MonoBehaviour
             }
             */
             #endregion
-            // When touching
-            if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
-                /*&& notAtStart */&& !GameManager.gameOver && !GameManager.canHitAgain)
-            {
-                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
-                {
-                    magnetGauge.UseMagnet(100f);
-                    isTouching = true; 
-                }
-            }
-
-            // Prevents bug when holding screen while grabbing power up - possible to make neater
-            if (touch.phase == TouchPhase.Ended)
-            {
-                isTouching = false;
-                inputEnabled = true;
-            }
         }
 
-    }
-
-    void DragStart()
-    {
-        dragStartPos = Camera.main.ScreenToWorldPoint(touch.position);
-        dragStartPos.z = 0f;
-        lr.positionCount = 1;
-        lr.SetPosition(0, dragStartPos);
-    }
-
-    void Dragging()
-    {
-        draggingPos = Camera.main.ScreenToWorldPoint(touch.position);
-        draggingPos.z = 0f;
-        lr.positionCount = 2;
-        lr.SetPosition(1, draggingPos);
-    }
-
-    void DragRelease()
-    {
-        // Only after hitting ball
-        if (lr.positionCount == 2)
-        {
-            hitAudio.Play();
-            //hitEffect.Play();
-            if (GameManager.hasRespawned)
-            {
-                //Physics.IgnoreLayerCollision(10, 3, false);
-                GameManager.canHitAgain = false;
-            }
-        }
-
-        lr.positionCount = 0;
-        Vector3 dragReleasePos = Camera.main.ScreenToWorldPoint(touch.position);
-        dragReleasePos.z = 0f;
-
-        Vector3 force = (dragStartPos - dragReleasePos);
-        Vector3 clampedForce = Vector3.ClampMagnitude(force, maxDrag) * power;
-        
-        rb.AddForce(clampedForce, ForceMode2D.Impulse);
     }
 
     void Move()
@@ -245,15 +202,58 @@ public class BallControl : MonoBehaviour
         */
     }
 
-    public void SetTarget(Vector3 position)
-    {
-        targetPos = position;
-        hasTarget = true;
-    }
-
     public void LaunchButton()
     {
         GameManager.checkpointHits = 0;
         SceneManager.LoadSceneAsync("Game");
     }
+
+    /* drag&shoot methods (legacy)
+    void DragStart()
+    {
+        dragStartPos = Camera.main.ScreenToWorldPoint(touch.position);
+        dragStartPos.z = 0f;
+        lr.positionCount = 1;
+        lr.SetPosition(0, dragStartPos);
+    }
+
+    void Dragging()
+    {
+        draggingPos = Camera.main.ScreenToWorldPoint(touch.position);
+        draggingPos.z = 0f;
+        lr.positionCount = 2;
+        lr.SetPosition(1, draggingPos);
+    }
+
+    void DragRelease()
+    {
+        // Only after hitting ship
+        if (lr.positionCount == 2)
+        {
+            hitAudio.Play();
+            //hitEffect.Play();
+            if (GameManager.hasRespawned)
+            {
+                //Physics.IgnoreLayerCollision(10, 3, false);
+                GameManager.canHitAgain = false;
+            }
+        }
+
+        lr.positionCount = 0;
+        Vector3 dragReleasePos = Camera.main.ScreenToWorldPoint(touch.position);
+        dragReleasePos.z = 0f;
+
+        Vector3 force = (dragStartPos - dragReleasePos);
+        Vector3 clampedForce = Vector3.ClampMagnitude(force, maxDrag) * power;
+        
+        rb.AddForce(clampedForce, ForceMode2D.Impulse);
+    }
+
+    public void SetTarget(Vector3 position)
+    {
+        targetPos = position;
+        hasTarget = true;
+    }
+    */
+
 }

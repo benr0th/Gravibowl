@@ -6,25 +6,26 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] BallControl ball;
+    [SerializeField] ShipControl ship;
     [SerializeField] Camera cam;
     [SerializeField] InfHitPowerUp hitPowerUp;
     [SerializeField] GameOverScreen gameOverScreen;
+    [SerializeField] Sprite[] planets;
     UIController ui;
 
-    public GameObject holePrefab;
-    public Vector3 spawnHolePos, spawnPowerUpPos, ballLastPos;
+    public GameObject planetPrefab;
+    public Vector3 spawnPlanetPos, spawnPowerUpPos, shipLastPos;
 
-    public bool gameOver, hasRespawned, inHole, canHitAgain,
-                coinAdClicked, continueAdClicked, superLaunchActive,
-                isPaused, slowMo, grabbedPowerUp, doEquipOnBuy;
+    public bool gameOver, hasRespawned, inHole, canHitAgain, exitOrbit,
+                coinAdClicked, continueAdClicked, superLaunchActive, isOrbiting,
+                isPaused, slowMo, grabbedPowerUp, doEquipOnBuy, lockedOn;
 
     [SerializeField] float yMin, yMax, maxPSpeed;
     bool upDiff, spawnPowerUp, switchSide;
 
     public int distanceTraveled, distanceTraveledLast, coins, checkpointHits;
-    public float ballStartPos;
-    float ballCurrentPos, grabbedPowerUpTime = 4f;
+    public float shipStartPos;
+    float shipCurrentPos, grabbedPowerUpTime = 4f;
     int powerUpRoll;
 
     //public bool IsPaused
@@ -47,8 +48,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        spawnHolePos = new Vector3();
-        ballStartPos = ball.transform.position.y;
+        spawnPlanetPos = new Vector3();
+        shipStartPos = ship.transform.position.y;
         coins = PlayerPrefs.GetInt("Coins", 0);
         if (PlayerPrefs.GetInt("Mute") == 1)
             AudioListener.volume = 0;
@@ -79,13 +80,13 @@ public class GameManager : MonoBehaviour
             EndPowerUp();
         }
 
-        if (ball != null)
+        if (ship != null)
         {
-            float ballSpeed = ball.rb.velocity.y;
-            ballCurrentPos = ball.transform.position.y;
-            distanceTraveled = Mathf.FloorToInt(ballCurrentPos - ballStartPos);
+            float shipSpeed = ship.rb.velocity.y;
+            shipCurrentPos = ship.transform.position.y;
+            distanceTraveled = Mathf.FloorToInt(shipCurrentPos - shipStartPos);
 
-            // Decreases hole spawn as distance increases
+            // Decreases planet spawn as distance increases
             if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && upDiff)
             {
                 upDiff = false;
@@ -94,18 +95,26 @@ public class GameManager : MonoBehaviour
                 yMin += 0.2f;
                 yMax += 0.2f;
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
-            // hold onto spawnHolePos.x = Random.Range(-2.05f, 2.05f);
-            // Spawns holes
-            //if (ballCurrentPos > spawnHolePos.y - 4f)
-            //{
-            //    switchSide = !switchSide;
-            //    spawnHolePos.y += Random.Range(yMin, yMax);
-            //    if (switchSide)
-            //        spawnHolePos.x = Random.Range(0, 2.05f);
-            //    else
-            //        spawnHolePos.x = Random.Range(-2.05f, 0);
-            //    Instantiate(holePrefab, spawnHolePos, Quaternion.identity);
-            //}
+
+            // Spawns planets
+            if (shipCurrentPos > spawnPlanetPos.y - 4f)
+            {
+                switchSide = !switchSide;
+                var p = Random.Range(0, 14);
+                planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
+                spawnPlanetPos.y += Random.Range(yMin, yMax);
+                if (switchSide)
+                {
+                    spawnPlanetPos.x = Random.Range(1f, 1.5f);
+                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
+                }
+                else
+                {
+                    spawnPlanetPos.x = Random.Range(-1.5f, -1f);
+                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
+                }
+                
+            }
             #region Spawn Power up code
             // Spawn power up
             /*
@@ -139,9 +148,9 @@ public class GameManager : MonoBehaviour
         {
             Time.timeScale = 0;
             ui.pauseScreen.SetActive(true);
-            ball.enabled = false;
+            ship.enabled = false;
             ui.abilityButton.enabled = false;
-            ball.isTouching = false;
+            ship.isTouching = false;
         } else
         {
             if (slowMo)
@@ -150,7 +159,7 @@ public class GameManager : MonoBehaviour
                 Time.fixedDeltaTime = Time.timeScale * .02f;
             } else { Time.timeScale = 1; }
             ui.pauseScreen.SetActive(false);
-            ball.enabled = true;
+            ship.enabled = true;
             ui.abilityButton.enabled = true;
         }
     }
@@ -164,21 +173,21 @@ public class GameManager : MonoBehaviour
 
     public void Respawn()
     {
-        ball.stoppedMoving = 0;
-        ball.transform.position = ballLastPos;
+        ship.stoppedMoving = 0;
+        ship.transform.position = shipLastPos;
         StartCoroutine(GameOverTrigger());
         ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         canHitAgain = true;
         hasRespawned = true;
         gameOver = false;
-        ball.ready = false;
+        ship.ready = false;
         ui.gameOverScreen.SetActive(false);
         ui.pauseGame.gameObject.SetActive(true);
         ui.coinsTextGameOver.enabled = false;
         ui.coinsText.gameObject.SetActive(true);
         ui.abilityButton.enabled = true;
         //Physics.IgnoreLayerCollision(10, 3);
-        ball.gameObject.SetActive(true);
+        ship.gameObject.SetActive(true);
     }
 
     public void Retry()
@@ -196,14 +205,14 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         gameOver = true;
-        ballLastPos = ball.transform.position;
+        shipLastPos = ship.transform.position;
         ui.gameOverScreen.SetActive(true);
         gameOverScreen.Setup();
     }
 
     IEnumerator GameOverTrigger()
     {
-        yield return new WaitUntil(() => ball.stoppedMoving > 100);
+        yield return new WaitUntil(() => ship.stoppedMoving > 100);
         GameOver();
     }
 

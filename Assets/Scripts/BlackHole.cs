@@ -4,23 +4,32 @@ using UnityEngine;
 
 public class BlackHole : MonoBehaviour
 {
-    BallControl ball;
+    ShipControl ship;
     public Rigidbody planetRb;
 
     public float G;
 
     private void Awake()
     {
-        ball = GameObject.Find("Ball").GetComponent<BallControl>();
+        ship = GameObject.Find("Ship").GetComponent<ShipControl>();
     }
+
     private void FixedUpdate()
     {
+        if (ship.notAtStart)
+        {
+            StartCoroutine(BlackHoleInit());
+        }
+    }
+
+    IEnumerator BlackHoleInit()
+    {
+        yield return new WaitForSeconds(1f);
         // Gravity
-        //Vector2 direction = transform.position - ball.transform.position;
-        //float distanceSqr = direction.sqrMagnitude;
-        //float forceMagnitude = G * (planetRb.mass * ball.rb.mass) / distanceSqr;
-        //Vector2 force = direction.normalized * forceMagnitude;
-        //ball.rb.AddForce(force);
-        //ball.rb.AddForce(new Vector2(0, -1));
+        Vector2 direction = transform.position - ship.transform.position;
+        float distanceSqr = direction.sqrMagnitude;
+        float forceMagnitude = G * (planetRb.mass * ship.rb.mass) / distanceSqr;
+        Vector2 force = direction.normalized * forceMagnitude;
+        ship.rb.AddForce(force);
     }
 }

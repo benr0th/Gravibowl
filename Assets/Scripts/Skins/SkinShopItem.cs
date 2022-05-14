@@ -47,6 +47,7 @@ public class SkinShopItem : MonoBehaviour
             }
             else
             {
+                // TODO - Add actual popup message
                 Debug.Log("Not enough coins");
             }
         }

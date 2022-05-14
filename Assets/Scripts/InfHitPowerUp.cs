@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class InfHitPowerUp : MonoBehaviour
 {
-    BallControl ball;
+    //BallControl ball;
     GameManager GameManager;
 
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        ball = GameObject.Find("Ball").GetComponent<BallControl>();
+        //ball = GameObject.Find("Ball").GetComponent<BallControl>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -19,7 +19,7 @@ public class InfHitPowerUp : MonoBehaviour
         {
             Destroy(gameObject);
             GameManager.grabbedPowerUp = true;
-            ball.inputEnabled = false;
+            //ball.inputEnabled = false;
         }
     }
 

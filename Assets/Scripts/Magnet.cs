@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class Magnet : MonoBehaviour
 {
-    BallControl ball;
+    //BallControl ball;
     MagnetGauge magnetGauge;
     public bool isMagnetized, canMagnetize = true;
 
     private void Awake()
     {
-        ball = GameObject.Find("Ball").GetComponent<BallControl>();
+        //ball = GameObject.Find("Ball").GetComponent<BallControl>();
         magnetGauge = GameObject.Find("MagnetGauge").GetComponent<MagnetGauge>();
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        /*
         if (collision.gameObject.TryGetComponent<BallControl>(out BallControl ballControl) && ball.isTouching
             && canMagnetize)
         {
@@ -25,5 +26,6 @@ public class Magnet : MonoBehaviour
                 ballControl.SetTarget(transform.parent.position);
             }       
         }
+        */
     }
 }
