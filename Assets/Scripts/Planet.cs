@@ -152,7 +152,7 @@ public class Planet : MonoBehaviour
     IEnumerator OrbitSpeedChange()
     {
         yield return new WaitForSeconds(0.3f);
-        Time.timeScale = 0.4f;
+        Time.timeScale = 0.6f;
         Time.fixedDeltaTime = Time.timeScale * .02f;
         yield return new WaitForSecondsRealtime(0.7f);
         Time.timeScale += (1f / 0.05f);

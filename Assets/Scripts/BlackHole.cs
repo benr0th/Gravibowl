@@ -24,7 +24,7 @@ public class BlackHole : MonoBehaviour
 
     IEnumerator BlackHoleInit()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         // Gravity
         Vector2 direction = transform.position - ship.transform.position;
         float distanceSqr = direction.sqrMagnitude;
