@@ -22,10 +22,8 @@ public class CameraControl : MonoBehaviour
         if (target != null)
         {
             // Camera follows ship
-            if (target.position.y > transform.position.y)
-            {
-                transform.position = new Vector3(transform.position.x, target.position.y, transform.position.z);
-            }
+            //if (target.position.y > transform.position.y)
+            //    transform.position = new Vector3(transform.position.x, target.position.y, transform.position.z);
 
             //if (target.position.y > transform.position.y)
             //{
@@ -51,8 +49,8 @@ public class CameraControl : MonoBehaviour
                 bottomWall.position = new Vector3(bottomWall.position.x, transform.position.y - 5.5f, transform.position.z);
 
             // Black hole follows camera
-            if (transform.position.y - 5.31f > blackHole.position.y)
-                blackHole.position = new Vector3(blackHole.position.x, transform.position.y - 5.31f, transform.position.z);
+            //if (transform.position.y - 5.31f > blackHole.position.y)
+            //    blackHole.position = new Vector3(blackHole.position.x, transform.position.y - 5.31f, transform.position.z);
         }
     }
 

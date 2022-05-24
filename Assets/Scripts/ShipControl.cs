@@ -124,7 +124,7 @@ public class ShipControl : MonoBehaviour
             // Prevents bug when holding screen while grabbing power up - possible to make neater
             if (touch.phase == TouchPhase.Ended)
             {
-                //isTouching = false;
+                isTouching = false;
                 inputEnabled = true;
             }
             #region drag&shoot mechanism (legacy)

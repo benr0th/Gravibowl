@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
         else
             AudioListener.volume = 1;
         StartCoroutine(GameOverTrigger());
+        InitPlanet();
     }
 
     private void Update()
@@ -96,25 +97,28 @@ public class GameManager : MonoBehaviour
                 yMax += 0.2f;
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
 
-            // Spawns planets
-            if (shipCurrentPos > spawnPlanetPos.y - 4f)
-            {
-                switchSide = !switchSide;
-                var p = Random.Range(0, 14);
-                planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
-                spawnPlanetPos.y += Random.Range(yMin, yMax);
-                if (switchSide)
+            #region Spawn planets progressively
+                /*
+                // Spawns planets
+                if (shipCurrentPos > spawnPlanetPos.y - 4f)
                 {
-                    spawnPlanetPos.x = Random.Range(1f, 1.5f);
-                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
+                    switchSide = !switchSide;
+                    var p = Random.Range(0, 14);
+                    planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
+                    //spawnPlanetPos.y += Random.Range(yMin, yMax);
+                    if (switchSide)
+                    {
+                        spawnPlanetPos.x = Random.Range(1f, 1.5f);
+                        Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
+                    }
+                    else
+                    {
+                        spawnPlanetPos.x = Random.Range(-1.5f, -1f);
+                        Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
+                    }   
                 }
-                else
-                {
-                    spawnPlanetPos.x = Random.Range(-1.5f, -1f);
-                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
-                }
-                
-            }
+                */
+                #endregion
             #region Spawn Power up code
             // Spawn power up
             /*
@@ -137,6 +141,24 @@ public class GameManager : MonoBehaviour
             */
             #endregion
 
+        }
+    }
+
+    void InitPlanet()
+    {
+        var p = Random.Range(0, 14);
+        planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
+        spawnPlanetPos.y = Random.Range(-2.5f, -1.5f);
+        var coinFlip = Random.Range(0, 2);
+        if (coinFlip == 0)
+        {
+            spawnPlanetPos.x = Random.Range(-1.5f, -1f);
+            Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
+        }
+        else
+        {
+            spawnPlanetPos.x = Random.Range(1f, 1.5f);
+            Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
         }
     }
 

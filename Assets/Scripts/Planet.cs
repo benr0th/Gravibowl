@@ -62,13 +62,8 @@ public class Planet : MonoBehaviour
             if (!GameManager.isOrbiting)
             {
                 StartCoroutine(OrbitRoutine());
-                StartCoroutine(OrbitSpeedChange());
+                //StartCoroutine(OrbitSpeedChange());
             }
-
-
-        }
-        if (doOrbit)
-        {
             Orbit();
             // Side faces planet, so force will be in correct direction
             if (transform.position.x >= 0)
@@ -77,6 +72,12 @@ public class Planet : MonoBehaviour
             else
                 TurnTowardsLeft();
             //ship.transform.right = (transform.position - ship.transform.position) * -1;
+
+
+        }
+        if (doOrbit)
+        {
+
         }
     }
 
