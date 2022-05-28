@@ -38,8 +38,7 @@ public class ShipControl : MonoBehaviour
 
     private void Start()
     {
-        //transform.position = new Vector3(0.07f, -0.57f).normalized * 0.5f;
-        //transform.position = new Vector3(0.15f, -1.12f).normalized * 1.13f;
+
     }
 
     private void FixedUpdate()
@@ -81,7 +80,7 @@ public class ShipControl : MonoBehaviour
 
     private void Update()
     {
-        notAtStart = transform.position.y != GameManager.shipStartPos;
+        notAtStart = transform.position.y != GameManager.shipStartPos.y;
         #region legacy logic
         // Logic for moving ball when not moving
         /*
@@ -111,8 +110,8 @@ public class ShipControl : MonoBehaviour
             touch = Input.GetTouch(0);
             
             // When touching
-            if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) 
-                /*&& notAtStart */&& !GameManager.gameOver && !GameManager.canHitAgain)
+            if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)
+                && !notAtStart && !GameManager.gameOver && !GameManager.canHitAgain)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
@@ -174,7 +173,6 @@ public class ShipControl : MonoBehaviour
             */
             #endregion
         }
-
     }
 
     void Move()

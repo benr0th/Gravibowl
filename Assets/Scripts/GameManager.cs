@@ -12,21 +12,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameOverScreen gameOverScreen;
     [SerializeField] Sprite[] planets;
     UIController ui;
+    GameObject[] pins;
+    PinManager[] pinManager = new PinManager[10];
+    Dictionary<int, int[]> gameScore = new();
 
     public GameObject planetPrefab;
-    public Vector3 spawnPlanetPos, spawnPowerUpPos, shipLastPos;
+    public Vector3 spawnPlanetPos, spawnPowerUpPos, shipLastPos, 
+                   shipCurrentPos, shipStartPos;
 
     public bool gameOver, hasRespawned, inHole, canHitAgain, exitOrbit,
                 coinAdClicked, continueAdClicked, superLaunchActive, isOrbiting,
                 isPaused, slowMo, grabbedPowerUp, doEquipOnBuy, lockedOn;
 
-    [SerializeField] float yMin, yMax, maxPSpeed;
-    bool upDiff, spawnPowerUp, switchSide;
-
     public int distanceTraveled, distanceTraveledLast, coins, checkpointHits;
-    public float shipStartPos;
-    float shipCurrentPos, grabbedPowerUpTime = 4f;
-    int powerUpRoll;
+
+    [SerializeField] float yMin, yMax, maxPSpeed;
+    bool upDiff, spawnPowerUp, switchSide, isStrike, isSpare;
+    float grabbedPowerUpTime = 4f;
+    int powerUpRoll, currentFrame, frameBall, pinScore, frameScore, frameBall1Score, frameBall2Score,
+        strikes;
+    Vector3[] originalPinPos = new Vector3[10];
 
     //public bool IsPaused
     //{
@@ -44,18 +49,28 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         ui = GameObject.Find("UI").GetComponent<UIController>();
+        pins = GameObject.FindGameObjectsWithTag("Pin");
+        for (int i = 0; i < pins.Length; i++)
+            pinManager[i] = pins[i].GetComponent<PinManager>();
     }
 
     private void Start()
     {
-        spawnPlanetPos = new Vector3();
-        shipStartPos = ship.transform.position.y;
+        shipStartPos = ship.transform.position;
+        gameScore = new();
         coins = PlayerPrefs.GetInt("Coins", 0);
+        // Check if game is muted
         if (PlayerPrefs.GetInt("Mute") == 1)
             AudioListener.volume = 0;
         else
             AudioListener.volume = 1;
-        StartCoroutine(GameOverTrigger());
+        // Store original pin pos for lane reset
+        for (int i = 0; i < pins.Length; i++)
+            originalPinPos[i] = pins[i].transform.position;
+        currentFrame = 1;
+        frameBall = 0;
+        pinScore = 0;
+        strikes = 0;
         InitPlanet();
     }
 
@@ -84,8 +99,8 @@ public class GameManager : MonoBehaviour
         if (ship != null)
         {
             float shipSpeed = ship.rb.velocity.y;
-            shipCurrentPos = ship.transform.position.y;
-            distanceTraveled = Mathf.FloorToInt(shipCurrentPos - shipStartPos);
+            shipCurrentPos = ship.transform.position;
+            distanceTraveled = Mathf.FloorToInt(shipCurrentPos.y - shipStartPos.y);
 
             // Decreases planet spawn as distance increases
             if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && upDiff)
@@ -98,27 +113,27 @@ public class GameManager : MonoBehaviour
             } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
 
             #region Spawn planets progressively
-                /*
-                // Spawns planets
-                if (shipCurrentPos > spawnPlanetPos.y - 4f)
+            /*
+            // Spawns planets
+            if (shipCurrentPos > spawnPlanetPos.y - 4f)
+            {
+                switchSide = !switchSide;
+                var p = Random.Range(0, 14);
+                planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
+                //spawnPlanetPos.y += Random.Range(yMin, yMax);
+                if (switchSide)
                 {
-                    switchSide = !switchSide;
-                    var p = Random.Range(0, 14);
-                    planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
-                    //spawnPlanetPos.y += Random.Range(yMin, yMax);
-                    if (switchSide)
-                    {
-                        spawnPlanetPos.x = Random.Range(1f, 1.5f);
-                        Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
-                    }
-                    else
-                    {
-                        spawnPlanetPos.x = Random.Range(-1.5f, -1f);
-                        Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
-                    }   
+                    spawnPlanetPos.x = Random.Range(1f, 1.5f);
+                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
                 }
-                */
-                #endregion
+                else
+                {
+                    spawnPlanetPos.x = Random.Range(-1.5f, -1f);
+                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
+                }   
+            }
+            */
+            #endregion
             #region Spawn Power up code
             // Spawn power up
             /*
@@ -148,18 +163,135 @@ public class GameManager : MonoBehaviour
     {
         var p = Random.Range(0, 14);
         planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
-        spawnPlanetPos.y = Random.Range(-2.5f, -1.5f);
+        spawnPlanetPos.y = Random.Range(-2.5f, -2f);
         var coinFlip = Random.Range(0, 2);
         if (coinFlip == 0)
         {
-            spawnPlanetPos.x = Random.Range(-1.5f, -1f);
+            spawnPlanetPos.x = -1.15f;
             Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
         }
         else
         {
-            spawnPlanetPos.x = Random.Range(1f, 1.5f);
+            spawnPlanetPos.x = 1.15f;
             Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
         }
+    }
+
+    public IEnumerator LaneReset()
+    {
+        yield return new WaitForSeconds(2f);
+        ShipReset();
+        frameBall++;
+        if (!isSpare || !isStrike)
+            ScoreHandler();
+        if (frameBall == 2)
+        {
+            if (isSpare)
+
+            PinReset();
+        }
+        
+    }
+
+    void PinReset()
+    {
+        for (int i = 0; i < pins.Length; i++)
+        {
+            pins[i].transform.position = originalPinPos[i];
+            pins[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            pins[i].GetComponent<Rigidbody2D>().angularVelocity = 0;
+            pins[i].transform.up = Vector2.up;
+            pinManager[i].pinFallen = false;
+        }
+        currentFrame++;
+        frameBall = 0;
+        frameBall1Score = 0;
+        frameBall2Score = 0;
+        frameScore = 0;
+    }
+
+    void ShipReset()
+    {
+        ship.transform.position = shipStartPos;
+        ship.rb.velocity = Vector2.zero;
+        ship.transform.up = Vector2.up;
+    }
+
+    void ScoreHandler()
+    {
+        for (int i = 0; i < pins.Length; i++)
+            if (pins[i].transform.position != originalPinPos[i] && !pinManager[i].pinFallen)
+            {
+                frameScore++;
+                pinManager[i].pinFallen = true;
+            }
+        #region ugly score code
+        /*
+        if (frameBall == 1) 
+            frameBall1Score = frameScore;
+        if (frameScore < 10 && frameBall == 2)
+        {
+            frameBall2Score = frameScore - frameBall1Score;
+            pinScore += frameBall1Score + frameBall2Score;
+            gameScore.Add(currentFrame, new int[] {frameBall1Score, frameBall2Score});
+        }
+        if (frameScore == 10 && frameBall < 2)
+            Strike();
+        else if (frameScore == 10 && frameBall == 2)
+            Spare();
+        */
+        #endregion
+
+        switch (frameBall)
+        {
+            case 1:
+                switch (frameScore)
+                {
+                    case 10:
+                        Strike();
+                        break;
+                    default:
+                        frameBall1Score = frameScore;
+                        break;
+                }
+                break;
+            case 2:
+                switch (frameScore)
+                {
+                    case 10:
+                        Spare();
+                        break;
+                    default:
+                        frameBall2Score = frameScore - frameBall1Score;
+                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score });
+                        pinScore += gameScore[currentFrame][0] + gameScore[currentFrame][1];
+                        break;
+                }
+                break;
+        }
+
+        Debug.Log($"frame: {currentFrame}, ball1: {frameBall1Score}, ball2: {frameBall2Score}\n" +
+            $"frameScore: {frameScore}, total: {pinScore}");
+        foreach (KeyValuePair<int, int[]> kvp in gameScore)
+        {
+            Debug.Log($"Frame = {kvp.Key}, Score = {kvp.Value[0]},{kvp.Value[1]}");
+        }
+    }
+
+    void Strike()
+    {
+        strikes++;
+        isStrike = true;
+        frameBall1Score = frameScore;
+
+        Debug.Log("Strike!");
+        PinReset();
+    }
+
+    void Spare()
+    {
+        isSpare = true;
+        Debug.Log("Spare!");
     }
 
     public void Pause()
