@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Lane : MonoBehaviour
 {
-    GameManager GameManager;
+    ScoreManager scoreManager;
 
     private void Awake()
     {
-        GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Ship"))
-            StartCoroutine(GameManager.LaneReset());
+            StartCoroutine(scoreManager.LaneReset());
     }
 }
