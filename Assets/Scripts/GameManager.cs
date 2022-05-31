@@ -198,7 +198,7 @@ public class GameManager : MonoBehaviour
     {
         ship.stoppedMoving = 0;
         ship.transform.position = shipLastPos;
-        StartCoroutine(GameOverTrigger());
+        //StartCoroutine(GameOverTrigger());
         ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         canHitAgain = true;
         hasRespawned = true;
@@ -233,11 +233,11 @@ public class GameManager : MonoBehaviour
         gameOverScreen.Setup();
     }
 
-    IEnumerator GameOverTrigger()
-    {
-        yield return new WaitUntil(() => ship.stoppedMoving > 100);
-        GameOver();
-    }
+    //IEnumerator GameOverTrigger()
+    //{
+    //    yield return new WaitUntil(() => ship.stoppedMoving > 100);
+    //    GameOver();
+    //}
 
     public void Quit()
     {
