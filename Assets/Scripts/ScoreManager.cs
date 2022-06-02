@@ -5,15 +5,16 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     [SerializeField] ShipControl ship;
+    [SerializeField] ScoreDisplay scoreDisplay;
     GameManager GameManager;
     GameObject[] pins;
     PinManager[] pinManager = new PinManager[10];
-    Dictionary<int, int[]> gameScore = new();
+    public Dictionary<int, int[]> gameScore = new();
     Vector3[] originalPinPos = new Vector3[10];
-    int currentFrame, frameBall, pinScore, frameScore, 
+    int frameBall, pinScore, frameScore, 
         frameBall1Score, frameBall2Score, frameBall3Score,
         strikes;
-
+    public int currentFrame;
     bool isStrike, isSpare;
     public bool finalFrame;
 
@@ -110,9 +111,13 @@ public class ScoreManager : MonoBehaviour
                 {
                     case 10:
                         GotStrike();
+                        if (strikes == 3)
+                            StrikeHandler();
                         break;
                     default:
                         frameBall1Score = frameScore;
+                        if (strikes == 2)
+                            StrikeHandler();
                         break;
                 }
                 break;
@@ -133,7 +138,6 @@ public class ScoreManager : MonoBehaviour
 
     void ScoreSpareBonus()
     {
-        isSpare = false;
         switch (frameBall)
         {
             case 1:
@@ -172,10 +176,18 @@ public class ScoreManager : MonoBehaviour
                 switch (frameScore)
                 {
                     case 10:
+                        if (isSpare)
+                            SpareScore();
                         GotStrike();
+                        if (strikes == 2)
+                            StrikeHandler();
                         break;
                     default:
+                        if (isSpare)
+                            SpareScore();
                         frameBall1Score = frameScore;
+                        if (strikes == 2)
+                            StrikeHandler();
                         break;
                 }
                 break;
@@ -259,7 +271,7 @@ public class ScoreManager : MonoBehaviour
                     frameBall2Score = frameScore - frameBall1Score;
                     pinScore += frameBall1Score + frameBall2Score;
                 }
-        else if (!finalFrame)
+        if (!finalFrame)
             frameBall2Score = frameScore - frameBall1Score;
         pinScore += 10 + frameBall1Score + frameBall2Score;
         gameScore[currentFrame - 1][2] = pinScore;
@@ -268,21 +280,27 @@ public class ScoreManager : MonoBehaviour
         if (!finalFrame)
             gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
         isStrike = false;
-        strikes = 0;
+        strikes--;
     }
 
     void DoubleStrike()
     {
         pinScore += 10 + 10 + frameBall1Score;
         gameScore[currentFrame - 2][2] = pinScore;
-        SingleStrike();
+        if (frameBall == 2)
+            SingleStrike();
+        else
+            strikes--;
     }
 
     void TripleStrike()
     {
         pinScore += 30;
         gameScore[currentFrame - 3][2] = pinScore;
-        DoubleStrike();
+        if (!isStrike)
+            DoubleStrike();
+        else
+            strikes--;
     }
 
     void StrikeHandler()
@@ -313,6 +331,7 @@ public class ScoreManager : MonoBehaviour
 
     void SpareScore()
     {
+        isSpare = false;
         frameBall1Score = frameScore;
         pinScore += 10 + frameBall1Score;
         gameScore[currentFrame - 1][2] = pinScore;
@@ -336,6 +355,7 @@ public class ScoreManager : MonoBehaviour
             frameBall2Score = 0;
         } 
         frameScore = 0;
+        scoreDisplay.ScoreboardUpdate();
         // Planet spawns on random side each frame, for more interesting gameplay
         Destroy(GameObject.FindGameObjectWithTag("Planet"));
         GameManager.InitPlanet();

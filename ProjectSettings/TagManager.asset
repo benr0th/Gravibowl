@@ -9,6 +9,7 @@ TagManager:
   - Ship
   - Pin
   - Planet
+  - Frame
   layers:
   - Default
   - TransparentFX
