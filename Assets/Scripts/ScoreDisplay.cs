@@ -3,67 +3,111 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 public class ScoreDisplay : MonoBehaviour
 {
     [SerializeField] ScoreManager scoreManager;
     [SerializeField] GameObject scoreBoard;
     [SerializeField] public GameObject[] frameText;
-    //public TextMeshProUGUI[] frameBall1Text, frameBall2Text, frameScoreText;
+    [SerializeField] Transform scoreTransform;
     TextMeshProUGUI frameBall3Text;
     bool strike, spare, zeroFirst, zeroSecond;
-
-    private void Awake()
-    {
-        
-    }
-
-    private void Start()
-    {
-        
-    }
-
-    private void Update()
-    {
-
-    }
+    int finalIndex;
 
     public void ScoreboardUpdate()
     {
-        strike = scoreManager.gameScore[scoreManager.currentFrame - 1][0] == 10;
-        spare = scoreManager.gameScore[scoreManager.currentFrame - 1][0] != 10 &&
-            scoreManager.gameScore[scoreManager.currentFrame - 1][0] +
-            scoreManager.gameScore[scoreManager.currentFrame - 1][1] == 10;
-        zeroFirst = scoreManager.gameScore[scoreManager.currentFrame - 1][0] == 0;
-        zeroSecond = scoreManager.gameScore[scoreManager.currentFrame - 1][1] == 0;
-
-        if (strike)
-            frameText[scoreManager.currentFrame - 2].transform.GetChild(0)
-                .GetComponent<TextMeshProUGUI>().text = "X";
-        else if (zeroFirst)
-            frameText[scoreManager.currentFrame - 2].transform.GetChild(0)
-                .GetComponent<TextMeshProUGUI>().text = "-";
+        if (scoreManager.finalFrame)
+        {
+            if (scoreManager.frameBall == 1 && scoreManager.frameBall1Score != 10)
+                FrameBall1Score();
+            if (scoreManager.frameBall == 2 && scoreManager.frameBall2Score != 10)
+            {
+                FrameBall2Score();
+                if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10 &&
+                    scoreManager.frameBall1Score != 10)
+                    ScoreboardWrite(1, 3, 0, 3);
+            }
+            if (scoreManager.frameBall == 3 && scoreManager.frameBall3Score != 10)
+            {
+                FrameBall3Score();
+                if ((scoreManager.frameBall2Score + scoreManager.frameBall3Score != 10 ||
+                    scoreManager.frameBall2Score + scoreManager.frameBall3Score == 10) &&
+                    scoreManager.frameBall2Score != 10)
+                    ScoreboardWrite(1, 3, 0, 3);
+            }
+        }
         else
-            frameText[scoreManager.currentFrame-2].transform.GetChild(0).GetComponent<TextMeshProUGUI>()
-                .text = scoreManager.gameScore[scoreManager.currentFrame - 1][0].ToString();
-
-        if (spare)
-            frameText[scoreManager.currentFrame - 2].transform.GetChild(1)
-                .GetComponent<TextMeshProUGUI>().text = "/";
-        else if (strike)
-            frameText[scoreManager.currentFrame - 2].transform.GetChild(1)
-                .GetComponent<TextMeshProUGUI>().text = "";
-        else if (zeroSecond)
-            frameText[scoreManager.currentFrame - 2].transform.GetChild(1)
-                .GetComponent<TextMeshProUGUI>().text = "-";
-        else
-            frameText[scoreManager.currentFrame-2].transform.GetChild(1).GetComponent<TextMeshProUGUI>()
-                .text = scoreManager.gameScore[scoreManager.currentFrame - 1][1].ToString();
-        
-        // final frame? 
-
-        if (!strike && !spare)
-            frameText[scoreManager.currentFrame-2].transform.GetChild(2).GetComponent<TextMeshProUGUI>()
-                .text = scoreManager.gameScore[scoreManager.currentFrame - 1][2].ToString();
+        {
+            if (scoreManager.frameBall == 1)
+            FrameBall1Score();
+            if (scoreManager.frameBall == 2)
+            {
+                FrameBall2Score();
+                if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10)
+                    ScoreboardWrite(1, 2, 0, 2);
+            }
+        }
     }
+
+    public void StrikeScoreboard(int childIndex)
+    {
+        scoreTransform.DOMove(new Vector3(0, -3.3f), 0.5f);
+        TextWrite(1, childIndex, "X");
+        if (!scoreManager.finalFrame)
+            TextWrite(1, 1, "");
+    }
+
+    public void SpareScoreboard(int childIndex)
+    {
+        TextWrite(1, childIndex, "/");
+    }
+
+    public void ZeroScore(int childIndex)
+    {
+        TextWrite(1, childIndex, "-");
+    }
+
+    public void ScoreboardWrite(int offsetFrame, int childIndex, int offsetScore, int scoreIndex)
+    {
+        TextWrite(offsetFrame, childIndex, 
+            scoreManager.gameScore[scoreManager.currentFrame - offsetScore][scoreIndex].ToString());
+    }
+
+    void FrameBall1Score()
+    {
+        if (scoreManager.frameBall1Score == 0)
+            ZeroScore(0);
+        else
+            ScoreboardWrite(1, 0, 0, 0);
+    }
+
+    void FrameBall2Score()
+    {
+        if (scoreManager.frameBall1Score + scoreManager.frameBall2Score == 10
+            && scoreManager.frameBall1Score != 10)
+            SpareScoreboard(1);
+        else if (scoreManager.frameBall2Score == 0)
+            ZeroScore(1);
+        else
+            ScoreboardWrite(1, 1, 0, 1);
+    }
+
+    void FrameBall3Score()
+    {
+        if (scoreManager.frameBall2Score + scoreManager.frameBall3Score == 10
+            && scoreManager.frameBall2Score != 10)
+            SpareScoreboard(2);
+        else if (scoreManager.frameBall3Score == 0)
+            ZeroScore(2);
+        else
+            ScoreboardWrite(1, 2, 0, 2);
+    }
+
+    private void TextWrite(int offset, int childIndex, string text)
+    {
+        frameText[scoreManager.currentFrame - offset].transform.GetChild(childIndex)
+                        .GetComponent<TextMeshProUGUI>().text = text;
+    }
+
 }

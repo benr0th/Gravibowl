@@ -11,10 +11,8 @@ public class ScoreManager : MonoBehaviour
     PinManager[] pinManager = new PinManager[10];
     public Dictionary<int, int[]> gameScore = new();
     Vector3[] originalPinPos = new Vector3[10];
-    int frameBall, pinScore, frameScore, 
-        frameBall1Score, frameBall2Score, frameBall3Score,
-        strikes;
-    public int currentFrame;
+    int pinScore, strikes;
+    public int currentFrame, frameBall, frameScore, frameBall1Score, frameBall2Score, frameBall3Score;
     bool isStrike, isSpare;
     public bool finalFrame;
 
@@ -83,6 +81,7 @@ public class ScoreManager : MonoBehaviour
                         break;
                     default:
                         frameBall1Score = frameScore;
+                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
                         break;
                 }
                 break;
@@ -95,7 +94,8 @@ public class ScoreManager : MonoBehaviour
                     default:
                         frameBall2Score = frameScore - frameBall1Score;
                         pinScore += frameBall1Score + frameBall2Score;
-                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+                        gameScore[currentFrame][1] = frameBall2Score;
+                        gameScore[currentFrame][2] = pinScore;
                         break;
                 }
                 break;
@@ -118,6 +118,7 @@ public class ScoreManager : MonoBehaviour
                         frameBall1Score = frameScore;
                         if (strikes == 2)
                             StrikeHandler();
+                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
                         break;
                 }
                 break;
@@ -161,7 +162,7 @@ public class ScoreManager : MonoBehaviour
                     default:
                         frameBall2Score = frameScore - frameBall1Score;
                         pinScore += frameBall1Score + frameBall2Score;
-                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+                        gameScore[currentFrame][1] = frameBall2Score;
                         break;
                 }
                 break;
@@ -188,6 +189,8 @@ public class ScoreManager : MonoBehaviour
                         frameBall1Score = frameScore;
                         if (strikes == 2)
                             StrikeHandler();
+                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
+                            frameBall3Score, pinScore });
                         break;
                 }
                 break;
@@ -211,8 +214,9 @@ public class ScoreManager : MonoBehaviour
                             }
                         }
                         StrikeHandler();
-                        gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
-                            frameBall3Score, pinScore });
+                        if (gameScore[currentFrame - 1][0] == 10 && frameBall1Score != 10)
+                            pinScore += frameBall1Score + frameBall2Score;
+                        gameScore[currentFrame][1] = frameBall2Score;
                         gameScore[currentFrame][3] = pinScore;
                         break;
                 }
@@ -221,11 +225,15 @@ public class ScoreManager : MonoBehaviour
                 if (frameBall2Score == 10 || isSpare)
                     frameBall3Score = frameScore;
                 else
-                    frameBall3Score = frameScore - frameBall2Score; 
+                    frameBall3Score = frameScore - frameBall2Score;
                 pinScore += frameBall3Score + frameBall2Score + frameBall1Score;
                 gameScore[currentFrame][2] = frameBall3Score;
                 gameScore[currentFrame][3] = pinScore;
-                
+                if (frameBall3Score == 10 && (frameBall2Score == 10 || frameBall1Score + frameBall2Score == 10))
+                {
+                    scoreDisplay.StrikeScoreboard(2);
+                    scoreDisplay.ScoreboardWrite(1, 3, 0, 3);
+                }
                 break;
                
         }
@@ -235,15 +243,22 @@ public class ScoreManager : MonoBehaviour
     {
         isStrike = true;
         frameBall1Score = frameScore;
-        if (finalFrame && frameBall == 2)
-        {
-            frameBall2Score = frameScore;
+        if (finalFrame && frameBall == 1)
             gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
                             frameBall3Score, pinScore });
-        }
-        if (!finalFrame)
+        else if (finalFrame && frameBall == 2)
         {
-            gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+            frameBall2Score = frameScore;
+            gameScore[currentFrame][1] = frameBall2Score;
+        }
+        if (finalFrame)
+            scoreDisplay.StrikeScoreboard(frameBall - 1);
+        else
+        {
+            if (currentFrame == 1 || gameScore[currentFrame - 1][0] + gameScore[currentFrame - 1][1] != 10
+                || gameScore[currentFrame - 1][0] == 10)
+                gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+            scoreDisplay.StrikeScoreboard(0);
             strikes++;
         }
         PinReset();
@@ -254,10 +269,14 @@ public class ScoreManager : MonoBehaviour
         isSpare = true;
         frameBall2Score = frameScore - frameBall1Score;
         if (finalFrame && frameBall == 2)
-            gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
-                            frameBall3Score, pinScore });
+        {
+            //gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
+            //                frameBall3Score, pinScore });
+            gameScore[currentFrame][1] = frameBall2Score;
+
+        }
         if (strikes < 1 && !finalFrame)
-            gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+            gameScore[currentFrame][1] = frameBall2Score;
         
     }
 
@@ -269,7 +288,7 @@ public class ScoreManager : MonoBehaviour
                 if (frameBall1Score != 10 && !isSpare)
                 {
                     frameBall2Score = frameScore - frameBall1Score;
-                    pinScore += frameBall1Score + frameBall2Score;
+                    //pinScore += frameBall1Score + frameBall2Score;
                 }
         if (!finalFrame)
             frameBall2Score = frameScore - frameBall1Score;
@@ -278,9 +297,15 @@ public class ScoreManager : MonoBehaviour
         if (!isSpare && !finalFrame)
             pinScore += frameBall1Score + frameBall2Score;
         if (!finalFrame)
-            gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+        {
+            //gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+            gameScore[currentFrame][1] = frameBall2Score;
+            gameScore[currentFrame][2] = pinScore;
+        }
+
         isStrike = false;
         strikes--;
+        scoreDisplay.ScoreboardWrite(2, 2, 1, 2);
     }
 
     void DoubleStrike()
@@ -291,6 +316,7 @@ public class ScoreManager : MonoBehaviour
             SingleStrike();
         else
             strikes--;
+        scoreDisplay.ScoreboardWrite(3, 2, 2, 2);
     }
 
     void TripleStrike()
@@ -301,6 +327,7 @@ public class ScoreManager : MonoBehaviour
             DoubleStrike();
         else
             strikes--;
+        scoreDisplay.ScoreboardWrite(4, 2, 3, 2);
     }
 
     void StrikeHandler()
@@ -316,14 +343,6 @@ public class ScoreManager : MonoBehaviour
             case 3:
                 TripleStrike();
                 break;
-            case > 3:
-                for (int i = 0; i < strikes - 3; i++)
-                {
-                    pinScore += 30;
-                    gameScore[currentFrame - (strikes - i)][2] = pinScore;
-                }
-                TripleStrike();
-                break;
             default:
                 break;
         }
@@ -335,6 +354,9 @@ public class ScoreManager : MonoBehaviour
         frameBall1Score = frameScore;
         pinScore += 10 + frameBall1Score;
         gameScore[currentFrame - 1][2] = pinScore;
+        if (!finalFrame)
+            gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+        scoreDisplay.ScoreboardWrite(2, 2, 1, 2);
     }
 
     void PinReset()
@@ -355,7 +377,7 @@ public class ScoreManager : MonoBehaviour
             frameBall2Score = 0;
         } 
         frameScore = 0;
-        scoreDisplay.ScoreboardUpdate();
+        
         // Planet spawns on random side each frame, for more interesting gameplay
         Destroy(GameObject.FindGameObjectWithTag("Planet"));
         GameManager.InitPlanet();
@@ -374,6 +396,7 @@ public class ScoreManager : MonoBehaviour
         ShipReset();
         frameBall++;
         ScoreHandler();
+        scoreDisplay.ScoreboardUpdate();
         if (frameBall == 2 && !finalFrame)
             PinReset();
         else if (finalFrame)
@@ -381,14 +404,20 @@ public class ScoreManager : MonoBehaviour
             if (frameBall == 2)
             {
                 if (!isSpare && frameBall1Score != 10)
+                {
                     //GameManager.GameOver();
+                    //scoreDisplay.ScoreboardUpdate();
                     Debug.Log("game over");
+                }
                 else if (isSpare)
                     PinReset();
             }
             if (frameBall == 3)
+            {
                 //GameManager.GameOver();
+                scoreDisplay.ScoreboardUpdate();
                 Debug.Log("game over");
+            }
         }
 
 
