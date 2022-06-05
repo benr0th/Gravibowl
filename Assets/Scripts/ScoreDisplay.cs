@@ -11,9 +11,18 @@ public class ScoreDisplay : MonoBehaviour
     [SerializeField] GameObject scoreBoard;
     [SerializeField] public GameObject[] frameText;
     [SerializeField] Transform scoreTransform;
-    TextMeshProUGUI frameBall3Text;
-    bool strike, spare, zeroFirst, zeroSecond;
+    [SerializeField] Button scoreMoveButton;
+    [SerializeField] Sprite upButton, downButton;
+    public TextMeshProUGUI currentPlayerText;
+    bool strike, spare, zeroFirst, zeroSecond, moved;
     int finalIndex;
+
+    private void Start()
+    {
+        if (PlayerPrefs.GetInt("LeftHandOn") == 1)
+            scoreMoveButton.transform.position = 
+                new Vector3(-scoreMoveButton.transform.position.x, scoreMoveButton.transform.position.y);
+    }
 
     public void ScoreboardUpdate()
     {
@@ -21,26 +30,25 @@ public class ScoreDisplay : MonoBehaviour
         {
             if (scoreManager.frameBall == 1 && scoreManager.frameBall1Score != 10)
                 FrameBall1Score();
-            if (scoreManager.frameBall == 2 && scoreManager.frameBall2Score != 10)
+            if (scoreManager.frameBall == 2 && 
+                (scoreManager.frameBall2Score != 10 || scoreManager.frameBall1Score == 0))
             {
                 FrameBall2Score();
                 if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10 &&
                     scoreManager.frameBall1Score != 10)
                     ScoreboardWrite(1, 3, 0, 3);
             }
-            if (scoreManager.frameBall == 3 && scoreManager.frameBall3Score != 10)
+            if (scoreManager.frameBall == 3)
             {
-                FrameBall3Score();
-                if ((scoreManager.frameBall2Score + scoreManager.frameBall3Score != 10 ||
-                    scoreManager.frameBall2Score + scoreManager.frameBall3Score == 10) &&
-                    scoreManager.frameBall2Score != 10)
-                    ScoreboardWrite(1, 3, 0, 3);
+                if (scoreManager.frameBall3Score != 10 || scoreManager.frameBall2Score == 0)
+                    FrameBall3Score();
+                ScoreboardWrite(1, 3, 0, 3);
             }
         }
         else
         {
             if (scoreManager.frameBall == 1)
-            FrameBall1Score();
+                FrameBall1Score();
             if (scoreManager.frameBall == 2)
             {
                 FrameBall2Score();
@@ -52,7 +60,7 @@ public class ScoreDisplay : MonoBehaviour
 
     public void StrikeScoreboard(int childIndex)
     {
-        scoreTransform.DOMove(new Vector3(0, -3.3f), 0.5f);
+        StartCoroutine(ScoreboardAnim());
         TextWrite(1, childIndex, "X");
         if (!scoreManager.finalFrame)
             TextWrite(1, 1, "");
@@ -60,16 +68,19 @@ public class ScoreDisplay : MonoBehaviour
 
     public void SpareScoreboard(int childIndex)
     {
+        StartCoroutine(ScoreboardAnim());
         TextWrite(1, childIndex, "/");
     }
 
     public void ZeroScore(int childIndex)
     {
+        StartCoroutine(ScoreboardAnim());
         TextWrite(1, childIndex, "-");
     }
 
     public void ScoreboardWrite(int offsetFrame, int childIndex, int offsetScore, int scoreIndex)
     {
+        StartCoroutine(ScoreboardAnim());
         TextWrite(offsetFrame, childIndex, 
             scoreManager.gameScore[scoreManager.currentFrame - offsetScore][scoreIndex].ToString());
     }
@@ -110,4 +121,47 @@ public class ScoreDisplay : MonoBehaviour
                         .GetComponent<TextMeshProUGUI>().text = text;
     }
 
+    IEnumerator ScoreboardAnim()
+    {
+        ScoreboardUp();
+        yield return new WaitForSeconds(2.3f);
+        if (scoreManager.finalFrame && scoreManager.frameBall >= 2)
+        {
+            if (scoreManager.frameBall == 2)
+            {
+                if (!scoreManager.isSpare && scoreManager.frameBall1Score != 10)
+                    yield break;
+                else if (scoreManager.isSpare)
+                    ScoreboardDown();
+            }
+            if (scoreManager.frameBall == 3)
+                yield break;
+        }
+        else
+            ScoreboardDown();
+    }
+
+    void ScoreboardUp()
+    {
+        if (!moved)
+            moved = !moved;
+        scoreTransform.DOMoveY(-0.2f, 1f);
+        scoreMoveButton.GetComponent<Image>().sprite = downButton;
+    }
+    void ScoreboardDown()
+    {
+        if (moved)
+            moved = !moved;
+        scoreTransform.DOMoveY(-5.7f, 1f);
+        scoreMoveButton.GetComponent<Image>().sprite = upButton;
+    }
+
+    public void ScoreboardButton()
+    {
+        moved = !moved;
+        if (moved)
+            ScoreboardUp();
+        if (!moved)
+            ScoreboardDown();
+    }
 }

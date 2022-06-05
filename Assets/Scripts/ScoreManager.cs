@@ -7,14 +7,17 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] ShipControl ship;
     [SerializeField] ScoreDisplay scoreDisplay;
     GameManager GameManager;
-    GameObject[] pins;
     PinManager[] pinManager = new PinManager[10];
+    public GameObject[] pins;
     public Dictionary<int, int[]> gameScore = new();
+    public Dictionary<int, int[]> gameScore2 = new();
+    public Dictionary<int, int[]>[] gameScores = new Dictionary<int, int[]>[2];
     Vector3[] originalPinPos = new Vector3[10];
-    int pinScore, strikes;
-    public int currentFrame, frameBall, frameScore, frameBall1Score, frameBall2Score, frameBall3Score;
-    bool isStrike, isSpare;
-    public bool finalFrame;
+    int strikes;
+    public int pinScore, currentFrame, frameBall, frameScore, 
+        frameBall1Score, frameBall2Score, frameBall3Score, player;
+    bool isStrike;
+    public bool finalFrame, isSpare, switchPlayer, twoPlayer;
 
     private void Awake()
     {
@@ -27,6 +30,9 @@ public class ScoreManager : MonoBehaviour
     private void Start()
     {
         gameScore = new();
+        gameScore2 = new();
+        gameScores[0] = gameScore;
+        gameScores[1] = gameScore2;
         // Store original pin pos for lane reset
         for (int i = 0; i < pins.Length; i++)
             originalPinPos[i] = pins[i].transform.position;
@@ -35,6 +41,8 @@ public class ScoreManager : MonoBehaviour
         frameBall = 0;
         pinScore = 0;
         strikes = 0;
+        // Check if playing two player mode
+        twoPlayer = PlayerPrefs.GetInt("TwoPlayer") == 1;
     }
 
     private void Update()
@@ -60,13 +68,14 @@ public class ScoreManager : MonoBehaviour
         else if (finalFrame)
             ScoreFinalFrame();
 
+        /* Debug score display
         if (finalFrame)
             Debug.Log($"frame: {currentFrame}, ball1: {frameBall1Score}, ball2: {frameBall2Score}, ball3: {frameBall3Score}\n" +
             $"frameScore: {frameScore}, total: {pinScore}");
         else
             Debug.Log($"frame: {currentFrame}, ball1: {frameBall1Score}, ball2: {frameBall2Score}\n" +
                 $"frameScore: {frameScore}, total: {pinScore}");
-        
+        */
     }
 
     void ScoreNoBonus()
@@ -363,6 +372,7 @@ public class ScoreManager : MonoBehaviour
     {
         for (int i = 0; i < pins.Length; i++)
         {
+            pins[i].SetActive(true);
             pins[i].transform.position = originalPinPos[i];
             pins[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             pins[i].GetComponent<Rigidbody2D>().angularVelocity = 0;
@@ -371,10 +381,19 @@ public class ScoreManager : MonoBehaviour
         }
         if (!finalFrame)
         {
-            currentFrame++;
             frameBall = 0;
             frameBall1Score = 0;
             frameBall2Score = 0;
+            if (twoPlayer)
+            {
+                switchPlayer = !switchPlayer;
+                player = switchPlayer ? 1 : 0;
+                scoreDisplay.currentPlayerText.text = $"Player {player + 1}";
+                if (!switchPlayer)
+                    currentFrame++;
+            }
+            else
+                currentFrame++;
         } 
         frameScore = 0;
         
@@ -392,42 +411,49 @@ public class ScoreManager : MonoBehaviour
 
     public IEnumerator LaneReset()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.7f);
+        GameManager.canStopTouching = false;
         ShipReset();
         frameBall++;
         ScoreHandler();
+        for (int i = 0; i < pins.Length; i++)
+            if (pinManager[i].pinFallen)
+                pins[i].SetActive(false);
         scoreDisplay.ScoreboardUpdate();
         if (frameBall == 2 && !finalFrame)
-            PinReset();
+        {
+            if (twoPlayer)
+                Invoke(nameof(PinReset), 3);
+            else
+                PinReset();
+        }
         else if (finalFrame)
         {
             if (frameBall == 2)
             {
                 if (!isSpare && frameBall1Score != 10)
                 {
-                    //GameManager.GameOver();
                     //scoreDisplay.ScoreboardUpdate();
-                    Debug.Log("game over");
+                    GameManager.GameOver();
                 }
                 else if (isSpare)
                     PinReset();
             }
             if (frameBall == 3)
             {
-                //GameManager.GameOver();
-                scoreDisplay.ScoreboardUpdate();
-                Debug.Log("game over");
+                GameManager.GameOver();
+                //scoreDisplay.ScoreboardUpdate();
             }
         }
 
-
+        /* Debug score display
         foreach (KeyValuePair<int, int[]> kvp in gameScore)
         {
             Debug.Log($"Frame = {kvp.Key}, Score = {kvp.Value[0]},{kvp.Value[1]},{kvp.Value[2]}");
             if (kvp.Key == 10)
                 Debug.Log($"Frame = {kvp.Key}, Score = {kvp.Value[0]},{kvp.Value[1]},{kvp.Value[2]},{kvp.Value[3]}");
         }
-       
+        */
     }
 
     // Debug function - please remove when done!

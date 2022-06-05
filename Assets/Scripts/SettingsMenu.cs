@@ -7,8 +7,8 @@ using UnityEngine.Audio;
 
 public class SettingsMenu : MonoBehaviour
 {
-    bool doEquipOnBuy, muteAudio, noScreenShake;
-    [SerializeField] Toggle equipToggle, muteToggle, shakeToggle;
+    bool doEquipOnBuy, muteAudio, noScreenShake, leftHandOn;
+    [SerializeField] Toggle equipToggle, muteToggle, shakeToggle, leftHandToggle;
 
     private void Start()
     {
@@ -34,11 +34,18 @@ public class SettingsMenu : MonoBehaviour
         PlayerPrefs.SetInt("NoScreenShake", setting);
     }
 
+    public void LeftHandOn(bool leftHandOn)
+    {
+        int setting = leftHandOn ? 1 : 0;
+        PlayerPrefs.SetInt("LeftHandOn", setting);
+    }
+
     void CheckSettings()
     {
         doEquipOnBuy = PlayerPrefs.GetInt("EquipOnBuy") == 1;
         muteAudio = PlayerPrefs.GetInt("Mute") == 1;
         noScreenShake = PlayerPrefs.GetInt("NoScreenShake") == 1;
+        leftHandOn = PlayerPrefs.GetInt("LeftHandOn") == 1;
     }
 
     void CheckToggleStatus()
@@ -46,6 +53,7 @@ public class SettingsMenu : MonoBehaviour
         equipToggle.isOn = doEquipOnBuy ? true : false;
         muteToggle.isOn = muteAudio ? true : false;
         shakeToggle.isOn = noScreenShake ? true : false;
+        leftHandToggle.isOn = leftHandOn ? true : false;
     }
 
     public void MainMenu() => SceneManager.LoadSceneAsync("Menu");

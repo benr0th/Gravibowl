@@ -7,7 +7,7 @@ using UnityEngine;
 public class AdsManager : MonoBehaviour
 {
     IRewardedAd ad;
-    List<IRewardedAd> ads = new List<IRewardedAd>();
+    readonly List<IRewardedAd> ads = new();
     GameManager GameManager;
     [SerializeField] GameOverScreen GameOverScreen;
     [SerializeField] UIController ui;
@@ -81,8 +81,9 @@ public class AdsManager : MonoBehaviour
     void InitializationComplete()
     {
         SetupAd();
-        foreach (var ad in ads)
-            ad.Load();
+        //foreach (var ad in ads)
+        //    ad.Load();
+        ads[0].Load();
     }
 
     void InitializationFailed(Exception e)

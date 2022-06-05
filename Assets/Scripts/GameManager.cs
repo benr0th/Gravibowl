@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
 
     public bool gameOver, hasRespawned, inHole, canHitAgain, exitOrbit,
                 coinAdClicked, continueAdClicked, superLaunchActive, isOrbiting,
-                isPaused, slowMo, grabbedPowerUp, doEquipOnBuy, lockedOn;
+                isPaused, slowMo, grabbedPowerUp, doEquipOnBuy, lockedOn, canStopTouching;
 
     public int distanceTraveled, distanceTraveledLast, coins, checkpointHits;
 
@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour
     {
         var p = Random.Range(0, 14);
         planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
-        spawnPlanetPos.y = Random.Range(-2.5f, -2f);
+        spawnPlanetPos.y = Random.Range(-2.7f, -2.4f);
         var coinFlip = Random.Range(0, 2);
         if (coinFlip == 0)
         {

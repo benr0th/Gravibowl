@@ -6,6 +6,7 @@ public class GameOverScreen : MonoBehaviour
     GameManager GameManager;
     [SerializeField] UIController ui;
     [SerializeField] GameObject floatingCoinsPrefab;
+    [SerializeField] ScoreManager scoreManager;
     AudioSource coinSound;
     public int coinsGained;
 
@@ -20,12 +21,14 @@ public class GameOverScreen : MonoBehaviour
         ui.pauseGame.gameObject.SetActive(false);
         ui.coinsTextGameOver.enabled = true;
         ui.coinsText.gameObject.SetActive(false);
-        ui.abilityButton.enabled = false;
+        //ui.abilityButton.enabled = false;
+        for (int i = 0; i < scoreManager.pins.Length; i++)
+            scoreManager.pins[i].SetActive(false);
         
         if (GameManager.distanceTraveled > PlayerPrefs.GetInt("HighScore", 0))
         {
-            PlayerPrefs.SetInt("HighScore", GameManager.distanceTraveled);
-            ui.highScore.text = "High Score\n" + GameManager.distanceTraveled.ToString();
+            PlayerPrefs.SetInt("HighScore", scoreManager.pinScore);
+            ui.highScore.text = "High Score\n" + scoreManager.pinScore.ToString();
         }
 
         if (floatingCoinsPrefab) { Invoke(nameof(AddCoins), 0.5f); }
@@ -36,7 +39,7 @@ public class GameOverScreen : MonoBehaviour
             GameManager.coins += coinsGained;
         } else
         {
-            coinsGained = GameManager.distanceTraveled / 2;
+            coinsGained = scoreManager.pinScore / 2;
             GameManager.distanceTraveledLast = GameManager.distanceTraveled;
             GameManager.coins += coinsGained;
         }

@@ -54,7 +54,8 @@ public class Planet : MonoBehaviour
                 $"\nnormalized={(transform.position - ship.transform.position).normalized}");
         */
         float orbitalDistance = Vector3.Distance(transform.position, ship.transform.position);
-        if (ship.isTouching && orbitalDistance < soiRadius && !GameManager.exitOrbit)
+        if (ship.isTouching && orbitalDistance < soiRadius && !GameManager.exitOrbit &&
+            ship.timePressed > 0.065f)
         {
 
             //Debug.Log($"orbiting {transform.position}");
@@ -71,9 +72,6 @@ public class Planet : MonoBehaviour
             //ship.transform.right = transform.position - ship.transform.position;
             else
                 TurnTowardsLeft();
-            //ship.transform.right = (transform.position - ship.transform.position) * -1;
-
-
         }
         if (doOrbit)
         {
@@ -146,7 +144,7 @@ public class Planet : MonoBehaviour
         doOrbit = true;
         yield return new WaitUntil(() => GameManager.exitOrbit);
         ship.isTouching = false;
-        doOrbit = false;
+        //doOrbit = false;
         GameManager.isOrbiting = false;
     }
 

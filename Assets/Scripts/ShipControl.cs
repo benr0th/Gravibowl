@@ -18,8 +18,8 @@ public class ShipControl : MonoBehaviour
     //public ParticleSystem hitEffect = null;
 
     bool notMoving, notMovingUp, launchButtonPressed;
-    public float stoppedMoving, magnetSpeed, rotateSpeed;
-    public bool isTouching, notAtStart, ready, hasTarget, orbitVel, inputEnabled = true;
+    public float stoppedMoving, magnetSpeed, rotateSpeed, timePressed;
+    public bool isTouching, notAtStart, ready, hasTarget, orbitVel, stoppedTouching, inputEnabled = true;
 
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos;
@@ -56,7 +56,7 @@ public class ShipControl : MonoBehaviour
         }
         */
         #endregion
-        if (isTouching && !GameManager.exitOrbit)
+        if (isTouching && !GameManager.exitOrbit && timePressed > 0.065f)
         {
             // Force of object
             //rb.AddRelativeForce(new Vector2(0, 4));
@@ -108,23 +108,25 @@ public class ShipControl : MonoBehaviour
         && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
             touch = Input.GetTouch(0);
-            
+            stoppedTouching = false;
             // When touching
             if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)
                 && !notAtStart && !GameManager.gameOver && !GameManager.canHitAgain)
             {
                 if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                 {
-                    magnetGauge.UseMagnet(100f);
-                    isTouching = true; 
+                    //magnetGauge.UseMagnet(100f);
+                    isTouching = true;
+                    timePressed += Time.deltaTime;
                 }
             }
 
-            // Prevents bug when holding screen while grabbing power up - possible to make neater
             if (touch.phase == TouchPhase.Ended)
             {
-                isTouching = false;
+                if (GameManager.canStopTouching)
+                    isTouching = false;
                 inputEnabled = true;
+                stoppedTouching = true;
             }
             #region drag&shoot mechanism (legacy)
             // Only move when ball is not moving, uses voodoo magic, do not touch or it will break

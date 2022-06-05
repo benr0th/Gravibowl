@@ -19,9 +19,9 @@ public class SkinShopItem : MonoBehaviour
         GetComponent<Image>().sprite = skin.sprite;
 
         if (skinManager.IsUnlocked(skinIndex))
-        {
             buyButtonText.text = "Equip";
-        } else { buyButtonText.text = skin.cost.ToString(); }
+        else
+            buyButtonText.text = skin.cost.ToString();
     }
 
     public void OnBuyButtonPressed()
@@ -30,9 +30,8 @@ public class SkinShopItem : MonoBehaviour
 
         // Equip skin if unlocked
         if (skinManager.IsUnlocked(skinIndex))
-        {
             skinManager.SelectSkin(skinIndex);
-        } else
+        else
         {
             // Unlock skin
             if (coins >= skin.cost && !skinManager.IsUnlocked(skinIndex))
@@ -41,9 +40,7 @@ public class SkinShopItem : MonoBehaviour
                 skinManager.Unlock(skinIndex);
                 buyButtonText.text = "Equip";
                 if (PlayerPrefs.GetInt("EquipOnBuy") == 1)
-                {
                     skinManager.SelectSkin(skinIndex);
-                }
             }
             else
             {

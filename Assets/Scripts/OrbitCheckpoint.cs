@@ -16,6 +16,18 @@ public class OrbitCheckpoint : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Ship"))
-            GameManager.checkpointHits++;
+        {
+            GameManager.canStopTouching = true;
+            StartCoroutine(ExitOrbit());
+        }
+    }
+
+    IEnumerator ExitOrbit()
+    {
+        if (ship.stoppedTouching)
+            GameManager.exitOrbit = true;
+        yield return new WaitForSeconds(0.3f);
+        GameManager.exitOrbit = false;
+        ship.isTouching = false;
     }
 }
