@@ -19,13 +19,22 @@ public class MainMenu : MonoBehaviour
     public void LoadGame(string sceneName)
     {
         PlayerPrefs.SetInt("TwoPlayer", 0);
+        PlayerPrefs.SetInt("CPU", 0);
         StartCoroutine(LoadScene(sceneName));
     }
 
     public void Load2Player()
     {
         PlayerPrefs.SetInt("TwoPlayer", 1);
-        SceneManager.LoadSceneAsync("Game");
+        PlayerPrefs.SetInt("CPU", 0);
+        StartCoroutine(LoadScene("Game"));
+    }
+
+    public void LoadCPUPlayer()
+    {
+        PlayerPrefs.SetInt("TwoPlayer", 1);
+        PlayerPrefs.SetInt("CPU", 1);
+        StartCoroutine(LoadScene("Game"));
     }
 
     public void PlayOptions()

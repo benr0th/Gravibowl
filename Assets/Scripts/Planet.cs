@@ -143,7 +143,7 @@ public class Planet : MonoBehaviour
         ship.isTouching = true;
         doOrbit = true;
         yield return new WaitUntil(() => GameManager.exitOrbit);
-        ship.isTouching = false;
+        //ship.isTouching = false;
         //doOrbit = false;
         GameManager.isOrbiting = false;
     }

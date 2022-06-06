@@ -13,6 +13,8 @@ public class ShipControl : MonoBehaviour
     [SerializeField] SkinManager skinManager;
     [SerializeField] MagnetGauge magnetGauge;
     [SerializeField] float power, maxDrag, moveSpeed;
+    [SerializeField] ScoreManager scoreManager;
+    CPUPlayer cpu;
     AudioSource hitAudio;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
@@ -33,12 +35,13 @@ public class ShipControl : MonoBehaviour
         hitAudio = GetComponent<AudioSource>();
         GetComponent<SpriteRenderer>().sprite = skinManager.GetSelectedSkin().sprite;
         rb = GetComponent<Rigidbody2D>();
-        
+        cpu = GetComponent<CPUPlayer>();
     }
 
     private void Start()
     {
-
+        if (PlayerPrefs.GetInt("CPU") == 1)
+            cpu.enabled = true;
     }
 
     private void FixedUpdate()
@@ -104,29 +107,32 @@ public class ShipControl : MonoBehaviour
         } else { stoppedMoving = 0f; notMovingUp = false; }
         */
         #endregion
-        if (Input.touchCount > 0 && !GameManager.isPaused 
-        && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+        if (Input.touchCount > 0 & !GameManager.isPaused 
+        & !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
-            touch = Input.GetTouch(0);
-            stoppedTouching = false;
-            // When touching
-            if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)
-                && !notAtStart && !GameManager.gameOver && !GameManager.canHitAgain)
+            if (!scoreManager.switchedPlayer || PlayerPrefs.GetInt("CPU") == 0)
             {
-                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
+                touch = Input.GetTouch(0);
+                stoppedTouching = false;
+                // When touching
+                if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)
+                    & !notAtStart & !GameManager.gameOver & !GameManager.canHitAgain)
                 {
-                    //magnetGauge.UseMagnet(100f);
-                    isTouching = true;
-                    timePressed += Time.deltaTime;
+                    if (touch.phase == TouchPhase.Moved | touch.phase == TouchPhase.Stationary)
+                    {
+                        //magnetGauge.UseMagnet(100f);
+                        isTouching = true;
+                        timePressed += Time.deltaTime;
+                    }
                 }
-            }
 
-            if (touch.phase == TouchPhase.Ended)
-            {
-                if (GameManager.canStopTouching)
-                    isTouching = false;
-                inputEnabled = true;
-                stoppedTouching = true;
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    if (GameManager.canStopTouching)
+                        isTouching = false;
+                    inputEnabled = true;
+                    stoppedTouching = true;
+                }
             }
             #region drag&shoot mechanism (legacy)
             // Only move when ball is not moving, uses voodoo magic, do not touch or it will break

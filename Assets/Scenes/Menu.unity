@@ -1459,7 +1459,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1032947570}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: Load2Player
+        m_MethodName: LoadCPUPlayer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

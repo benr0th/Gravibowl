@@ -8,20 +8,24 @@ using DG.Tweening;
 public class ScoreDisplay : MonoBehaviour
 {
     [SerializeField] ScoreManager scoreManager;
-    [SerializeField] GameObject scoreBoard;
-    [SerializeField] public GameObject[] frameText;
-    [SerializeField] Transform scoreTransform;
-    [SerializeField] Button scoreMoveButton;
+    [SerializeField] GameObject[] scoreBoard;
+    [SerializeField] public Button[] scoreMoveButton;
     [SerializeField] Sprite upButton, downButton;
-    public TextMeshProUGUI currentPlayerText;
-    bool strike, spare, zeroFirst, zeroSecond, moved;
-    int finalIndex;
+    public FrameTextArray[] frameArray;
+    public TextMeshProUGUI[] currentPlayerText;
+    public bool moved, flipped;
+    int alpha1 = 0;
+    int alpha2 = 1;
+
+    [System.Serializable]
+    public class FrameTextArray
+    {
+        public GameObject[] frameText;
+    }
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("LeftHandOn") == 1)
-            scoreMoveButton.transform.position = 
-                new Vector3(-scoreMoveButton.transform.position.x, scoreMoveButton.transform.position.y);
+
     }
 
     public void ScoreboardUpdate()
@@ -47,7 +51,7 @@ public class ScoreDisplay : MonoBehaviour
         }
         else
         {
-            if (scoreManager.frameBall == 1)
+            if (scoreManager.frameBall == 1 && scoreManager.frameBall1Score != 10)
                 FrameBall1Score();
             if (scoreManager.frameBall == 2)
             {
@@ -82,7 +86,7 @@ public class ScoreDisplay : MonoBehaviour
     {
         StartCoroutine(ScoreboardAnim());
         TextWrite(offsetFrame, childIndex, 
-            scoreManager.gameScore[scoreManager.currentFrame - offsetScore][scoreIndex].ToString());
+            scoreManager.gameScore[scoreManager.player][scoreManager.currentFrame - offsetScore][scoreIndex].ToString());
     }
 
     void FrameBall1Score()
@@ -117,8 +121,9 @@ public class ScoreDisplay : MonoBehaviour
 
     private void TextWrite(int offset, int childIndex, string text)
     {
-        frameText[scoreManager.currentFrame - offset].transform.GetChild(childIndex)
+        frameArray[scoreManager.player].frameText[scoreManager.currentFrame - offset].transform.GetChild(childIndex)
                         .GetComponent<TextMeshProUGUI>().text = text;
+
     }
 
     IEnumerator ScoreboardAnim()
@@ -129,9 +134,9 @@ public class ScoreDisplay : MonoBehaviour
         {
             if (scoreManager.frameBall == 2)
             {
-                if (!scoreManager.isSpare && scoreManager.frameBall1Score != 10)
+                if (!scoreManager.playerClass[scoreManager.player].isSpare && scoreManager.frameBall1Score != 10)
                     yield break;
-                else if (scoreManager.isSpare)
+                else if (scoreManager.playerClass[scoreManager.player].isSpare)
                     ScoreboardDown();
             }
             if (scoreManager.frameBall == 3)
@@ -145,15 +150,15 @@ public class ScoreDisplay : MonoBehaviour
     {
         if (!moved)
             moved = !moved;
-        scoreTransform.DOMoveY(-0.2f, 1f);
-        scoreMoveButton.GetComponent<Image>().sprite = downButton;
+        scoreBoard[scoreManager.player].transform.DOMoveY(-0.2f, 1f);
+        scoreMoveButton[scoreManager.player].GetComponent<Image>().sprite = downButton;
     }
     void ScoreboardDown()
     {
         if (moved)
             moved = !moved;
-        scoreTransform.DOMoveY(-5.7f, 1f);
-        scoreMoveButton.GetComponent<Image>().sprite = upButton;
+        scoreBoard[scoreManager.player].transform.DOMoveY(-5.7f, 1f);
+        scoreMoveButton[scoreManager.player].GetComponent<Image>().sprite = upButton;
     }
 
     public void ScoreboardButton()
@@ -163,5 +168,14 @@ public class ScoreDisplay : MonoBehaviour
             ScoreboardUp();
         if (!moved)
             ScoreboardDown();
+    }
+
+    public void SwitchScoreboard()
+    {
+        scoreBoard[0].GetComponent<CanvasGroup>().alpha = alpha1;
+        scoreMoveButton[0].gameObject.SetActive(!scoreManager.switchedPlayer);
+        scoreBoard[1].GetComponent<CanvasGroup>().alpha = alpha2;
+        scoreMoveButton[1].gameObject.SetActive(scoreManager.switchedPlayer);
+        (alpha1, alpha2) = (alpha2, alpha1);
     }
 }
