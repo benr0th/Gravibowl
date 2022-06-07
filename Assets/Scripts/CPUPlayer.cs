@@ -7,7 +7,7 @@ public class CPUPlayer : MonoBehaviour
     [SerializeField] ScoreManager scoreManager;
     [SerializeField] ShipControl ship;
     public int fallenPins;
-    bool hasLetGo;
+    public bool hasLetGo;
 
     private void Awake()
     {
@@ -18,26 +18,29 @@ public class CPUPlayer : MonoBehaviour
     {
         if (scoreManager.switchedPlayer)
         {
-            for (int i = 0; i < scoreManager.pins.Length; i++)
-                if (scoreManager.pinManager[i].pinFallen)
-                    fallenPins++;
-
+            
             if (!hasLetGo)
             {
                 ship.isTouching = true;
                 ship.stoppedTouching = false;
             }
-
-            if (fallenPins == 0)
-                StartCoroutine(LetGoFirstFrame());
+            
+            //else
+            //    StartCoroutine(LetGoSecond());
         }
     }
 
-    IEnumerator LetGoFirstFrame()
+    public IEnumerator LetGoFirst()
     {
-        yield return new WaitForSeconds(Random.Range(1.06f, 1.15f));
+        yield return new WaitForSeconds(Random.Range(1.025f, 1.056f));
         ship.isTouching = false;
         ship.stoppedTouching = true;
-        hasLetGo = true;
+        hasLetGo = true;   
+    }
+
+    public IEnumerator LetGoSecond()
+    {
+        yield return new WaitForSeconds(0.5f);
+        ship.GetComponentInChildren<BoxCollider2D>().enabled = true;
     }
 }

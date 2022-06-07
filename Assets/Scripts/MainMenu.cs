@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
     public GameObject loadingScreen;
     public Slider loadBar;
     public TextMeshProUGUI loadText;
+    int timesPlayed = 1;
 
     public void SkinShop() => SceneManager.LoadSceneAsync("Shop");
     public void SettingsMenu() => SceneManager.LoadSceneAsync("Settings");
@@ -61,6 +62,8 @@ public class MainMenu : MonoBehaviour
 
     IEnumerator LoadScene(string sceneName)
     {
+        timesPlayed += PlayerPrefs.GetInt("TimesPlayed");
+        PlayerPrefs.SetInt("TimesPlayed", timesPlayed);
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
         loadingScreen.SetActive(true);
 

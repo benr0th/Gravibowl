@@ -69,16 +69,16 @@ public class ScoreManager : MonoBehaviour
     {
         // If any pin has moved, increase score - ignore pins that already moved
         for (int i = 0; i < pins.Length; i++)
-            if (pins[i].transform.position != originalPinPos[i] && !pinManager[i].pinFallen)
+            if (pins[i].transform.position != originalPinPos[i] & !pinManager[i].pinFallen)
             {
                 frameScore++;
                 pinManager[i].pinFallen = true;
             }
-        if (!playerClass[player].isSpare && !playerClass[player].isStrike && !finalFrame)
+        if (!playerClass[player].isSpare & !playerClass[player].isStrike & !finalFrame)
             ScoreNoBonus();
-        else if (playerClass[player].isStrike && !finalFrame)
+        else if (playerClass[player].isStrike & !finalFrame)
             ScoreStrikeBonus();
-        else if (playerClass[player].isSpare && !finalFrame)
+        else if (playerClass[player].isSpare & !finalFrame)
             ScoreSpareBonus();
         else if (finalFrame)
             ScoreFinalFrame();
@@ -227,7 +227,7 @@ public class ScoreManager : MonoBehaviour
                         StrikeHandler();
                         break;
                     default:
-                        if (gameScore[player][currentFrame - 1][0] != 10 || frameBall1Score == 10)
+                        if (gameScore[player][currentFrame - 1][0] != 10 | frameBall1Score == 10)
                         {
                             if (frameBall1Score == 10)
                                 frameBall2Score = frameScore;
@@ -238,7 +238,7 @@ public class ScoreManager : MonoBehaviour
                             }
                         }
                         StrikeHandler();
-                        if (gameScore[player][currentFrame - 1][0] == 10 && frameBall1Score != 10)
+                        if (gameScore[player][currentFrame - 1][0] == 10 & frameBall1Score != 10)
                             playerClass[player].pinScore += frameBall1Score + frameBall2Score;
                         gameScore[player][currentFrame][1] = frameBall2Score;
                         gameScore[player][currentFrame][3] = playerClass[player].pinScore;
@@ -246,14 +246,14 @@ public class ScoreManager : MonoBehaviour
                 }
                 break;
             case 3:
-                if (frameBall2Score == 10 || playerClass[player].isSpare)
+                if (frameBall2Score == 10 | playerClass[player].isSpare)
                     frameBall3Score = frameScore;
                 else
                     frameBall3Score = frameScore - frameBall2Score;
                 playerClass[player].pinScore += frameBall3Score + frameBall2Score + frameBall1Score;
                 gameScore[player][currentFrame][2] = frameBall3Score;
                 gameScore[player][currentFrame][3] = playerClass[player].pinScore;
-                if (frameBall3Score == 10 && (frameBall2Score == 10 || frameBall1Score + frameBall2Score == 10))
+                if (frameBall3Score == 10 & (frameBall2Score == 10 | frameBall1Score + frameBall2Score == 10))
                 {
                     scoreDisplay.StrikeScoreboard(2);
                     scoreDisplay.ScoreboardWrite(1, 3, 0, 3);
@@ -267,10 +267,10 @@ public class ScoreManager : MonoBehaviour
     {
         playerClass[player].isStrike = true;
         frameBall1Score = frameScore;
-        if (finalFrame && frameBall == 1)
+        if (finalFrame & frameBall == 1)
             gameScore[player].Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
                             frameBall3Score, playerClass[player].pinScore });
-        else if (finalFrame && frameBall == 2)
+        else if (finalFrame & frameBall == 2)
         {
             frameBall2Score = frameScore;
             gameScore[player][currentFrame][1] = frameBall2Score;
@@ -280,7 +280,7 @@ public class ScoreManager : MonoBehaviour
         else
         {
             if (currentFrame == 1 || gameScore[player][currentFrame - 1][0] + gameScore[player][currentFrame - 1][1] != 10
-                || gameScore[player][currentFrame - 1][0] == 10)
+                | gameScore[player][currentFrame - 1][0] == 10)
                 gameScore[player].Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, playerClass[player].pinScore });
             scoreDisplay.StrikeScoreboard(0);
             playerClass[player].strikes++;
@@ -298,14 +298,14 @@ public class ScoreManager : MonoBehaviour
     {
         playerClass[player].isSpare = true;
         frameBall2Score = frameScore - frameBall1Score;
-        if (finalFrame && frameBall == 2)
+        if (finalFrame & frameBall == 2)
         {
             //gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
             //                frameBall3Score, pinScore });
             gameScore[player][currentFrame][1] = frameBall2Score;
 
         }
-        if (playerClass[player].strikes < 1 && !finalFrame)
+        if (playerClass[player].strikes < 1 & !finalFrame)
             gameScore[player][currentFrame][1] = frameBall2Score;
         
     }
@@ -315,7 +315,7 @@ public class ScoreManager : MonoBehaviour
         if (finalFrame)
             if (frameBall == 1) frameBall2Score = 0;
             else
-                if (frameBall1Score != 10 && !playerClass[player].isSpare)
+                if (frameBall1Score != 10 & !playerClass[player].isSpare)
                 {
                     frameBall2Score = frameScore - frameBall1Score;
                     //pinScore += frameBall1Score + frameBall2Score;
@@ -324,7 +324,7 @@ public class ScoreManager : MonoBehaviour
             frameBall2Score = frameScore - frameBall1Score;
         playerClass[player].pinScore += 10 + frameBall1Score + frameBall2Score;
         gameScore[player][currentFrame - 1][2] = playerClass[player].pinScore;
-        if (!playerClass[player].isSpare && !finalFrame)
+        if (!playerClass[player].isSpare & !finalFrame)
             playerClass[player].pinScore += frameBall1Score + frameBall2Score;
         if (!finalFrame)
         {
@@ -332,7 +332,6 @@ public class ScoreManager : MonoBehaviour
             gameScore[player][currentFrame][1] = frameBall2Score;
             gameScore[player][currentFrame][2] = playerClass[player].pinScore;
         }
-
         playerClass[player].isStrike = false;
         playerClass[player].strikes--;
         scoreDisplay.ScoreboardWrite(2, 2, 1, 2);
@@ -352,12 +351,18 @@ public class ScoreManager : MonoBehaviour
     void TripleStrike()
     {
         playerClass[player].pinScore += 30;
-        gameScore[player][currentFrame - 3][2] = playerClass[player].pinScore;
+        if (twoPlayer)
+            gameScore[player][currentFrame - 2][2] = playerClass[player].pinScore;
+        else
+            gameScore[player][currentFrame - 3][2] = playerClass[player].pinScore;
         if (!playerClass[player].isStrike)
             DoubleStrike();
         else
             playerClass[player].strikes--;
-        scoreDisplay.ScoreboardWrite(4, 2, 3, 2);
+        if (twoPlayer)
+            scoreDisplay.ScoreboardWrite(3, 2, 2, 2);
+        else
+            scoreDisplay.ScoreboardWrite(4, 2, 3, 2);
     }
 
     void StrikeHandler()
@@ -412,6 +417,9 @@ public class ScoreManager : MonoBehaviour
         } 
         frameScore = 0;
         ship.enabled = true;
+        cpu.fallenPins = 0;
+        if (finalFrame)
+            CPUTurn();
         // Planet spawns on random side each frame, for more interesting gameplay
         Destroy(GameObject.FindGameObjectWithTag("Planet"));
         GameManager.InitPlanet();
@@ -428,6 +436,8 @@ public class ScoreManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1.7f);
         GameManager.canStopTouching = false;
+        ship.stoppedTouching = false;
+        ship.GetComponentInChildren<BoxCollider2D>().enabled = false;
         ShipReset();
         frameBall++;
         ScoreHandler();
@@ -435,7 +445,9 @@ public class ScoreManager : MonoBehaviour
             if (pinManager[i].pinFallen)
                 pins[i].SetActive(false);
         scoreDisplay.ScoreboardUpdate();
-        if (frameBall == 2 && !finalFrame)
+        if ((frameBall == 1 & frameBall1Score != 10) | (frameBall == 2 & frameBall1Score == 10))
+            CPUTurn();
+        if (frameBall == 2 & !finalFrame)
         {
             if (twoPlayer)
             {
@@ -449,7 +461,7 @@ public class ScoreManager : MonoBehaviour
         {
             if (frameBall == 2)
             {
-                if (!playerClass[player].isSpare && frameBall1Score != 10)
+                if (!playerClass[player].isSpare & frameBall1Score != 10)
                 {
                     if (twoPlayer)
                         TwoPlayerEnd();
@@ -484,9 +496,13 @@ public class ScoreManager : MonoBehaviour
         player = switchedPlayer ? 1 : 0;
         scoreDisplay.SwitchScoreboard();
         scoreDisplay.currentPlayerText[player].text = $"Player {player + 1}";
-        cpu.fallenPins = 0;
         if (!switchedPlayer)
+        {
             currentFrame++;
+            ship.timePressed = 0;
+            ship.GetComponentInChildren<BoxCollider2D>().enabled = false;
+        }
+        CPUTurn();
     }
 
     void TwoPlayerEnd()
@@ -494,7 +510,35 @@ public class ScoreManager : MonoBehaviour
         if (switchedPlayer)
             GameManager.GameOver();
         else
-            SwitchPlayer();
+            StartCoroutine(TwoPlayerEndTimer());
+    }
+
+    IEnumerator TwoPlayerEndTimer()
+    {
+        ship.enabled = false;
+        yield return new WaitForSeconds(3.5f);
+        PinReset();
+        SwitchPlayer();
+        frameBall = 0;
+        frameBall1Score = 0;
+        frameBall2Score = 0;
+        frameBall3Score = 0;
+    }
+
+    void CPUTurn()
+    {
+        if (PlayerPrefs.GetInt("CPU") == 1 & switchedPlayer)
+        {
+            cpu.hasLetGo = false;
+            for (int i = 0; i < pins.Length; i++)
+                if (pinManager[i].pinFallen)
+                    cpu.fallenPins++;
+
+            if (cpu.fallenPins == 0)
+                StartCoroutine(cpu.LetGoFirst());
+            else
+                StartCoroutine(cpu.LetGoSecond());
+        }
     }
 
     // Debug function - please remove when done!

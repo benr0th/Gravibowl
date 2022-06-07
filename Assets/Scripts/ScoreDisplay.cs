@@ -32,26 +32,26 @@ public class ScoreDisplay : MonoBehaviour
     {
         if (scoreManager.finalFrame)
         {
-            if (scoreManager.frameBall == 1 && scoreManager.frameBall1Score != 10)
+            if (scoreManager.frameBall == 1 & scoreManager.frameBall1Score != 10)
                 FrameBall1Score();
-            if (scoreManager.frameBall == 2 && 
-                (scoreManager.frameBall2Score != 10 || scoreManager.frameBall1Score == 0))
+            if (scoreManager.frameBall == 2 & 
+                (scoreManager.frameBall2Score != 10 | scoreManager.frameBall1Score == 0))
             {
                 FrameBall2Score();
-                if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10 &&
+                if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10 &
                     scoreManager.frameBall1Score != 10)
                     ScoreboardWrite(1, 3, 0, 3);
             }
             if (scoreManager.frameBall == 3)
             {
-                if (scoreManager.frameBall3Score != 10 || scoreManager.frameBall2Score == 0)
+                if (scoreManager.frameBall3Score != 10 | scoreManager.frameBall2Score == 0)
                     FrameBall3Score();
                 ScoreboardWrite(1, 3, 0, 3);
             }
         }
         else
         {
-            if (scoreManager.frameBall == 1 && scoreManager.frameBall1Score != 10)
+            if (scoreManager.frameBall == 1 & scoreManager.frameBall1Score != 10)
                 FrameBall1Score();
             if (scoreManager.frameBall == 2)
             {
@@ -100,7 +100,7 @@ public class ScoreDisplay : MonoBehaviour
     void FrameBall2Score()
     {
         if (scoreManager.frameBall1Score + scoreManager.frameBall2Score == 10
-            && scoreManager.frameBall1Score != 10)
+            & scoreManager.frameBall1Score != 10)
             SpareScoreboard(1);
         else if (scoreManager.frameBall2Score == 0)
             ZeroScore(1);
@@ -111,7 +111,8 @@ public class ScoreDisplay : MonoBehaviour
     void FrameBall3Score()
     {
         if (scoreManager.frameBall2Score + scoreManager.frameBall3Score == 10
-            && scoreManager.frameBall2Score != 10)
+            & scoreManager.frameBall2Score != 10
+            & scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10)
             SpareScoreboard(2);
         else if (scoreManager.frameBall3Score == 0)
             ZeroScore(2);
@@ -130,17 +131,30 @@ public class ScoreDisplay : MonoBehaviour
     {
         ScoreboardUp();
         yield return new WaitForSeconds(2.3f);
-        if (scoreManager.finalFrame && scoreManager.frameBall >= 2)
+        if (scoreManager.finalFrame & scoreManager.frameBall >= 2)
         {
             if (scoreManager.frameBall == 2)
             {
-                if (!scoreManager.playerClass[scoreManager.player].isSpare && scoreManager.frameBall1Score != 10)
-                    yield break;
+                if (!scoreManager.playerClass[scoreManager.player].isSpare & scoreManager.frameBall1Score != 10)
+                {
+                    if (scoreManager.twoPlayer & !scoreManager.switchedPlayer)
+                        ScoreboardDown();
+                    else
+                        yield break;
+                }
                 else if (scoreManager.playerClass[scoreManager.player].isSpare)
+                    ScoreboardDown();
+                else
                     ScoreboardDown();
             }
             if (scoreManager.frameBall == 3)
-                yield break;
+            {
+                if (scoreManager.twoPlayer & !scoreManager.switchedPlayer)
+                    ScoreboardDown();
+                else
+                    yield break;
+            }
+            
         }
         else
             ScoreboardDown();

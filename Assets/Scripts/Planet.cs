@@ -54,7 +54,7 @@ public class Planet : MonoBehaviour
                 $"\nnormalized={(transform.position - ship.transform.position).normalized}");
         */
         float orbitalDistance = Vector3.Distance(transform.position, ship.transform.position);
-        if (ship.isTouching && orbitalDistance < soiRadius && !GameManager.exitOrbit &&
+        if (ship.isTouching & orbitalDistance < soiRadius & !GameManager.exitOrbit &
             ship.timePressed > 0.065f)
         {
 
@@ -82,7 +82,7 @@ public class Planet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Ship")
-            && ship.isTouching)
+            & ship.isTouching)
         {
             //transform.position = Vector2.Lerp(ship.transform.position,
             //    (transform.position - ship.transform.position).normalized * 0.5f, 0.5f);

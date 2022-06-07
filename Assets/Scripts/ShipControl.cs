@@ -26,8 +26,7 @@ public class ShipControl : MonoBehaviour
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos;
     public Vector3 targetPos;
-
-    Touch touch;
+    public Touch touch;
 
     private void Awake()
     {
@@ -59,7 +58,7 @@ public class ShipControl : MonoBehaviour
         }
         */
         #endregion
-        if (isTouching && !GameManager.exitOrbit && timePressed > 0.065f)
+        if (isTouching & !GameManager.exitOrbit & timePressed > 0.065f)
         {
             // Force of object
             //rb.AddRelativeForce(new Vector2(0, 4));
@@ -113,14 +112,13 @@ public class ShipControl : MonoBehaviour
             if (!scoreManager.switchedPlayer || PlayerPrefs.GetInt("CPU") == 0)
             {
                 touch = Input.GetTouch(0);
-                stoppedTouching = false;
+                //stoppedTouching = false;
                 // When touching
                 if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)
-                    & !notAtStart & !GameManager.gameOver & !GameManager.canHitAgain)
+                    & !stoppedTouching & !GameManager.gameOver & !GameManager.canHitAgain)
                 {
                     if (touch.phase == TouchPhase.Moved | touch.phase == TouchPhase.Stationary)
                     {
-                        //magnetGauge.UseMagnet(100f);
                         isTouching = true;
                         timePressed += Time.deltaTime;
                     }
@@ -131,7 +129,8 @@ public class ShipControl : MonoBehaviour
                     if (GameManager.canStopTouching)
                         isTouching = false;
                     inputEnabled = true;
-                    stoppedTouching = true;
+                    if (notAtStart)
+                        stoppedTouching = true;
                 }
             }
             #region drag&shoot mechanism (legacy)

@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         // Power up stuff
-        if (grabbedPowerUp && !isPaused)
+        if (grabbedPowerUp & !isPaused)
         {
             grabbedPowerUp = true;
             // Power up timer
@@ -89,14 +89,14 @@ public class GameManager : MonoBehaviour
             distanceTraveled = Mathf.FloorToInt(shipCurrentPos.y - shipStartPos.y);
 
             // Decreases planet spawn as distance increases
-            if (distanceTraveled % 100 == 0 && distanceTraveled > 0 && upDiff)
+            if (distanceTraveled % 100 == 0 & distanceTraveled > 0 & upDiff)
             {
                 upDiff = false;
                 yMin = Mathf.Clamp(yMin, 0.5f, 10f);
                 yMax = Mathf.Clamp(yMax, 0.5f, 10f);
                 yMin += 0.2f;
                 yMax += 0.2f;
-            } else if (distanceTraveled % 100 != 0 && !upDiff) { upDiff = true; }
+            } else if (distanceTraveled % 100 != 0 & !upDiff) { upDiff = true; }
 
             #region Spawn planets progressively
             /*
@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour
     {
         var p = Random.Range(0, 14);
         planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
-        spawnPlanetPos.y = Random.Range(-2.7f, -2.4f);
+        spawnPlanetPos.y = Random.Range(-2.7f, -2.55f);
         var coinFlip = Random.Range(0, 2);
         if (coinFlip == 0)
         {

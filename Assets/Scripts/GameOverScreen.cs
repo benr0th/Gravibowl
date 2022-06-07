@@ -25,10 +25,10 @@ public class GameOverScreen : MonoBehaviour
         for (int i = 0; i < scoreManager.pins.Length; i++)
             scoreManager.pins[i].SetActive(false);
         
-        if (GameManager.distanceTraveled > PlayerPrefs.GetInt("HighScore", 0))
+        if (scoreManager.playerClass[scoreManager.player].pinScore > PlayerPrefs.GetInt("HighScore", 0))
         {
-            PlayerPrefs.SetInt("HighScore", scoreManager.pinScore);
-            ui.highScore.text = "High Score\n" + scoreManager.pinScore.ToString();
+            PlayerPrefs.SetInt("HighScore", scoreManager.playerClass[scoreManager.player].pinScore);
+            ui.highScore.text = "High Score\n" + scoreManager.playerClass[scoreManager.player].pinScore.ToString();
         }
 
         if (floatingCoinsPrefab) { Invoke(nameof(AddCoins), 0.5f); }
@@ -39,7 +39,7 @@ public class GameOverScreen : MonoBehaviour
             GameManager.coins += coinsGained;
         } else
         {
-            coinsGained = scoreManager.pinScore / 2;
+            coinsGained = Mathf.Max(scoreManager.playerClass[0].pinScore, scoreManager.playerClass[1].pinScore) / 2;
             GameManager.distanceTraveledLast = GameManager.distanceTraveled;
             GameManager.coins += coinsGained;
         }
