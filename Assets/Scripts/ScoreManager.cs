@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
     [SerializeField] ShipControl ship;
     [SerializeField] ScoreDisplay scoreDisplay;
+    [SerializeField] TutorialManager tutorialManager;
+    [SerializeField] GameObject[] fanfare;
+    [SerializeField] TextMeshProUGUI strikeFanfareText;
+    [SerializeField] AudioSource fanfareSound;
     CPUPlayer cpu;
     GameManager GameManager;
     public PinManager[] pinManager = new PinManager[10];
@@ -13,16 +18,16 @@ public class ScoreManager : MonoBehaviour
     public Dictionary<int, int[]>[] gameScore = new Dictionary<int, int[]>[2];
     public Player[] playerClass = new Player[2];
     Vector3[] originalPinPos = new Vector3[10];
-    public int pinScore, currentFrame, frameBall, frameScore, 
+    public int pinScore, currentFrame, frameBall, frameScore, pinsHit,
         frameBall1Score, frameBall2Score, frameBall3Score, player;
-    public bool finalFrame, switchedPlayer, twoPlayer;
+    public bool finalFrame, switchedPlayer, twoPlayer, hasBowled;
 
     [System.Serializable]
     public class Player
     {
         public Player(int id) => Id = id;
         public int Id { get; private set; }
-        public int strikes, pinScore;
+        public int strikes, pinScore, actualStrikes;
         public bool isSpare, isStrike;
     }
 
@@ -74,15 +79,21 @@ public class ScoreManager : MonoBehaviour
                 frameScore++;
                 pinManager[i].pinFallen = true;
             }
-        if (!playerClass[player].isSpare & !playerClass[player].isStrike & !finalFrame)
-            ScoreNoBonus();
-        else if (playerClass[player].isStrike & !finalFrame)
-            ScoreStrikeBonus();
-        else if (playerClass[player].isSpare & !finalFrame)
-            ScoreSpareBonus();
-        else if (finalFrame)
-            ScoreFinalFrame();
-
+        // Do not score if in tutorial - no free strikes!
+        if (tutorialManager.tutStarted)
+            PinReset();
+        else
+        {
+            if (!playerClass[player].isSpare & !playerClass[player].isStrike & !finalFrame)
+                ScoreNoBonus();
+            else if (playerClass[player].isStrike & !finalFrame)
+                ScoreStrikeBonus();
+            else if (playerClass[player].isSpare & !finalFrame)
+                ScoreSpareBonus();
+            else if (finalFrame)
+                ScoreFinalFrame();
+        }
+        
         /* Debug score display
         if (finalFrame)
             Debug.Log($"frame: {currentFrame}, ball1: {frameBall1Score}, ball2: {frameBall2Score}, ball3: {frameBall3Score}\n" +
@@ -266,6 +277,7 @@ public class ScoreManager : MonoBehaviour
     void GotStrike()
     {
         playerClass[player].isStrike = true;
+        playerClass[player].actualStrikes++;
         frameBall1Score = frameScore;
         if (finalFrame & frameBall == 1)
             gameScore[player].Add(currentFrame, new int[] { frameBall1Score, frameBall2Score,
@@ -285,13 +297,14 @@ public class ScoreManager : MonoBehaviour
             scoreDisplay.StrikeScoreboard(0);
             playerClass[player].strikes++;
         }
+        ship.enabled = false;
+        hasBowled = false;
         if (twoPlayer)
-        {
-            ship.enabled = false;
+        {   
             Invoke(nameof(PinReset), 3.5f);
         }
         else
-            PinReset();
+            Invoke(nameof(PinReset), 3.5f);
     }
 
     void GotSpare()
@@ -312,15 +325,28 @@ public class ScoreManager : MonoBehaviour
 
     void SingleStrike()
     {
+        /*
         if (finalFrame)
-            if (frameBall == 1) frameBall2Score = 0;
+            if (frameBall == 1) 
+                frameBall2Score = 0;
             else
                 if (frameBall1Score != 10 & !playerClass[player].isSpare)
                 {
                     frameBall2Score = frameScore - frameBall1Score;
                     //pinScore += frameBall1Score + frameBall2Score;
                 }
-        if (!finalFrame)
+        */
+        if (finalFrame)
+        {
+            if (frameBall == 1)
+                frameBall2Score = 0;
+            else
+            {
+                if (frameBall1Score != 10 & !playerClass[player].isSpare)
+                    frameBall2Score = frameScore - frameBall1Score;
+            }
+        }
+        else
             frameBall2Score = frameScore - frameBall1Score;
         playerClass[player].pinScore += 10 + frameBall1Score + frameBall2Score;
         gameScore[player][currentFrame - 1][2] = playerClass[player].pinScore;
@@ -329,9 +355,12 @@ public class ScoreManager : MonoBehaviour
         if (!finalFrame)
         {
             //gameScore.Add(currentFrame, new int[] { frameBall1Score, frameBall2Score, pinScore });
+            playerClass[player].actualStrikes = 0;
             gameScore[player][currentFrame][1] = frameBall2Score;
             gameScore[player][currentFrame][2] = playerClass[player].pinScore;
         }
+        if (finalFrame & hasBowled & pinsHit != 10)
+            playerClass[player].actualStrikes = 0;
         playerClass[player].isStrike = false;
         playerClass[player].strikes--;
         scoreDisplay.ScoreboardWrite(2, 2, 1, 2);
@@ -354,7 +383,7 @@ public class ScoreManager : MonoBehaviour
         if (twoPlayer)
             gameScore[player][currentFrame - 2][2] = playerClass[player].pinScore;
         else
-            gameScore[player][currentFrame - 3][2] = playerClass[player].pinScore;
+            gameScore[player][currentFrame - 2][2] = playerClass[player].pinScore;
         if (!playerClass[player].isStrike)
             DoubleStrike();
         else
@@ -362,7 +391,7 @@ public class ScoreManager : MonoBehaviour
         if (twoPlayer)
             scoreDisplay.ScoreboardWrite(3, 2, 2, 2);
         else
-            scoreDisplay.ScoreboardWrite(4, 2, 3, 2);
+            scoreDisplay.ScoreboardWrite(3, 2, 2, 2);
     }
 
     void StrikeHandler()
@@ -405,7 +434,7 @@ public class ScoreManager : MonoBehaviour
             pins[i].transform.up = Vector2.up;
             pinManager[i].pinFallen = false;
         }
-        if (!finalFrame)
+        if (!finalFrame & !tutorialManager.tutStarted)
         {
             frameBall = 0;
             frameBall1Score = 0;
@@ -416,7 +445,9 @@ public class ScoreManager : MonoBehaviour
                 currentFrame++;
         } 
         frameScore = 0;
+        hasBowled = false;
         ship.enabled = true;
+        tutorialManager.helpButton.enabled = true;
         cpu.fallenPins = 0;
         if (finalFrame)
             CPUTurn();
@@ -432,30 +463,83 @@ public class ScoreManager : MonoBehaviour
         ship.transform.up = Vector2.up;
     }
 
+    void ScoreFanfare()
+    {
+        if (!tutorialManager.tutStarted)
+        {
+            for (int i = 0; i < pins.Length; i++)
+                if (pinManager[i].pinHit)
+                    pinsHit++;
+
+            if (pinsHit == 10 & !hasBowled)
+            {
+                pinsHit = 0;
+                if (playerClass[player].actualStrikes <= 3)
+                {
+                    strikeFanfareText.text = $"Strike!";
+                    FanfareAnim(playerClass[player].actualStrikes - 1);
+                }
+                if (playerClass[player].actualStrikes > 3)
+                {
+                    strikeFanfareText.text = $"{playerClass[player].actualStrikes} in a row!";
+                    FanfareAnim(0);
+                }
+            }
+            else if (pinsHit == 10 & hasBowled)
+                FanfareAnim(3);
+
+        }
+    }
+
+    void FanfareAnim(int index)
+    {
+        var s = LeanTween.sequence();
+        s.append(LeanTween.scale(fanfare[index], new Vector3(1, 1), 0.5f).setEaseOutQuad());
+        s.append(1.8f);
+        s.append(LeanTween.scale(fanfare[index], new Vector3(0, 0), 0.5f).setEaseOutQuad());
+        fanfareSound.Play();
+    }
+
     public IEnumerator LaneReset()
     {
         yield return new WaitForSeconds(1.7f);
+        GameManager.checkpointHits = 0;
+        GameManager.tutRelease = false;
         GameManager.canStopTouching = false;
         ship.stoppedTouching = false;
         ship.GetComponentInChildren<BoxCollider2D>().enabled = false;
         ShipReset();
-        frameBall++;
+        if (!tutorialManager.tutStarted)
+            frameBall++;
+        hasBowled = true;
         ScoreHandler();
+        ScoreFanfare();
+        scoreDisplay.ScoreboardUpdate();
         for (int i = 0; i < pins.Length; i++)
+        {
+            if (pinManager[i].pinHit)
+                tutorialManager.tutStarted = false;
+            pinManager[i].pinHit = false;
             if (pinManager[i].pinFallen)
                 pins[i].SetActive(false);
-        scoreDisplay.ScoreboardUpdate();
+        }
         if ((frameBall == 1 & frameBall1Score != 10) | (frameBall == 2 & frameBall1Score == 10))
             CPUTurn();
         if (frameBall == 2 & !finalFrame)
         {
+            ship.enabled = false;
             if (twoPlayer)
             {
-                ship.enabled = false;
+                hasBowled = false;
+                tutorialManager.helpButton.enabled = false;
                 Invoke(nameof(PinReset), 3.5f);
+                pinsHit = 0;
             }
             else
-                PinReset();
+            {
+                Invoke(nameof(PinReset), 3.5f);
+                pinsHit = 0;
+            }
         }
         else if (finalFrame)
         {
@@ -469,7 +553,11 @@ public class ScoreManager : MonoBehaviour
                         GameManager.GameOver();
                 }
                 else if (playerClass[player].isSpare)
-                    PinReset();
+                {
+                    ship.enabled = false;
+                    Invoke(nameof(PinReset), 3.5f);
+                    pinsHit = 0;
+                }
             }
             if (frameBall == 3)
             {
@@ -516,8 +604,10 @@ public class ScoreManager : MonoBehaviour
     IEnumerator TwoPlayerEndTimer()
     {
         ship.enabled = false;
+        tutorialManager.helpButton.enabled = false;
         yield return new WaitForSeconds(3.5f);
         PinReset();
+        pinsHit = 0;
         SwitchPlayer();
         frameBall = 0;
         frameBall1Score = 0;
@@ -534,20 +624,11 @@ public class ScoreManager : MonoBehaviour
                 if (pinManager[i].pinFallen)
                     cpu.fallenPins++;
 
+            // If no pins have been hit shoot randomly, otherwise aim for remaining pins
             if (cpu.fallenPins == 0)
                 StartCoroutine(cpu.LetGoFirst());
             else
                 StartCoroutine(cpu.LetGoSecond());
         }
-    }
-
-    // Debug function - please remove when done!
-    public void DebugAutoStrike()
-    {
-        for (int i = 0; i < pins.Length; i++)
-        {
-            pins[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 30), ForceMode2D.Impulse);
-        }
-        ship.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 30), ForceMode2D.Impulse);
     }
 }

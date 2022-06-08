@@ -11,6 +11,7 @@ public class ScoreDisplay : MonoBehaviour
     [SerializeField] GameObject[] scoreBoard;
     [SerializeField] public Button[] scoreMoveButton;
     [SerializeField] Sprite upButton, downButton;
+    [SerializeField] TutorialManager tutorialManager;
     public FrameTextArray[] frameArray;
     public TextMeshProUGUI[] currentPlayerText;
     public bool moved, flipped;
@@ -23,41 +24,39 @@ public class ScoreDisplay : MonoBehaviour
         public GameObject[] frameText;
     }
 
-    private void Start()
-    {
-
-    }
-
     public void ScoreboardUpdate()
     {
-        if (scoreManager.finalFrame)
+        if (!tutorialManager.tutStarted)
         {
-            if (scoreManager.frameBall == 1 & scoreManager.frameBall1Score != 10)
-                FrameBall1Score();
-            if (scoreManager.frameBall == 2 & 
-                (scoreManager.frameBall2Score != 10 | scoreManager.frameBall1Score == 0))
+            if (scoreManager.finalFrame)
             {
-                FrameBall2Score();
-                if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10 &
-                    scoreManager.frameBall1Score != 10)
+                if (scoreManager.frameBall == 1 & scoreManager.frameBall1Score != 10)
+                    FrameBall1Score();
+                if (scoreManager.frameBall == 2 &
+                    (scoreManager.frameBall2Score != 10 | scoreManager.frameBall1Score == 0))
+                {
+                    FrameBall2Score();
+                    if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10 &
+                        scoreManager.frameBall1Score != 10)
+                        ScoreboardWrite(1, 3, 0, 3);
+                }
+                if (scoreManager.frameBall == 3)
+                {
+                    if (scoreManager.frameBall3Score != 10 | scoreManager.frameBall2Score == 0)
+                        FrameBall3Score();
                     ScoreboardWrite(1, 3, 0, 3);
+                }
             }
-            if (scoreManager.frameBall == 3)
+            else
             {
-                if (scoreManager.frameBall3Score != 10 | scoreManager.frameBall2Score == 0)
-                    FrameBall3Score();
-                ScoreboardWrite(1, 3, 0, 3);
-            }
-        }
-        else
-        {
-            if (scoreManager.frameBall == 1 & scoreManager.frameBall1Score != 10)
-                FrameBall1Score();
-            if (scoreManager.frameBall == 2)
-            {
-                FrameBall2Score();
-                if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10)
-                    ScoreboardWrite(1, 2, 0, 2);
+                if (scoreManager.frameBall == 1 & scoreManager.frameBall1Score != 10)
+                    FrameBall1Score();
+                if (scoreManager.frameBall == 2)
+                {
+                    FrameBall2Score();
+                    if (scoreManager.frameBall1Score + scoreManager.frameBall2Score != 10)
+                        ScoreboardWrite(1, 2, 0, 2);
+                }
             }
         }
     }
@@ -129,6 +128,7 @@ public class ScoreDisplay : MonoBehaviour
 
     IEnumerator ScoreboardAnim()
     {
+        // Scoreboard goes up, then down after small delay. Logic in place for final frame
         ScoreboardUp();
         yield return new WaitForSeconds(2.3f);
         if (scoreManager.finalFrame & scoreManager.frameBall >= 2)
@@ -137,6 +137,7 @@ public class ScoreDisplay : MonoBehaviour
             {
                 if (!scoreManager.playerClass[scoreManager.player].isSpare & scoreManager.frameBall1Score != 10)
                 {
+                    // If playing two player, do not end until 2nd player goes
                     if (scoreManager.twoPlayer & !scoreManager.switchedPlayer)
                         ScoreboardDown();
                     else
@@ -164,19 +165,22 @@ public class ScoreDisplay : MonoBehaviour
     {
         if (!moved)
             moved = !moved;
-        scoreBoard[scoreManager.player].transform.DOMoveY(-0.2f, 1f);
+        //scoreBoard[scoreManager.player].transform.DOMoveY(-0.2f, 0.7f);
+        LeanTween.moveY(scoreBoard[scoreManager.player], -0.2f, 0.5f).setEaseOutQuad();
         scoreMoveButton[scoreManager.player].GetComponent<Image>().sprite = downButton;
     }
     void ScoreboardDown()
     {
         if (moved)
             moved = !moved;
-        scoreBoard[scoreManager.player].transform.DOMoveY(-5.7f, 1f);
+        //scoreBoard[scoreManager.player].transform.DOMoveY(-5.7f, 0.7f);
+        LeanTween.moveY(scoreBoard[scoreManager.player], -5.7f, 0.5f).setEaseOutQuad();
         scoreMoveButton[scoreManager.player].GetComponent<Image>().sprite = upButton;
     }
 
     public void ScoreboardButton()
     {
+        // Button to manually view scoreboard
         moved = !moved;
         if (moved)
             ScoreboardUp();
@@ -186,10 +190,17 @@ public class ScoreDisplay : MonoBehaviour
 
     public void SwitchScoreboard()
     {
+        // Prevents annoying bug
+        scoreBoard[1].SetActive(true);
+
+        // Turns inactive scoreboard invisible and sets scale to 0 to prevent interaction
         scoreBoard[0].GetComponent<CanvasGroup>().alpha = alpha1;
         scoreMoveButton[0].gameObject.SetActive(!scoreManager.switchedPlayer);
+        scoreBoard[0].transform.localScale = new Vector3(alpha1, alpha1);
+
         scoreBoard[1].GetComponent<CanvasGroup>().alpha = alpha2;
         scoreMoveButton[1].gameObject.SetActive(scoreManager.switchedPlayer);
+        scoreBoard[1].transform.localScale = new Vector3(alpha2, alpha2);
         (alpha1, alpha2) = (alpha2, alpha1);
     }
 }

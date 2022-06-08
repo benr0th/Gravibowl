@@ -6,7 +6,7 @@ public class PinManager : MonoBehaviour
 {
     ShipControl ship;
     CPUPlayer cpu;
-    public bool pinFallen, pinDetected;
+    public bool pinFallen, pinDetected, pinHit;
 
     private void Awake()
     {
@@ -25,4 +25,9 @@ public class PinManager : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.collider.CompareTag("Ship") | other.collider.CompareTag("Pin"))
+            pinHit = true;
+    }
 }

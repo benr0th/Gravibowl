@@ -3,26 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using System.Linq;
 
 public class TutorialManager : MonoBehaviour
 {
     [SerializeField] ShipControl ship;
     [SerializeField] GameObject[] tutMessages;
+    [SerializeField] GameObject helpScreen, tutButton;
+    [SerializeField] public Button helpButton;
+    [SerializeField] ScoreManager scoreManager;
     GameManager GameManager;
-    bool tutStarted, tutEnded;
+    public bool tutStarted, tutEnded, screenToggled, debugTut;
     public int tutIndex;
-    float waitTime = 1.1f;
 
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
+    private void Start()
+    {
+        if (PlayerPrefs.GetInt("LeftHandOn") == 1)
+            helpButton.transform.position = new Vector3(-helpButton.transform.position.x, 
+                helpButton.transform.position.y);
+    }
+
     private void Update()
     {
-        if ((PlayerPrefs.GetInt("TimesPlayed") == 1 | tutStarted) & !tutEnded)
+        if ((PlayerPrefs.GetInt("TimesPlayed") == 1 | tutStarted | debugTut) & !tutEnded)
             Tutorial();
+
+        if ((PlayerPrefs.GetInt("CPU") == 1 & scoreManager.switchedPlayer) 
+            | GameManager.gameOver | GameManager.isPaused | ship.notAtStart)
+            helpButton.enabled = false;
+        else
+            helpButton.enabled = true;
     }
 
     void Tutorial()
@@ -46,10 +62,8 @@ public class TutorialManager : MonoBehaviour
         }
         else if (tutIndex == 1)
         {
-            if (waitTime <= 0)
+            if (GameManager.tutRelease)
                 tutIndex++;
-            else
-                waitTime -= Time.deltaTime;
         }
         else if (tutIndex == 2)
         {
@@ -60,26 +74,36 @@ public class TutorialManager : MonoBehaviour
                 Time.timeScale = 1;
                 tutMessages[tutIndex].SetActive(false);
                 tutEnded = true;
-                tutStarted = false;
+                debugTut = false; // TEMPORARY!
+                GameManager.tutRelease = false;
             }
         }
     }
 
     public void TutButton()
     {
+        ToggleHelpScreen();
         tutIndex = 0;
-        waitTime = 1.1f;
         tutEnded = false;
-        tutStarted = true;
+        //tutStarted = true;
+        debugTut = true; // TEMPORARY!
     }
 
-    /* tutorial text page
- 
-    Press and Hold the screen to attract to the nearby planet!
+    public void HelpScreen() => ToggleHelpScreen();
 
-    Keep holding to slingshot around the planet!
+    void ToggleHelpScreen()
+    {
+        screenToggled = !screenToggled;
+        helpScreen.SetActive(screenToggled);
 
-    Let go when you get a good shot!
+        if (screenToggled)
+            Time.timeScale = 0;
+        else
+            Time.timeScale = 1;
 
-     */
+        if (scoreManager.frameBall != 0)
+            tutButton.SetActive(false);
+        else
+            tutButton.SetActive(true);
+    }
 }

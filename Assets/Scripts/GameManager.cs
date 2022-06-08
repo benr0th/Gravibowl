@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,14 +12,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] InfHitPowerUp hitPowerUp;
     [SerializeField] GameOverScreen gameOverScreen;
     [SerializeField] Sprite[] planets;
+    [SerializeField] GameObject loadingScreen;
+    [SerializeField] Slider loadBar;
+    [SerializeField] TextMeshProUGUI loadText;
     UIController ui;
-    
 
     public GameObject planetPrefab;
     public Vector3 spawnPlanetPos, spawnPowerUpPos, shipLastPos, 
                    shipCurrentPos, shipStartPos;
 
-    public bool gameOver, hasRespawned, inHole, canHitAgain, exitOrbit,
+    public bool gameOver, hasRespawned, inHole, canHitAgain, exitOrbit, tutRelease,
                 coinAdClicked, continueAdClicked, superLaunchActive, isOrbiting,
                 isPaused, slowMo, grabbedPowerUp, doEquipOnBuy, lockedOn, canStopTouching;
 
@@ -27,7 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float yMin, yMax, maxPSpeed;
     bool upDiff, spawnPowerUp, switchSide;
     float grabbedPowerUpTime = 4f;
-    int powerUpRoll;
+    int powerUpRoll, timesPlayed;
     
 
     //public bool IsPaused
@@ -46,6 +49,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         ui = GameObject.Find("UI").GetComponent<UIController>();
+        timesPlayed = PlayerPrefs.GetInt("TimesPlayed");
     }
 
     private void Start()
@@ -154,12 +158,12 @@ public class GameManager : MonoBehaviour
         if (coinFlip == 0)
         {
             spawnPlanetPos.x = -1.15f;
-            Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
+            Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
         }
         else
         {
             spawnPlanetPos.x = 1.15f;
-            Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
+            Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
         }
     }
 
@@ -216,7 +220,7 @@ public class GameManager : MonoBehaviour
     public void Retry()
     {
         Time.timeScale = 1;
-        SceneManager.LoadSceneAsync("Game");
+        StartCoroutine(LoadScene("Game"));
     }
 
     public void ResetScore()
@@ -233,11 +237,10 @@ public class GameManager : MonoBehaviour
         gameOverScreen.Setup();
     }
 
-    //IEnumerator GameOverTrigger()
-    //{
-    //    yield return new WaitUntil(() => ship.stoppedMoving > 100);
-    //    GameOver();
-    //}
+    public void Shop()
+    {
+        SceneManager.LoadSceneAsync("Shop");
+    }
 
     public void Quit()
     {
@@ -245,5 +248,20 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadSceneAsync("Menu");
     }
 
+    IEnumerator LoadScene(string sceneName)
+    {
+        timesPlayed += PlayerPrefs.GetInt("TimesPlayed");
+        PlayerPrefs.SetInt("TimesPlayed", timesPlayed);
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+        loadingScreen.SetActive(true);
 
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / .9f);
+            loadBar.value = progress;
+            float progressText = progress * 100f;
+            loadText.text = progressText.ToString("F0") + "%";
+            yield return null;
+        }
+    }
 }
