@@ -8,7 +8,7 @@ using DG.Tweening;
 public class ScoreDisplay : MonoBehaviour
 {
     [SerializeField] ScoreManager scoreManager;
-    [SerializeField] GameObject[] scoreBoard;
+    [SerializeField] public GameObject[] scoreBoard;
     [SerializeField] public Button[] scoreMoveButton;
     [SerializeField] Sprite upButton, downButton;
     [SerializeField] TutorialManager tutorialManager;

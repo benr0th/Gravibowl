@@ -23,8 +23,15 @@ public class CPUPlayer : MonoBehaviour
             {
                 ship.isTouching = true;
                 ship.stoppedTouching = false;
+                ship.thrustPrefab.SetActive(true);
+                ship.thrustAudio.enabled = true;
             }
-            
+            else
+            {
+                ship.thrustPrefab.SetActive(false);
+                ship.thrustAudio.enabled = false;
+            }
+
             //else
             //    StartCoroutine(LetGoSecond());
         }
@@ -32,7 +39,7 @@ public class CPUPlayer : MonoBehaviour
 
     public IEnumerator LetGoFirst()
     {
-        yield return new WaitForSeconds(Random.Range(1.03f, 1.056f));
+        yield return new WaitForSeconds(Random.Range(1.17f, 1.22f));
         ship.isTouching = false;
         ship.stoppedTouching = true;
         hasLetGo = true;   

@@ -31,7 +31,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Update()
     {
-        if ((PlayerPrefs.GetInt("TimesPlayed") == 1 | tutStarted | debugTut) & !tutEnded)
+        if ((PlayerPrefs.GetInt("TimesPlayed") == 1 | tutStarted) & !tutEnded)
             Tutorial();
 
         if ((PlayerPrefs.GetInt("CPU") == 1 & scoreManager.switchedPlayer) 
@@ -74,7 +74,6 @@ public class TutorialManager : MonoBehaviour
                 Time.timeScale = 1;
                 tutMessages[tutIndex].SetActive(false);
                 tutEnded = true;
-                debugTut = false; // TEMPORARY!
                 GameManager.tutRelease = false;
             }
         }
@@ -85,8 +84,7 @@ public class TutorialManager : MonoBehaviour
         ToggleHelpScreen();
         tutIndex = 0;
         tutEnded = false;
-        //tutStarted = true;
-        debugTut = true; // TEMPORARY!
+        tutStarted = true;
     }
 
     public void HelpScreen() => ToggleHelpScreen();

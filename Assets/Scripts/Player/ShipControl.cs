@@ -14,9 +14,9 @@ public class ShipControl : MonoBehaviour
     [SerializeField] MagnetGauge magnetGauge;
     [SerializeField] float power, maxDrag, moveSpeed;
     [SerializeField] ScoreManager scoreManager;
-    [SerializeField] GameObject thrustPrefab;
+    [SerializeField] public GameObject thrustPrefab;
+    public AudioSource thrustAudio;
     CPUPlayer cpu;
-    AudioSource thrustAudio;
     GameManager GameManager;
     //public ParticleSystem hitEffect = null;
 
@@ -72,7 +72,7 @@ public class ShipControl : MonoBehaviour
             */
             if (orbitVel)
                 //    //rb.velocity = transform.up.normalized * 13.0058f;
-                rb.velocity = transform.up.normalized * 7f;
+                rb.velocity = transform.up.normalized * 6f;
 
         }
         else

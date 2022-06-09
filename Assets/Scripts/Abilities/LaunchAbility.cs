@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[CreateAssetMenu]
+[CreateAssetMenu(fileName = "Ability_", menuName = "Scriptable/Abilities")]
 public class LaunchAbility : Ability
 {
     GameManager GameManager;

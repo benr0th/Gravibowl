@@ -1,0 +1,45 @@
+
+ ____   ____               __      
+/ ___| |  _ \  _ __  ___  / _| ___ 
+\___ \ | |_) || '__|/ _ \| |_ / __|
+ ___) ||  __/ | |  |  __/|  _|\__ \
+|____/ |_|    |_|   \___||_|  |___/
+                                                  
+
+The most simple and intuitive script for securly storing your player preferences!
+
+
+
+            _                  
+ ___   ___ | |_   _   _  _ __  
+/ __| / _ \| __| | | | || '_ \ 
+\__ \|  __/| |_  | |_| || |_) |
+|___/ \___| \__|  \__,_|| .__/ 
+                        |_|    
+
+- Import the SPref package to your project
+- Use SPrefs anywhere in your scripts!
+
+For more security, change the ENCRYPTION_KEY to a different hash (see Cryptor class)
+
+If you want to migrate from PlayerPrefs to SPrefs, DON'T DO a global find/replace! Doing so will break SPrefs, since it depends on PlayerPrefs!
+You can however do a global find/replace BEFORE importing the SPrefs asset. Or you can do a manual find/replace and skip the SPrefs class.
+
+
+                                     _            
+  ___ __  __ __ _  _ __ ___   _ __  | |  ___  ___ 
+ / _ \\ \/ // _` || '_ ` _ \ | '_ \ | | / _ \/ __|
+|  __/ >  <| (_| || | | | | || |_) || ||  __/\__ \
+ \___|/_/\_\\__,_||_| |_| |_|| .__/ |_| \___||___/
+                             |_|                  
+
+More examples can be found in the "ExampleUsage" and "TestClass" files.
+
+<code>
+ if (SPrefs.HasKey("PlayerProgress"))
+ {
+    playerProgress = SPrefs.GetInt("PlayerProgress");
+ }
+
+ SPrefs.SetInt("PlayerProgress", 3);
+</code>

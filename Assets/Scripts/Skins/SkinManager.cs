@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SkinManager", menuName = "Skin Manager")]
+[CreateAssetMenu(fileName = "SkinManager", menuName = "Scriptable/Skin Manager")]
 public class SkinManager : ScriptableObject
 {
     [SerializeField] public Skin[] skins;

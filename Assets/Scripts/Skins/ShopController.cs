@@ -10,6 +10,18 @@ public class ShopController : MonoBehaviour
     [SerializeField] Image selectedSkin;
     [SerializeField] TextMeshProUGUI coinsText;
     [SerializeField] SkinManager skinManager;
+    [SerializeField] Button menu;
+    AudioManager audioManager;
+
+    private void Awake()
+    {
+        audioManager = FindObjectOfType<AudioManager>();   
+    }
+
+    private void Start()
+    {
+        audioManager.AudioOnPress(menu, 0);
+    }
 
     void Update()
     {

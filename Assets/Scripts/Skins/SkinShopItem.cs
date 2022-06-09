@@ -10,18 +10,28 @@ public class SkinShopItem : MonoBehaviour
     [SerializeField] int skinIndex;
     [SerializeField] Button buyButton;
     [SerializeField] TextMeshProUGUI buyButtonText;
-    int coins;
     Skin skin;
+    AudioManager audioManager;
+    int coins;
+
+    private void Awake()
+    {
+        audioManager = FindObjectOfType<AudioManager>();
+    }
 
     void Start()
     {
         skin = skinManager.skins[skinIndex];
         GetComponent<Image>().sprite = skin.sprite;
+        skinManager.Unlock(0); // Default skin, always unlocked
 
         if (skinManager.IsUnlocked(skinIndex))
             buyButtonText.text = "Equip";
         else
+        {
             buyButtonText.text = skin.cost.ToString();
+            audioManager.AudioOnPress(buyButton, 9);
+        }
     }
 
     public void OnBuyButtonPressed()
@@ -39,6 +49,7 @@ public class SkinShopItem : MonoBehaviour
                 PlayerPrefs.SetInt("Coins", coins - skin.cost);
                 skinManager.Unlock(skinIndex);
                 buyButtonText.text = "Equip";
+                buyButton.onClick.RemoveListener(() => audioManager.PlaySound(9));
                 if (PlayerPrefs.GetInt("EquipOnBuy") == 1)
                     skinManager.SelectSkin(skinIndex);
             }

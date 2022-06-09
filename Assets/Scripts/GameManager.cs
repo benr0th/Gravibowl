@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject loadingScreen;
     [SerializeField] Slider loadBar;
     [SerializeField] TextMeshProUGUI loadText;
+    [SerializeField] Button help, tutStart, pause, retryPause, quitPause, retryOver, quitOver; 
+    AudioManager audioManager;
     UIController ui;
 
     public GameObject planetPrefab;
@@ -30,7 +32,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float yMin, yMax, maxPSpeed;
     bool upDiff, spawnPowerUp, switchSide;
     float grabbedPowerUpTime = 4f;
-    int powerUpRoll, timesPlayed;
+    int powerUpRoll;
     
 
     //public bool IsPaused
@@ -49,7 +51,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         ui = GameObject.Find("UI").GetComponent<UIController>();
-        timesPlayed = PlayerPrefs.GetInt("TimesPlayed");
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     private void Start()
@@ -62,6 +64,14 @@ public class GameManager : MonoBehaviour
         else
             AudioListener.volume = 1;
         InitPlanet();
+        audioManager.AudioOnPress(pause, 5);
+        audioManager.AudioOnPress(retryPause, 0);
+        audioManager.AudioOnPress(quitPause, 6);
+        audioManager.AudioOnPress(retryOver, 1);
+        audioManager.AudioOnPress(quitOver, 6);
+        audioManager.AudioOnPress(help, 3);
+        audioManager.AudioOnPress(tutStart, 0);
+
     }
 
     private void Update()
@@ -220,7 +230,7 @@ public class GameManager : MonoBehaviour
     public void Retry()
     {
         Time.timeScale = 1;
-        StartCoroutine(LoadScene("Game"));
+        SceneManager.LoadSceneAsync("Game");
     }
 
     public void ResetScore()
@@ -246,22 +256,5 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadSceneAsync("Menu");
-    }
-
-    IEnumerator LoadScene(string sceneName)
-    {
-        timesPlayed += PlayerPrefs.GetInt("TimesPlayed");
-        PlayerPrefs.SetInt("TimesPlayed", timesPlayed);
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        loadingScreen.SetActive(true);
-
-        while (!operation.isDone)
-        {
-            float progress = Mathf.Clamp01(operation.progress / .9f);
-            loadBar.value = progress;
-            float progressText = progress * 100f;
-            loadText.text = progressText.ToString("F0") + "%";
-            yield return null;
-        }
     }
 }

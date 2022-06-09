@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameOverScreen : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class GameOverScreen : MonoBehaviour
     [SerializeField] UIController ui;
     [SerializeField] GameObject floatingCoinsPrefab;
     [SerializeField] ScoreManager scoreManager;
+    [SerializeField] ScoreDisplay scoreDisplay;
     AudioSource coinSound;
     public int coinsGained;
 
@@ -24,7 +26,8 @@ public class GameOverScreen : MonoBehaviour
         //ui.abilityButton.enabled = false;
         for (int i = 0; i < scoreManager.pins.Length; i++)
             scoreManager.pins[i].SetActive(false);
-        
+        if (scoreManager.twoPlayer)
+            TwoPlayerEndScreen();
         /*
         if (scoreManager.playerClass[scoreManager.player].pinScore > PlayerPrefs.GetInt("HighScore", 0))
         {
@@ -54,8 +57,24 @@ public class GameOverScreen : MonoBehaviour
         coinSound.Play();
         ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
         GameObject prefab = Instantiate(floatingCoinsPrefab,
-            new Vector3(transform.position.x + 0.5f, transform.position.y + 0.3f), Quaternion.identity);
+            new Vector3(ui.coinsTextGameOver.transform.position.x + 0.8f,
+            ui.coinsTextGameOver.transform.position.y - 1f), Quaternion.identity);
         prefab.GetComponentInChildren<TMP_Text>().text = "+" + coinsGained.ToString();
         Destroy(prefab, 1f);
+    }
+
+    void TwoPlayerEndScreen()
+    {
+        // Displays both scoreboards for two player mode
+        for (int i = 0; i < scoreDisplay.scoreBoard.Length; i++)
+        {
+            scoreDisplay.scoreBoard[i].transform.localScale = new Vector3(0.8f, 0.8f);
+            scoreDisplay.scoreBoard[i].GetComponent<Button>().enabled = false;
+            scoreDisplay.scoreMoveButton[i].gameObject.SetActive(false);
+        }
+        scoreDisplay.scoreBoard[0].GetComponent<CanvasGroup>().alpha = 1;
+        scoreDisplay.scoreBoard[0].transform.position = new Vector3(0, 1.04f);
+        scoreDisplay.scoreBoard[1].transform.position = new Vector3(0, -0.97f);
+        
     }
 }

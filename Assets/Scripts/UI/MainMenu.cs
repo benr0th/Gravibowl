@@ -12,7 +12,24 @@ public class MainMenu : MonoBehaviour
     [SerializeField] GameObject loadingScreen;
     [SerializeField] Slider loadBar;
     [SerializeField] TextMeshProUGUI loadText;
+    AudioManager audioManager;
     int timesPlayed = 1;
+
+    private void Awake()
+    {
+        audioManager = FindObjectOfType<AudioManager>();
+    }
+
+    private void Start()
+    {
+        audioManager.AudioOnPress(singlePlayer, 1);
+        audioManager.AudioOnPress(twoPlayer, 1);
+        audioManager.AudioOnPress(vsCPU, 1);
+        audioManager.AudioOnPress(playOptions, 0);
+        audioManager.AudioOnPress(backButton, 0);
+        audioManager.AudioOnPress(shop, 0);
+        audioManager.AudioOnPress(settings, 0);
+    }
 
     public void SkinShop() => SceneManager.LoadSceneAsync("Shop");
     public void SettingsMenu() => SceneManager.LoadSceneAsync("Settings");
