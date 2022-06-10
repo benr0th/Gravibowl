@@ -31,22 +31,30 @@ public class PinManager : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.collider.CompareTag("Ship") & !scoreManager.soundSinglePlayed)
-        {
-            scoreManager.singlePinHit.Play();
-            scoreManager.soundSinglePlayed = true;
-        }
         if ((other.collider.CompareTag("Ship") | other.collider.CompareTag("Pin"))
             & !pinHit)
         {
             pinHit = true;
             scoreManager.pinsHit++;
+            Mathf.Clamp(scoreManager.pinsHit, 0, 10);
+            scoreManager.pinsHitThisBowl++;
 
-            if (scoreManager.pinsHit > 1 & !scoreManager.soundMultiPlayed)
-            {
-                scoreManager.multiPinHit.Play();
-                scoreManager.soundMultiPlayed = true;
-            }
+            StartCoroutine(HitSound());
+        }
+    }
+
+    IEnumerator HitSound()
+    {
+        yield return new WaitForSeconds(0.075f);
+        if (scoreManager.pinsHitThisBowl > 1 & !scoreManager.soundMultiPlayed)
+        {
+            scoreManager.multiPinHit.Play();
+            scoreManager.soundMultiPlayed = true;
+        }
+        else if (scoreManager.pinsHitThisBowl == 1 & !scoreManager.soundSinglePlayed)
+        {
+            scoreManager.singlePinHit.Play();
+            scoreManager.soundSinglePlayed = true;
         }
     }
 }

@@ -192,7 +192,7 @@ private void OnTriggerEnter2D(Collider2D other)
     {
         if (GameManager.superLaunchActive)
         {
-            if (PlayerPrefs.GetInt("NoScreenShake") == 0)
+            if (SPrefs.GetInt("NoScreenShake") == 0)
                 StartCoroutine(cam.GetComponent<ScreenShake>().Shaking());
             StartCoroutine(LaunchAudio());
         }

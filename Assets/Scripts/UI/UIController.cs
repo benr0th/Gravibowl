@@ -26,9 +26,9 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-        highScore.text = "High Score\n" + PlayerPrefs.GetInt("HighScore", 0).ToString();
-        coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
-        coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        highScore.text = "High Score\n" + SPrefs.GetInt("HighScore", 0).ToString();
+        coinsText.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins", 0).ToString();
+        coinsTextGameOver.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins", 0).ToString();
     }
 
     private void Update()

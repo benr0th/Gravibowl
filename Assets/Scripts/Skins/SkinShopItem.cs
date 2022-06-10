@@ -28,34 +28,35 @@ public class SkinShopItem : MonoBehaviour
         if (skinManager.IsUnlocked(skinIndex))
             buyButtonText.text = "Equip";
         else
-        {
             buyButtonText.text = skin.cost.ToString();
-            audioManager.AudioOnPress(buyButton, 9);
-        }
     }
 
     public void OnBuyButtonPressed()
     {
-        coins = PlayerPrefs.GetInt("Coins", 0);
+        coins = SPrefs.GetInt("Coins", 0);
 
         // Equip skin if unlocked
         if (skinManager.IsUnlocked(skinIndex))
+        {
             skinManager.SelectSkin(skinIndex);
+            audioManager.PlaySound(0);
+        }
         else
         {
             // Unlock skin
             if (coins >= skin.cost && !skinManager.IsUnlocked(skinIndex))
             {
-                PlayerPrefs.SetInt("Coins", coins - skin.cost);
+                SPrefs.SetInt("Coins", coins - skin.cost);
                 skinManager.Unlock(skinIndex);
                 buyButtonText.text = "Equip";
-                buyButton.onClick.RemoveListener(() => audioManager.PlaySound(9));
-                if (PlayerPrefs.GetInt("EquipOnBuy") == 1)
+                audioManager.PlaySound(9);
+                if (SPrefs.GetInt("EquipOnBuy") == 1)
                     skinManager.SelectSkin(skinIndex);
             }
             else
             {
                 // TODO - Add actual popup message
+                audioManager.PlaySound(4);
                 Debug.Log("Not enough coins");
             }
         }

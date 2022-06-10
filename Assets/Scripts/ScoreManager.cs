@@ -18,7 +18,7 @@ public class ScoreManager : MonoBehaviour
     public Dictionary<int, int[]>[] gameScore = new Dictionary<int, int[]>[2];
     public Player[] playerClass = new Player[2];
     Vector3[] originalPinPos = new Vector3[10];
-    public int pinScore, currentFrame, frameBall, frameScore, pinsHit,
+    public int pinScore, currentFrame, frameBall, frameScore, pinsHit, pinsHitThisBowl,
         frameBall1Score, frameBall2Score, frameBall3Score, player;
     public bool finalFrame, switchedPlayer, twoPlayer, hasBowled, fanfareActive, 
         soundSinglePlayed, soundMultiPlayed;
@@ -57,9 +57,9 @@ public class ScoreManager : MonoBehaviour
         playerClass[0] = new Player(0);
         playerClass[1] = new Player(1);
         // Check if playing two player mode
-        twoPlayer = PlayerPrefs.GetInt("TwoPlayer") == 1;
+        twoPlayer = SPrefs.GetInt("TwoPlayer") == 1;
         // Check for left-handed mode
-        if (PlayerPrefs.GetInt("LeftHandOn") == 1)
+        if (SPrefs.GetInt("LeftHandOn") == 1)
             for (int i = 0; i < scoreDisplay.scoreMoveButton.Length; i++)
                 scoreDisplay.scoreMoveButton[i].transform.position =
                     new Vector3(-scoreDisplay.scoreMoveButton[i].transform.position.x,
@@ -478,7 +478,7 @@ public class ScoreManager : MonoBehaviour
                 pinsHit = 0;
                 if (playerClass[player].actualStrikes <= 3)
                 {
-                    strikeFanfareText.text = $"Strike!";
+                    strikeFanfareText.text = "Strike!";
                     FanfareAnim(playerClass[player].actualStrikes - 1);
                 }
                 if (playerClass[player].actualStrikes > 3)
@@ -499,18 +499,17 @@ public class ScoreManager : MonoBehaviour
         fanfareSound.Play();
         fanfareActive = true;
         s.append(LeanTween.scale(fanfare[index], new Vector3(1, 1), 0.5f).setEaseOutQuad());
-        s.append(1.8f);
+        s.append(1.5f);
         s.append(LeanTween.scale(fanfare[index], new Vector3(0, 0), 0.5f).setEaseOutQuad()
-            .setOnComplete(DeactivateFanfare));
+            .setOnComplete(() => fanfareActive = false));
     }
-
-    void DeactivateFanfare() => fanfareActive = false;
 
     public IEnumerator LaneReset()
     {
         yield return new WaitForSeconds(1.7f);
         // Bunch of paramaters to reset
         GameManager.checkpointHits = 0;
+        pinsHitThisBowl = 0;
         soundSinglePlayed = false;
         soundMultiPlayed = false;
         GameManager.tutRelease = false;
@@ -634,7 +633,6 @@ public class ScoreManager : MonoBehaviour
         tutorialManager.helpButton.enabled = false;
         yield return new WaitForSeconds(3.5f);
         PinReset();
-        
         SwitchPlayer();
         frameBall = 0;
         frameBall1Score = 0;
@@ -644,7 +642,7 @@ public class ScoreManager : MonoBehaviour
 
     void CPUTurn()
     {
-        if (PlayerPrefs.GetInt("CPU") == 1 & switchedPlayer)
+        if (SPrefs.GetInt("CPU") == 1 & switchedPlayer)
         {
             cpu.hasLetGo = false;
             for (int i = 0; i < pins.Length; i++)
@@ -663,12 +661,5 @@ public class ScoreManager : MonoBehaviour
     {
         yield return new WaitUntil(() => !fanfareActive);
         GameManager.GameOver();
-    }
-
-    public void DebugStrike()
-    {
-        for (int i = 0; i < pins.Length; i++)
-            pins[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 20), ForceMode2D.Impulse);
-        ship.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 20), ForceMode2D.Impulse);
     }
 }

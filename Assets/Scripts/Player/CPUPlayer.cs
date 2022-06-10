@@ -18,7 +18,6 @@ public class CPUPlayer : MonoBehaviour
     {
         if (scoreManager.switchedPlayer)
         {
-            
             if (!hasLetGo)
             {
                 ship.isTouching = true;
@@ -31,14 +30,12 @@ public class CPUPlayer : MonoBehaviour
                 ship.thrustPrefab.SetActive(false);
                 ship.thrustAudio.enabled = false;
             }
-
-            //else
-            //    StartCoroutine(LetGoSecond());
         }
     }
 
     public IEnumerator LetGoFirst()
     {
+        //yield return new WaitUntil(() => ship.enabled = true);
         yield return new WaitForSeconds(Random.Range(1.17f, 1.22f));
         ship.isTouching = false;
         ship.stoppedTouching = true;
@@ -47,7 +44,17 @@ public class CPUPlayer : MonoBehaviour
 
     public IEnumerator LetGoSecond()
     {
+        //yield return new WaitUntil(() => ship.enabled = true);
         yield return new WaitForSeconds(0.5f);
         ship.GetComponentInChildren<BoxCollider2D>().enabled = true;
     }
+
+    //IEnumerator CPUTouch()
+    //{
+    //    //yield return new WaitUntil(() => ship.enabled = true);
+    //    ship.isTouching = true;
+    //    ship.stoppedTouching = false;
+    //    ship.thrustPrefab.SetActive(true);
+    //    ship.thrustAudio.enabled = true;
+    //}
 }

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class AudioManager : MonoBehaviour
 {
     public AudioSource[] audioSources;
+
     private void Awake()
     {
         AudioManager[] objects = FindObjectsOfType<AudioManager>();
@@ -14,6 +15,14 @@ public class AudioManager : MonoBehaviour
             Destroy(objects[1].gameObject);
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Update()
+    {
+        if (SPrefs.GetInt("Mute") == 1)
+            AudioListener.volume = 0;
+        else
+            AudioListener.volume = 1;
     }
 
     public void PlaySound(int index)

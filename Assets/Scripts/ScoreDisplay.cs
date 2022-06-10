@@ -8,10 +8,12 @@ using DG.Tweening;
 public class ScoreDisplay : MonoBehaviour
 {
     [SerializeField] ScoreManager scoreManager;
-    [SerializeField] public GameObject[] scoreBoard;
-    [SerializeField] public Button[] scoreMoveButton;
     [SerializeField] Sprite upButton, downButton;
     [SerializeField] TutorialManager tutorialManager;
+    [SerializeField] ShipControl ship;
+    AudioManager audioManager;
+    public GameObject[] scoreBoard;
+    public Button[] scoreMoveButton;
     public FrameTextArray[] frameArray;
     public TextMeshProUGUI[] currentPlayerText;
     public bool moved, flipped;
@@ -22,6 +24,11 @@ public class ScoreDisplay : MonoBehaviour
     public class FrameTextArray
     {
         public GameObject[] frameText;
+    }
+
+    private void Awake()
+    {
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     public void ScoreboardUpdate()
@@ -130,7 +137,7 @@ public class ScoreDisplay : MonoBehaviour
     {
         // Scoreboard goes up, then down after small delay. Logic in place for final frame
         ScoreboardUp();
-        yield return new WaitForSeconds(2.3f);
+        yield return new WaitForSeconds(2f);
         if (scoreManager.finalFrame & scoreManager.frameBall >= 2)
         {
             if (scoreManager.frameBall == 2)
@@ -165,15 +172,19 @@ public class ScoreDisplay : MonoBehaviour
     {
         if (!moved)
             moved = !moved;
-        //scoreBoard[scoreManager.player].transform.DOMoveY(-0.2f, 0.7f);
         LeanTween.moveY(scoreBoard[scoreManager.player], -0.2f, 0.5f).setEaseOutQuad();
         scoreMoveButton[scoreManager.player].GetComponent<Image>().sprite = downButton;
+
+        if (SPrefs.GetInt("CPU") == 1 & scoreManager.switchedPlayer)
+            return;
+        else
+            return;
+
     }
     void ScoreboardDown()
     {
         if (moved)
             moved = !moved;
-        //scoreBoard[scoreManager.player].transform.DOMoveY(-5.7f, 0.7f);
         LeanTween.moveY(scoreBoard[scoreManager.player], -5.7f, 0.5f).setEaseOutQuad();
         scoreMoveButton[scoreManager.player].GetComponent<Image>().sprite = upButton;
     }
@@ -183,9 +194,15 @@ public class ScoreDisplay : MonoBehaviour
         // Button to manually view scoreboard
         moved = !moved;
         if (moved)
+        {
+            audioManager.PlaySound(7);
             ScoreboardUp();
+        }
         if (!moved)
+        {
+            audioManager.PlaySound(8);
             ScoreboardDown();
+        }
     }
 
     public void SwitchScoreboard()

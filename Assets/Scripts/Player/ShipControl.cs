@@ -40,7 +40,7 @@ public class ShipControl : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("CPU") == 1)
+        if (SPrefs.GetInt("CPU") == 1)
             cpu.enabled = true;
     }
 
@@ -110,7 +110,7 @@ public class ShipControl : MonoBehaviour
         if (Input.touchCount > 0 & !GameManager.isPaused 
         & !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
-            if (!scoreManager.switchedPlayer || PlayerPrefs.GetInt("CPU") == 0)
+            if (!scoreManager.switchedPlayer || SPrefs.GetInt("CPU") == 0)
             {
                 touch = Input.GetTouch(0);
                 //stoppedTouching = false;

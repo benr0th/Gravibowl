@@ -13,11 +13,12 @@ public class MainMenu : MonoBehaviour
     [SerializeField] Slider loadBar;
     [SerializeField] TextMeshProUGUI loadText;
     AudioManager audioManager;
-    int timesPlayed = 1;
+    int timesPlayed;
 
     private void Awake()
     {
         audioManager = FindObjectOfType<AudioManager>();
+        timesPlayed = SPrefs.GetInt("TimesPlayed", 0);
     }
 
     private void Start()
@@ -36,22 +37,22 @@ public class MainMenu : MonoBehaviour
 
     public void LoadGame(string sceneName)
     {
-        PlayerPrefs.SetInt("TwoPlayer", 0);
-        PlayerPrefs.SetInt("CPU", 0);
+        SPrefs.SetInt("TwoPlayer", 0);
+        SPrefs.SetInt("CPU", 0);
         StartCoroutine(LoadScene(sceneName));
     }
 
     public void Load2Player()
     {
-        PlayerPrefs.SetInt("TwoPlayer", 1);
-        PlayerPrefs.SetInt("CPU", 0);
+        SPrefs.SetInt("TwoPlayer", 1);
+        SPrefs.SetInt("CPU", 0);
         StartCoroutine(LoadScene("Game"));
     }
 
     public void LoadCPUPlayer()
     {
-        PlayerPrefs.SetInt("TwoPlayer", 1);
-        PlayerPrefs.SetInt("CPU", 1);
+        SPrefs.SetInt("TwoPlayer", 1);
+        SPrefs.SetInt("CPU", 1);
         StartCoroutine(LoadScene("Game"));
     }
 
@@ -79,8 +80,8 @@ public class MainMenu : MonoBehaviour
 
     IEnumerator LoadScene(string sceneName)
     {
-        timesPlayed += PlayerPrefs.GetInt("TimesPlayed");
-        PlayerPrefs.SetInt("TimesPlayed", timesPlayed);
+        timesPlayed++;
+        SPrefs.SetInt("TimesPlayed", timesPlayed);
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
         loadingScreen.SetActive(true);
 

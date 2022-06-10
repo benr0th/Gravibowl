@@ -5,7 +5,7 @@ using System.Text;
 public class Cryptor
 {
     // Please replace this key (32 chars, [a-z, 0-9])
-    private const string ENCRYPTION_KEY = "471f58d72fd273ds47c49f9e481cabe3";
+    private const string ENCRYPTION_KEY = "4ie86wx29cj2z18r6df7s82u5di37iu7";
 
     public static string Hash(string value)
     {

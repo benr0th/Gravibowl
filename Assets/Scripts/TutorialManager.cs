@@ -24,17 +24,17 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("LeftHandOn") == 1)
+        if (SPrefs.GetInt("LeftHandOn") == 1)
             helpButton.transform.position = new Vector3(-helpButton.transform.position.x, 
                 helpButton.transform.position.y);
     }
 
     private void Update()
     {
-        if ((PlayerPrefs.GetInt("TimesPlayed") == 1 | tutStarted) & !tutEnded)
+        if ((SPrefs.GetInt("TimesPlayed") == 1 | tutStarted) & !tutEnded)
             Tutorial();
 
-        if ((PlayerPrefs.GetInt("CPU") == 1 & scoreManager.switchedPlayer) 
+        if ((SPrefs.GetInt("CPU") == 1 & scoreManager.switchedPlayer) 
             | GameManager.gameOver | GameManager.isPaused | ship.notAtStart)
             helpButton.enabled = false;
         else
@@ -43,6 +43,7 @@ public class TutorialManager : MonoBehaviour
 
     void Tutorial()
     {
+        tutStarted = true;
         for (int i = 0; i < tutMessages.Length; i++)
         {
             if (i == tutIndex)

@@ -29,9 +29,9 @@ public class GameOverScreen : MonoBehaviour
         if (scoreManager.twoPlayer)
             TwoPlayerEndScreen();
         /*
-        if (scoreManager.playerClass[scoreManager.player].pinScore > PlayerPrefs.GetInt("HighScore", 0))
+        if (scoreManager.playerClass[scoreManager.player].pinScore > SPrefs.GetInt("HighScore", 0))
         {
-            PlayerPrefs.SetInt("HighScore", scoreManager.playerClass[scoreManager.player].pinScore);
+            SPrefs.SetInt("HighScore", scoreManager.playerClass[scoreManager.player].pinScore);
             ui.highScore.text = "High Score\n" + scoreManager.playerClass[scoreManager.player].pinScore.ToString();
         }
         */
@@ -49,13 +49,13 @@ public class GameOverScreen : MonoBehaviour
             GameManager.coins += coinsGained;
         }
 
-        PlayerPrefs.SetInt("Coins", GameManager.coins);
+        SPrefs.SetInt("Coins", GameManager.coins);
     }
 
     public void AddCoins()
     {
         coinSound.Play();
-        ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins", 0).ToString();
         GameObject prefab = Instantiate(floatingCoinsPrefab,
             new Vector3(ui.coinsTextGameOver.transform.position.x + 0.8f,
             ui.coinsTextGameOver.transform.position.y - 1f), Quaternion.identity);

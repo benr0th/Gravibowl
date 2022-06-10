@@ -12,10 +12,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] InfHitPowerUp hitPowerUp;
     [SerializeField] GameOverScreen gameOverScreen;
     [SerializeField] Sprite[] planets;
+    [SerializeField] Sprite muteOn, muteOff;
     [SerializeField] GameObject loadingScreen;
     [SerializeField] Slider loadBar;
     [SerializeField] TextMeshProUGUI loadText;
-    [SerializeField] Button help, tutStart, pause, retryPause, quitPause, retryOver, quitOver; 
+    [SerializeField] Button help, tutStart, pause, retryPause, quitPause, retryOver, quitOver, mute; 
     AudioManager audioManager;
     UIController ui;
 
@@ -30,9 +31,9 @@ public class GameManager : MonoBehaviour
     public int distanceTraveled, distanceTraveledLast, coins, checkpointHits;
 
     [SerializeField] float yMin, yMax, maxPSpeed;
-    bool upDiff, spawnPowerUp, switchSide;
+    bool upDiff, spawnPowerUp, switchSide, isMuted;
     float grabbedPowerUpTime = 4f;
-    int powerUpRoll;
+    int powerUpRoll, timesPlayed;
     
 
     //public bool IsPaused
@@ -57,25 +58,34 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         shipStartPos = ship.transform.position;
-        coins = PlayerPrefs.GetInt("Coins", 0);
-        // Check if game is muted
-        if (PlayerPrefs.GetInt("Mute") == 1)
-            AudioListener.volume = 0;
-        else
-            AudioListener.volume = 1;
+        timesPlayed = SPrefs.GetInt("TimesPlayed");
+        coins = SPrefs.GetInt("Coins", 0);
         InitPlanet();
         audioManager.AudioOnPress(pause, 5);
         audioManager.AudioOnPress(retryPause, 0);
         audioManager.AudioOnPress(quitPause, 6);
         audioManager.AudioOnPress(retryOver, 1);
         audioManager.AudioOnPress(quitOver, 6);
-        audioManager.AudioOnPress(help, 3);
+        audioManager.AudioOnPress(help, 5);
         audioManager.AudioOnPress(tutStart, 0);
+        audioManager.AudioOnPress(mute, 0);
 
     }
 
     private void Update()
     {
+        // Check if game is muted
+        if (SPrefs.GetInt("Mute") == 1)
+        {
+            isMuted = true;
+            mute.GetComponent<Image>().sprite = muteOn;
+        }
+        else
+        {
+            isMuted = false;
+            mute.GetComponent<Image>().sprite = muteOff;
+        }
+
         // Power up stuff
         if (grabbedPowerUp & !isPaused)
         {
@@ -213,7 +223,7 @@ public class GameManager : MonoBehaviour
         ship.stoppedMoving = 0;
         ship.transform.position = shipLastPos;
         //StartCoroutine(GameOverTrigger());
-        ui.coinsText.text = "<sprite anim=0,5,12>" + PlayerPrefs.GetInt("Coins", 0).ToString();
+        ui.coinsText.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins", 0).ToString();
         canHitAgain = true;
         hasRespawned = true;
         gameOver = false;
@@ -230,12 +240,14 @@ public class GameManager : MonoBehaviour
     public void Retry()
     {
         Time.timeScale = 1;
+        timesPlayed++;
+        SPrefs.SetInt("TimesPlayed", timesPlayed);
         SceneManager.LoadSceneAsync("Game");
     }
 
     public void ResetScore()
     {
-        PlayerPrefs.DeleteKey("HighScore");
+        SPrefs.DeleteKey("HighScore");
         ui.highScore.text = "High Score\n0";
     }
 
@@ -250,6 +262,14 @@ public class GameManager : MonoBehaviour
     public void Shop()
     {
         SceneManager.LoadSceneAsync("Shop");
+    }
+
+    public void Mute()
+    {
+        if (isMuted)
+            SPrefs.SetInt("Mute", 0);
+        else
+            SPrefs.SetInt("Mute", 1);
     }
 
     public void Quit()

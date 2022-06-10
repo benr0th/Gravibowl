@@ -137,7 +137,7 @@ public class AdsManager : MonoBehaviour
         if (GameManager.coinAdClicked)
         {
             GameManager.coins += GameOverScreen.coinsGained;
-            PlayerPrefs.SetInt("Coins", GameManager.coins);
+            SPrefs.SetInt("Coins", GameManager.coins);
             GameOverScreen.Invoke("AddCoins", 0.5f);
             GameManager.coinAdClicked = false;
             ui.coinAd.gameObject.SetActive(false);
