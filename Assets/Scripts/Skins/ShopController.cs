@@ -25,7 +25,7 @@ public class ShopController : MonoBehaviour
 
     void Update()
     {
-        coinsText.text = "Coins: " + SPrefs.GetInt("Coins");
+        coinsText.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins");
         selectedSkin.sprite = skinManager.GetSelectedSkin().sprite;
     }
 

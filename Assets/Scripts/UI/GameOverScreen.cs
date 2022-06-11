@@ -21,6 +21,7 @@ public class GameOverScreen : MonoBehaviour
     public void Setup()
     {
         ui.pauseGame.gameObject.SetActive(false);
+        ui.muteButton.gameObject.SetActive(false);
         ui.coinsTextGameOver.enabled = true;
         ui.coinsText.gameObject.SetActive(false);
         //ui.abilityButton.enabled = false;

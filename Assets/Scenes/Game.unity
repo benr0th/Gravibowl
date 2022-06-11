@@ -15485,6 +15485,7 @@ MonoBehaviour:
   coinAd: {fileID: 668457375}
   continueAd: {fileID: 914417301}
   abilityButton: {fileID: 766883033}
+  muteButton: {fileID: 1878069644}
   magnetGauge: {fileID: 1087386710}
   gameOverScreen: {fileID: 759135429}
   pauseScreen: {fileID: 533786877}

@@ -69,7 +69,6 @@ public class GameManager : MonoBehaviour
         audioManager.AudioOnPress(help, 5);
         audioManager.AudioOnPress(tutStart, 0);
         audioManager.AudioOnPress(mute, 0);
-
     }
 
     private void Update()

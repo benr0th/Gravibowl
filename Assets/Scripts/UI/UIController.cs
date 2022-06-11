@@ -7,12 +7,12 @@ using TMPro;
 public class UIController : MonoBehaviour
 {
     GameManager GameManager;
-    public TMPro.TextMeshProUGUI distanceText, highScore, gameOverText,
+    public TextMeshProUGUI distanceText, highScore, gameOverText,
                                  powerUpText, coinsText, coinsTextGameOver;
 
     public Button retryButton, resetScore, quitGame,
                   pauseGame, coinAd, continueAd,
-                  abilityButton;
+                  abilityButton, muteButton;
 
     public Slider magnetGauge;
 
@@ -49,7 +49,6 @@ public class UIController : MonoBehaviour
     
     void SceneSetup()
     {
-        pauseScreen.gameObject.SetActive(false);
         powerUpText.enabled = false;
         coinsTextGameOver.enabled = false;
     }
