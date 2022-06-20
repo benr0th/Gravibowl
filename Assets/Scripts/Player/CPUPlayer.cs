@@ -14,7 +14,7 @@ public class CPUPlayer : MonoBehaviour
         
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (scoreManager.switchedPlayer)
         {

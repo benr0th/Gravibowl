@@ -120,29 +120,6 @@ public class GameManager : MonoBehaviour
                 yMin += 0.2f;
                 yMax += 0.2f;
             } else if (distanceTraveled % 100 != 0 & !upDiff) { upDiff = true; }
-
-            #region Spawn planets progressively
-            /*
-            // Spawns planets
-            if (shipCurrentPos > spawnPlanetPos.y - 4f)
-            {
-                switchSide = !switchSide;
-                var p = Random.Range(0, 14);
-                planetPrefab.GetComponent<SpriteRenderer>().sprite = planets[p];
-                //spawnPlanetPos.y += Random.Range(yMin, yMax);
-                if (switchSide)
-                {
-                    spawnPlanetPos.x = Random.Range(1f, 1.5f);
-                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.identity);
-                }
-                else
-                {
-                    spawnPlanetPos.x = Random.Range(-1.5f, -1f);
-                    Instantiate(planetPrefab, spawnPlanetPos, Quaternion.Euler(0, 180, 0));
-                }   
-            }
-            */
-            #endregion
             #region Spawn Power up code
             // Spawn power up
             /*

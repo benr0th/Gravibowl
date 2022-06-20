@@ -6020,7 +6020,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 248981027}
         m_TargetAssemblyTypeName: AdsManager, Assembly-CSharp
-        m_MethodName: ShowAdCoin
+        m_MethodName: ShowAd
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -84,29 +84,6 @@ public class ShipControl : MonoBehaviour
     private void Update()
     {
         notAtStart = transform.position.y != GameManager.shipStartPos.y;
-        #region legacy logic
-        // Logic for moving ball when not moving
-        /*
-        if (rb.velocity.magnitude <= 0.25f && !GameManager.inHole)
-        {
-            notMoving = true;
-            rb.velocity = Vector2.zero;
-            if (notAtStart && !GameManager.canHitAgain)
-                stoppedMoving += Time.deltaTime;
-        }
-        else { notMoving = false; stoppedMoving = 0; }
-        */
-
-        // Prevents moving ball left and right infinitely
-        /*
-        if (rb.velocity.y <= 0.5f)
-        {
-            notMovingUp = true;
-            stoppedMoving += Time.deltaTime;
-            //rb.velocity = Vector2.zero;
-        } else { stoppedMoving = 0f; notMovingUp = false; }
-        */
-        #endregion
         if (Input.touchCount > 0 & !GameManager.isPaused 
         & !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
@@ -118,7 +95,8 @@ public class ShipControl : MonoBehaviour
                 if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)
                     & !stoppedTouching & !GameManager.gameOver & !GameManager.canHitAgain)
                 {
-                    if (touch.phase == TouchPhase.Moved | touch.phase == TouchPhase.Stationary)
+                    if ((touch.phase == TouchPhase.Moved | touch.phase == TouchPhase.Stationary)
+                        | Input.GetMouseButton(0))
                     {
                         isTouching = true;
                         timePressed += Time.deltaTime;
@@ -132,7 +110,7 @@ public class ShipControl : MonoBehaviour
                     }
                 }
 
-                if (touch.phase == TouchPhase.Ended)
+                if (touch.phase == TouchPhase.Ended | Input.GetMouseButtonUp(0))
                 {
                     if (GameManager.canStopTouching)
                         isTouching = false;
@@ -141,52 +119,6 @@ public class ShipControl : MonoBehaviour
                         stoppedTouching = true;
                 }
             }
-            #region drag&shoot mechanism (legacy)
-            // Only move when ball is not moving, uses voodoo magic, do not touch or it will break
-            /*
-            if (notMoving)
-            {
-                if (touch.phase == TouchPhase.Began)
-                {
-                    ready = true;
-                }
-            }
-            else { ready = false; }
-            */
-            // Code for power up logic - GameManager.grabbedPowerUp && inputEnabled == true
-
-            // Drag and shoot
-            /*
-            if (ready && !notAtStart || ready && GameManager.canHitAgain)
-            {
-                if (touch.phase == TouchPhase.Began)
-                {
-                    DragStart();
-                }
-
-                if (touch.phase == TouchPhase.Moved)
-                {
-                    Dragging();
-                }
-
-                if (touch.phase == TouchPhase.Ended)
-                {
-                    DragRelease();
-                }
-            }
-            */
-
-            // Move left and right while moving
-            /*
-            if (!notMovingUp && stoppedMoving < 1f && touch.position.y < Screen.height / 1.2f)
-            {
-                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
-                {
-                    Move();
-                }
-            }
-            */
-            #endregion
         }
     }
 

@@ -85,6 +85,15 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.analytics": {
+      "version": "3.6.12",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.burst": {
       "version": "1.6.5",
       "depth": 2,
@@ -320,14 +329,15 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.mediation": {
-      "version": "file:C:/Users/vgame/Downloads/d45086feba8425cdca66e28c960ac2d63380cca3.tgz",
+      "version": "0.5.0-preview.5",
       "depth": 0,
-      "source": "local-tarball",
+      "source": "registry",
       "dependencies": {
         "com.unity.settings-manager": "1.0.3",
         "com.unity.modules.ui": "1.0.0",
-        "com.unity.services.core": "1.1.0-pre.11"
-      }
+        "com.unity.services.core": "1.4.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.services.qos": {
       "version": "1.0.1",

@@ -56,8 +56,6 @@ public class AdsManager : MonoBehaviour
             ad.OnLoaded += AdLoaded;
             ad.OnFailedLoad += AdFailedLoad;
 
-            ad.OnShowed += AdShown;
-            ad.OnFailedShow += AdFailedShow;
             ad.OnClosed += AdClosed;
             ad.OnClicked += AdClicked;
             ad.OnUserRewarded += UserRewarded;
@@ -66,6 +64,7 @@ public class AdsManager : MonoBehaviour
         MediationService.Instance.ImpressionEventPublisher.OnImpression += ImpressionEvent;
     }
 
+    /* old ad code
     public void ShowAdCoin()
     {
         if (ads[0].AdState == AdState.Loaded)
@@ -77,13 +76,45 @@ public class AdsManager : MonoBehaviour
         if (ads[1].AdState == AdState.Loaded)
             ads[1].Show();
     }
+    */
+
+    public async void ShowAd()
+    {
+        if (ads[0].AdState == AdState.Loaded)
+        {
+            try
+            {
+                RewardedAdShowOptions showOptions = new();
+                showOptions.AutoReload = true;
+                await ads[0].ShowAsync(showOptions);
+                AdShown();
+            }
+            catch (ShowFailedException e)
+            {
+                AdFailedShow(e);
+            }
+        }
+    }
+
 
     void InitializationComplete()
     {
         SetupAd();
         //foreach (var ad in ads)
         //    ad.Load();
-        ads[0].Load();
+        LoadAd();
+    }
+
+    async void LoadAd()
+    {
+        try
+        {
+            await ads[0].LoadAsync();
+        }
+        catch (LoadFailedException)
+        {
+            // We will handle the failure in the OnFailedLoad callback
+        }
     }
 
     void InitializationFailed(Exception e)
@@ -102,18 +133,18 @@ public class AdsManager : MonoBehaviour
         Debug.Log(args.Message);
     }
 
-    void AdShown(object sender, EventArgs args)
+    void AdShown()
     {
         Debug.Log("Ad shown!");
     }
 
     void AdClosed(object sender, EventArgs e)
     {
-        // Pre-load the next ad
-        ad.Load();
+        LoadAd();
         Debug.Log("Ad has closed");
         // Execute logic after an ad has been closed.
     }
+
 
     void AdClicked(object sender, EventArgs e)
     {
@@ -121,9 +152,9 @@ public class AdsManager : MonoBehaviour
         // Execute logic after an ad has been clicked.
     }
 
-    void AdFailedShow(object sender, ShowErrorEventArgs args)
+    void AdFailedShow(ShowFailedException e)
     {
-        Debug.Log(args.Message);
+        Debug.Log(e.Message);
     }
 
     void ImpressionEvent(object sender, ImpressionEventArgs args)
