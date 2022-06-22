@@ -17,6 +17,12 @@ public class TutorialManager : MonoBehaviour
     public bool tutStarted, tutEnded, screenToggled, debugTut;
     public int tutIndex;
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     private void Awake()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -24,14 +30,25 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("LeftHandOn"), out int lefty);
+        if (lefty == 1)
+#else
         if (SPrefs.GetInt("LeftHandOn") == 1)
+#endif
             helpButton.transform.position = new Vector3(-helpButton.transform.position.x, 
                 helpButton.transform.position.y);
     }
 
     private void Update()
     {
-        if ((SPrefs.GetInt("TimesPlayed") == 1 | tutStarted) & !tutEnded)
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("TimesPlayed"), out int timesplayed);
+        if ((timesplayed == 1
+#else
+        if ((SPrefs.GetInt("TimesPlayed") == 1 
+#endif
+            | tutStarted) & !tutEnded)
             Tutorial();
 
         if ((SPrefs.GetInt("CPU") == 1 & scoreManager.switchedPlayer) 
@@ -55,11 +72,17 @@ public class TutorialManager : MonoBehaviour
         
         if (tutIndex == 0)
         {
+#if UNITY_IOS || UNITY_ANDROID
             if ((ship.touch.phase == TouchPhase.Moved | ship.touch.phase == TouchPhase.Stationary) 
                 & !EventSystem.current.IsPointerOverGameObject(ship.touch.fingerId))
+#else
+            if (Input.GetMouseButton(0) &
+                !EventSystem.current.IsPointerOverGameObject())
+#endif
             {
                 tutIndex++;
             }
+
         }
         else if (tutIndex == 1)
         {
@@ -69,8 +92,13 @@ public class TutorialManager : MonoBehaviour
         else if (tutIndex == 2)
         {
             Time.timeScale = 0;
+#if UNITY_IOS || UNITY_ANDROID
             if (ship.touch.phase == TouchPhase.Ended
                 & !EventSystem.current.IsPointerOverGameObject(ship.touch.fingerId))
+#else
+            if (Input.GetMouseButtonUp(0) &
+                !EventSystem.current.IsPointerOverGameObject())
+#endif
             {
                 Time.timeScale = 1;
                 tutMessages[tutIndex].SetActive(false);

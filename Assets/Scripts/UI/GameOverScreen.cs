@@ -9,8 +9,15 @@ public class GameOverScreen : MonoBehaviour
     [SerializeField] GameObject floatingCoinsPrefab;
     [SerializeField] ScoreManager scoreManager;
     [SerializeField] ScoreDisplay scoreDisplay;
+    [SerializeField] Button shop;
     AudioSource coinSound;
     public int coinsGained;
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
 
     private void Awake()
     {
@@ -24,6 +31,12 @@ public class GameOverScreen : MonoBehaviour
         ui.muteButton.gameObject.SetActive(false);
         ui.coinsTextGameOver.enabled = true;
         ui.coinsText.gameObject.SetActive(false);
+
+#if !(UNITY_IOS || UNITY_ANDROID)
+        ui.coinAd.gameObject.SetActive(false);
+        shop.transform.position = new Vector3(0, shop.transform.position.y);
+#endif
+
         //ui.abilityButton.enabled = false;
         for (int i = 0; i < scoreManager.pins.Length; i++)
             scoreManager.pins[i].SetActive(false);
@@ -49,14 +62,22 @@ public class GameOverScreen : MonoBehaviour
             GameManager.distanceTraveledLast = GameManager.distanceTraveled;
             GameManager.coins += coinsGained;
         }
-
+#if UNITY_WEBGL && !UNITY_EDITOR
+        SetData("Coins", GameManager.coins.ToString());
+#else
         SPrefs.SetInt("Coins", GameManager.coins);
+#endif
     }
 
     public void AddCoins()
     {
         coinSound.Play();
-        ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins", 0).ToString();
+        ui.coinsTextGameOver.text = "<sprite anim=0,5,12>" +
+#if UNITY_WEBGL && !UNITY_EDITOR
+           GetData("Coins");
+#else
+            SPrefs.GetInt("Coins", 0).ToString();
+#endif
         GameObject prefab = Instantiate(floatingCoinsPrefab,
             new Vector3(ui.coinsTextGameOver.transform.position.x + 0.8f,
             ui.coinsTextGameOver.transform.position.y - 1f), Quaternion.identity);

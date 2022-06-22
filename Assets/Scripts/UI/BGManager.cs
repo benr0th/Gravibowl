@@ -1,10 +1,17 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BGManager : MonoBehaviour
 {
     [SerializeField] Sprite[] bgs;
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
 
     private void Awake()
     {
@@ -18,7 +25,12 @@ public class BGManager : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("Background"), out int background);
+        var bg = background;
+#else
         var bg = SPrefs.GetInt("Background", 0);
+#endif
         var bgSprite = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         if (bg == 0)
             bgSprite.sprite = bgs[0];

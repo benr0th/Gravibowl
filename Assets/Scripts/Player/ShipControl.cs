@@ -23,11 +23,27 @@ public class ShipControl : MonoBehaviour
     bool notMoving, notMovingUp, launchButtonPressed;
     public float stoppedMoving, magnetSpeed, rotateSpeed, timePressed;
     public bool isTouching, notAtStart, ready, hasTarget, orbitVel, stoppedTouching, inputEnabled = true;
-
+    bool isWebMobile;
     Vector3 difference = Vector3.zero;
     Vector3 draggingPos, dragStartPos;
     public Vector3 targetPos;
     public Touch touch;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern bool IsMobile();
+#endif
+
+    private void CheckIfMobile()
+    {
+        var isMobile = false;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        isMobile = IsMobile();
+#endif
+
+        isWebMobile = isMobile;
+    }
 
     private void Awake()
     {
@@ -72,7 +88,7 @@ public class ShipControl : MonoBehaviour
             */
             if (orbitVel)
                 //    //rb.velocity = transform.up.normalized * 13.0058f;
-                rb.velocity = transform.up.normalized * 6f;
+                rb.velocity = transform.up.normalized * 5f;
 
         }
         else
@@ -84,12 +100,19 @@ public class ShipControl : MonoBehaviour
     private void Update()
     {
         notAtStart = transform.position.y != GameManager.shipStartPos.y;
-        if (Input.touchCount > 0 & !GameManager.isPaused 
-        & !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+        if (
+#if UNITY_IOS || UNITY_ANDROID
+        Input.touchCount > 0 & !EventSystem.current.IsPointerOverGameObject(touch.fingerId) & 
+#else
+            !EventSystem.current.IsPointerOverGameObject() &
+#endif
+            !GameManager.isPaused)
         {
             if (!scoreManager.switchedPlayer || SPrefs.GetInt("CPU") == 0)
             {
+        #if UNITY_IOS || UNITY_ANDROID
                 touch = Input.GetTouch(0);
+        #endif
                 //stoppedTouching = false;
                 // When touching
                 if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId)

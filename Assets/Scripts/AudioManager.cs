@@ -7,6 +7,12 @@ public class AudioManager : MonoBehaviour
 {
     public AudioSource[] audioSources;
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     private void Awake()
     {
         AudioManager[] objects = FindObjectsOfType<AudioManager>();
@@ -19,7 +25,13 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("Mute"), out int muted);
+        if (muted == 1)
+#else
         if (SPrefs.GetInt("Mute") == 1)
+        
+#endif
             AudioListener.volume = 0;
         else
             AudioListener.volume = 1;

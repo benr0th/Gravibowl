@@ -6629,6 +6629,7 @@ MonoBehaviour:
   floatingCoinsPrefab: {fileID: 5466809016378535132, guid: 34e75804b0189124aa73ceef3f8b0aa5, type: 3}
   scoreManager: {fileID: 1335195078}
   scoreDisplay: {fileID: 902618454}
+  shop: {fileID: 2131281542}
   coinsGained: 0
 --- !u!82 &759135432
 AudioSource:
@@ -10949,7 +10950,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press and HOLD to Start!
+  m_text: Press and HOLD anywhere to Start!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a562502c4e83e254795873370221317b, type: 2}
   m_sharedMaterial: {fileID: 8401278728298140409, guid: a562502c4e83e254795873370221317b, type: 2}
@@ -12907,7 +12908,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: cfb3145d83deacb488b173d434569599, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.25
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -13003,7 +13004,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 1006e776e5d295f40b58c6552af358d8, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.25
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -18895,11 +18896,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Press and Hold to attract to the nearby planet!
+  m_text: 'Press and Hold anywhere to attract to the nearby planet!
 
 
-    Keep holding to
-    slingshot around the planet!
+    Keep holding
+    to slingshot around the planet!
 
 
     Let go when you get a good shot!'

@@ -1,0 +1,17 @@
+mergeInto(LibraryManager.library, {
+            aFunctionImplementedInJavaScriptLibraryFile: function(utf8String) {
+                var jsString = UTF8ToString(utf8String);
+            },
+            GetData: function(yourkey) {
+				if (localStorage.getItem(Pointer_stringify(yourkey)) !== null) {
+					var returnStr = localStorage.getItem(Pointer_stringify(yourkey));
+					var bufferSize = lengthBytes UTF8(returnStr) + 1;
+					var buffer = _malloc(bufferSize);
+					stringToUTF8(returnStr, buffer, bufferSize);
+					return buffer;
+				}
+			},
+			SetData: function(yourkey, yourdata) {
+				localStorage.setItem(Pointer_stringify(yourkey), Pointer_stringify(yourdata));
+			}
+});

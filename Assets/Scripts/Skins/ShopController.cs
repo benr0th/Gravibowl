@@ -13,6 +13,12 @@ public class ShopController : MonoBehaviour
     [SerializeField] Button menu;
     AudioManager audioManager;
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     private void Awake()
     {
         audioManager = FindObjectOfType<AudioManager>();   
@@ -25,7 +31,12 @@ public class ShopController : MonoBehaviour
 
     void Update()
     {
-        coinsText.text = "<sprite anim=0,5,12>" + SPrefs.GetInt("Coins");
+        coinsText.text = "<sprite anim=0,5,12>" +
+#if UNITY_WEBGL && !UNITY_EDITOR
+            GetData("Coins");
+#else
+            SPrefs.GetInt("Coins");
+#endif
         selectedSkin.sprite = skinManager.GetSelectedSkin().sprite;
     }
 

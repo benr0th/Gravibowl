@@ -15,10 +15,23 @@ public class MainMenu : MonoBehaviour
     AudioManager audioManager;
     int timesPlayed;
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     private void Awake()
     {
         audioManager = FindObjectOfType<AudioManager>();
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("TimesPlayed"), out int timesplayed);
+        timesPlayed = timesplayed;
+        if (GetData("Coins") == null)
+            SetData("Coins", "0");
+#else
         timesPlayed = SPrefs.GetInt("TimesPlayed", 0);
+#endif
     }
 
     private void Start()
@@ -81,7 +94,11 @@ public class MainMenu : MonoBehaviour
     IEnumerator LoadScene(string sceneName)
     {
         timesPlayed++;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        SetData("TimesPlayed", timesPlayed.ToString());
+#else
         SPrefs.SetInt("TimesPlayed", timesPlayed);
+#endif
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
         loadingScreen.SetActive(true);
 

@@ -14,6 +14,12 @@ public class SkinShopItem : MonoBehaviour
     AudioManager audioManager;
     int coins;
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     private void Awake()
     {
         audioManager = FindObjectOfType<AudioManager>();
@@ -33,7 +39,12 @@ public class SkinShopItem : MonoBehaviour
 
     public void OnBuyButtonPressed()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("Coins"), out int parseCoins);
+        coins = parseCoins;
+#else
         coins = SPrefs.GetInt("Coins", 0);
+#endif
 
         // Equip skin if unlocked
         if (skinManager.IsUnlocked(skinIndex))
@@ -46,11 +57,20 @@ public class SkinShopItem : MonoBehaviour
             // Unlock skin
             if (coins >= skin.cost && !skinManager.IsUnlocked(skinIndex))
             {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                SetData("Coins", (coins - skin.cost).ToString());
+#else
                 SPrefs.SetInt("Coins", coins - skin.cost);
+#endif
                 skinManager.Unlock(skinIndex);
                 buyButtonText.text = "Equip";
                 audioManager.PlaySound(9);
+#if UNITY_WEBGL && !UNITY_EDITOR
+                int.TryParse(GetData("EquipOnBuy"), out int eob);
+                if (eob == 1)
+#else
                 if (SPrefs.GetInt("EquipOnBuy") == 1)
+#endif
                     skinManager.SelectSkin(skinIndex);
             }
             else

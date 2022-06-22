@@ -36,7 +36,7 @@ public class CPUPlayer : MonoBehaviour
     public IEnumerator LetGoFirst()
     {
         //yield return new WaitUntil(() => ship.enabled = true);
-        yield return new WaitForSeconds(Random.Range(1.17f, 1.22f));
+        yield return new WaitForSeconds(Random.Range(1.4f, 1.5f));
         ship.isTouching = false;
         ship.stoppedTouching = true;
         hasLetGo = true;   

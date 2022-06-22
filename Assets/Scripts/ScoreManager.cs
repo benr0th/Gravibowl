@@ -23,6 +23,12 @@ public class ScoreManager : MonoBehaviour
     public bool finalFrame, switchedPlayer, twoPlayer, hasBowled, fanfareActive, 
         soundSinglePlayed, soundMultiPlayed;
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     [System.Serializable]
     public class Player
     {
@@ -59,7 +65,12 @@ public class ScoreManager : MonoBehaviour
         // Check if playing two player mode
         twoPlayer = SPrefs.GetInt("TwoPlayer") == 1;
         // Check for left-handed mode
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("LeftHandOn"), out int lefty);
+        if (lefty == 1)
+#else
         if (SPrefs.GetInt("LeftHandOn") == 1)
+#endif
             for (int i = 0; i < scoreDisplay.scoreMoveButton.Length; i++)
                 scoreDisplay.scoreMoveButton[i].transform.position =
                     new Vector3(-scoreDisplay.scoreMoveButton[i].transform.position.x,

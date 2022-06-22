@@ -20,6 +20,12 @@ public class AdsManager : MonoBehaviour
     string gameId = "4722743";
 #endif
 
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
+
     private void Start()
     {
         InitServices();
@@ -168,7 +174,11 @@ public class AdsManager : MonoBehaviour
         if (GameManager.coinAdClicked)
         {
             GameManager.coins += GameOverScreen.coinsGained;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            SetData("Coins", GameManager.coins.ToString());
+#else
             SPrefs.SetInt("Coins", GameManager.coins);
+#endif
             GameOverScreen.Invoke("AddCoins", 0.5f);
             GameManager.coinAdClicked = false;
             ui.coinAd.gameObject.SetActive(false);

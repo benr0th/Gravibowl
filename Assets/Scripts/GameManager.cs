@@ -34,7 +34,12 @@ public class GameManager : MonoBehaviour
     bool upDiff, spawnPowerUp, switchSide, isMuted;
     float grabbedPowerUpTime = 4f;
     int powerUpRoll, timesPlayed;
-    
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern string GetData(string key);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SetData(string key, string value);
 
     //public bool IsPaused
     //{
@@ -53,13 +58,23 @@ public class GameManager : MonoBehaviour
     {
         ui = GameObject.Find("UI").GetComponent<UIController>();
         audioManager = FindObjectOfType<AudioManager>();
+#if !(UNITY_IOS || UNITY_ANDROID)
+        GetComponent<AdsManager>().enabled = false;
+#endif
     }
 
     private void Start()
     {
         shipStartPos = ship.transform.position;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("TimesPlayed"), out int timesplayed);
+        timesPlayed = timesplayed;
+        int.TryParse(GetData("Coins"), out int parseCoins);
+        coins = parseCoins;
+#else
         timesPlayed = SPrefs.GetInt("TimesPlayed");
         coins = SPrefs.GetInt("Coins", 0);
+#endif
         InitPlanet();
         audioManager.AudioOnPress(pause, 5);
         audioManager.AudioOnPress(retryPause, 0);
@@ -74,7 +89,12 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         // Check if game is muted
+#if UNITY_WEBGL && !UNITY_EDITOR
+        int.TryParse(GetData("Mute"), out int muted);
+        if (muted == 1)
+#else
         if (SPrefs.GetInt("Mute") == 1)
+#endif
         {
             isMuted = true;
             mute.GetComponent<Image>().sprite = muteOn;
@@ -120,7 +140,7 @@ public class GameManager : MonoBehaviour
                 yMin += 0.2f;
                 yMax += 0.2f;
             } else if (distanceTraveled % 100 != 0 & !upDiff) { upDiff = true; }
-            #region Spawn Power up code
+#region Spawn Power up code
             // Spawn power up
             /*
             if (distanceTraveled % 50 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp
@@ -140,7 +160,7 @@ public class GameManager : MonoBehaviour
                 }
             } else if (distanceTraveled % 50 != 0 && !spawnPowerUp) { spawnPowerUp = true; }
             */
-            #endregion
+#endregion
 
         }
     }
@@ -217,7 +237,11 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         timesPlayed++;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        SetData("TimesPlayed", timesPlayed.ToString());
+#else
         SPrefs.SetInt("TimesPlayed", timesPlayed);
+#endif
         SceneManager.LoadSceneAsync("Game");
     }
 
@@ -242,10 +266,17 @@ public class GameManager : MonoBehaviour
 
     public void Mute()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (isMuted)
+            SetData("Mute", "0");
+        else
+            SetData("Mute", "1");
+#else
         if (isMuted)
             SPrefs.SetInt("Mute", 0);
         else
             SPrefs.SetInt("Mute", 1);
+#endif
     }
 
     public void Quit()
