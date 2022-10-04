@@ -6,12 +6,14 @@ using UnityEngine.UI;
 public class AudioManager : MonoBehaviour
 {
     public AudioSource[] audioSources;
-
+    
+#if UNITY_WEBGL
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern string GetData(string key);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern void SetData(string key, string value);
+#endif
 
     private void Awake()
     {

@@ -9,12 +9,13 @@ public class SkinManager : ScriptableObject
     private const string Prefix = "Skin_";
     private const string SelectedSkin = "SelectedSkin";
 
+#if UNITY_WEBGL
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern string GetData(string key);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern void SetData(string key, string value);
-
+#endif
     public void SelectSkin(int skinIndex) =>
 #if UNITY_WEBGL && !UNITY_EDITOR
         SetData(SelectedSkin, skinIndex.ToString());

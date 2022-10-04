@@ -18,11 +18,13 @@ public class UIController : MonoBehaviour
 
     public GameObject gameOverScreen, pauseScreen;
 
+#if UNITY_WEBGL
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern string GetData(string key);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern void SetData(string key, string value);
+#endif
 
     private void Awake()
     {

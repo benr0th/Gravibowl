@@ -23,11 +23,13 @@ public class ScoreManager : MonoBehaviour
     public bool finalFrame, switchedPlayer, twoPlayer, hasBowled, fanfareActive, 
         soundSinglePlayed, soundMultiPlayed;
 
+#if UNITY_WEBGL
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern string GetData(string key);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern void SetData(string key, string value);
+#endif
 
     [System.Serializable]
     public class Player

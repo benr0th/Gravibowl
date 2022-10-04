@@ -35,11 +35,13 @@ public class GameManager : MonoBehaviour
     float grabbedPowerUpTime = 4f;
     int powerUpRoll, timesPlayed;
 
+#if UNITY_WEBGL
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern string GetData(string key);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern void SetData(string key, string value);
+#endif
 
     //public bool IsPaused
     //{
