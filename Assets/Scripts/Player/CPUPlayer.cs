@@ -16,27 +16,36 @@ public class CPUPlayer : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (scoreManager.switchedPlayer)
+        if (!scoreManager.switchedPlayer) return;
+        if (!hasLetGo)
         {
-            if (!hasLetGo)
-            {
-                ship.isTouching = true;
-                ship.stoppedTouching = false;
-                ship.thrustPrefab.SetActive(true);
-                ship.thrustAudio.enabled = true;
-            }
-            else
-            {
-                ship.thrustPrefab.SetActive(false);
-                ship.thrustAudio.enabled = false;
-            }
+            ship.isTouching = true;
+            ship.stoppedTouching = false;
+            ship.thrustPrefab.SetActive(true);
+            ship.thrustAudio.enabled = true;
+        }
+        else
+        {
+            ship.thrustPrefab.SetActive(false);
+            ship.thrustAudio.enabled = false;
         }
     }
 
     public IEnumerator LetGoFirst()
     {
         //yield return new WaitUntil(() => ship.enabled = true);
-        yield return new WaitForSeconds(Random.Range(1.4f, 1.53f));
+        switch (SPrefs.GetInt("Difficulty"))
+        {
+            case 1:
+                yield return new WaitForSeconds(Random.Range(1.9f, 2f));
+                break;
+            case 2:
+                yield return new WaitForSeconds(Random.Range(1.4f, 1.53f));
+                break;
+            case 3:
+                yield return new WaitForSeconds(Random.Range(1.15f, 1.2f));
+                break;
+        }
         ship.isTouching = false;
         ship.stoppedTouching = true;
         hasLetGo = true;   

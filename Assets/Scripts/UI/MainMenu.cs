@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,11 +8,11 @@ using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
-    //List<AsyncOperation> operations = new();
-    [SerializeField] Button playOptions, singlePlayer, twoPlayer, vsCPU, shop, settings, backButton;
+    [SerializeField] Button playOptions, singlePlayer, twoPlayer, vsCPU, shop, settings, backButton,
+                            diffEasy, diffMed, diffHard;
     [SerializeField] GameObject loadingScreen;
     [SerializeField] Slider loadBar;
-    [SerializeField] TextMeshProUGUI loadText;
+    [SerializeField] TextMeshProUGUI loadText, diffText;
     AudioManager audioManager;
     int timesPlayed;
 
@@ -76,12 +77,36 @@ public class MainMenu : MonoBehaviour
         shop.gameObject.SetActive(false);
         settings.gameObject.SetActive(false);
         playOptions.gameObject.SetActive(false);
+        diffEasy.gameObject.SetActive(true);
+        diffMed.gameObject.SetActive(true);
+        diffHard.gameObject.SetActive(true);
+        diffText.gameObject.SetActive(true);
+    }
+
+    public void SetDifficulty(string diffLevel)
+    {
+        switch (diffLevel)
+        {
+            case "Easy":
+                SPrefs.SetInt("Difficulty", 1);
+                break;
+            case "Medium":
+                SPrefs.SetInt("Difficulty", 2);
+                break;
+            case "Hard":
+                SPrefs.SetInt("Difficulty", 3);
+                break;
+        }
+        diffText.gameObject.SetActive(false);
         singlePlayer.gameObject.SetActive(true);
         twoPlayer.gameObject.SetActive(true);
         vsCPU.gameObject.SetActive(true);
         backButton.gameObject.SetActive(true);
+        diffEasy.gameObject.SetActive(false);
+        diffMed.gameObject.SetActive(false);
+        diffHard.gameObject.SetActive(false);
     }
-
+    
     public void Back()
     {
         shop.gameObject.SetActive(true);
@@ -113,16 +138,4 @@ public class MainMenu : MonoBehaviour
             yield return null;
         }
     }
-
-    /*
-    public void LoadGame()
-    {
-        operations.Add(SceneManager.UnloadSceneAsync("Menu"));
-        operations.Add(SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive));
-        operations.Add(SceneManager.LoadSceneAsync("Shop", LoadSceneMode.Additive));
-        operations.Add(SceneManager.LoadSceneAsync("Settings", LoadSceneMode.Additive));
-        if (operations[1].isDone)
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName("Game"));
-    }
-    */
 }

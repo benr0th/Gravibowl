@@ -71,21 +71,7 @@ public class AdsManager : MonoBehaviour
         // Impression Event
         MediationService.Instance.ImpressionEventPublisher.OnImpression += ImpressionEvent;
     }
-
-    /* old ad code
-    public void ShowAdCoin()
-    {
-        if (ads[0].AdState == AdState.Loaded)
-            ads[0].Show();
-    }
-
-    public void ShowAdContinue()
-    {
-        if (ads[1].AdState == AdState.Loaded)
-            ads[1].Show();
-    }
-    */
-
+    
     public async void ShowAd()
     {
         if (ads[0].AdState == AdState.Loaded)
@@ -103,8 +89,7 @@ public class AdsManager : MonoBehaviour
             }
         }
     }
-
-
+    
     void InitializationComplete()
     {
         SetupAd();

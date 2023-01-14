@@ -85,11 +85,16 @@ public class ShipControl : MonoBehaviour
             PosVector=(0.07, -0.57, 0.00)
             PosFloat=0.5714426
             normalized=(0.12, -0.99, 0.00)
+            transform.up.normalized * 13.0058f
             */
-            if (orbitVel)
-                //    //rb.velocity = transform.up.normalized * 13.0058f;
-                rb.velocity = transform.up.normalized * 5f;
-
+            if (!orbitVel) return;
+            rb.velocity = SPrefs.GetInt("Difficulty") switch
+            {
+                1 => transform.up.normalized * 4f,
+                2 => transform.up.normalized * 5f,
+                3 => transform.up.normalized * 6f,
+                _ => rb.velocity
+            };
         }
         else
             GetComponent<ConstantForce2D>().relativeForce = Vector2.zero;
@@ -145,6 +150,7 @@ public class ShipControl : MonoBehaviour
         }
     }
 
+    // Legacy movement method
     void Move()
     {
         Vector2 vel = rb.velocity;
@@ -170,13 +176,14 @@ public class ShipControl : MonoBehaviour
         */
     }
 
+    // Debug method
     public void LaunchButton()
     {
         GameManager.checkpointHits = 0;
         SceneManager.LoadSceneAsync("Game");
     }
-
-    /* drag&shoot methods (legacy)
+#region Legacy Drag&Shoot Methods
+    /*
     void DragStart()
     {
         dragStartPos = Camera.main.ScreenToWorldPoint(touch.position);
@@ -223,5 +230,5 @@ public class ShipControl : MonoBehaviour
         hasTarget = true;
     }
     */
-
+#endregion
 }

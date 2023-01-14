@@ -126,13 +126,14 @@ public class GameManager : MonoBehaviour
             // When power up runs out
             EndPowerUp();
         }
-
+#region Legacy powerup/difficulty code
+        /*
         if (ship != null)
         {
             float shipSpeed = ship.rb.velocity.y;
             shipCurrentPos = ship.transform.position;
             distanceTraveled = Mathf.FloorToInt(shipCurrentPos.y - shipStartPos.y);
-
+        
             // Decreases planet spawn as distance increases
             if (distanceTraveled % 100 == 0 & distanceTraveled > 0 & upDiff)
             {
@@ -142,9 +143,10 @@ public class GameManager : MonoBehaviour
                 yMin += 0.2f;
                 yMax += 0.2f;
             } else if (distanceTraveled % 100 != 0 & !upDiff) { upDiff = true; }
-#region Spawn Power up code
+
+
             // Spawn power up
-            /*
+
             if (distanceTraveled % 50 == 0 && distanceTraveled > 0 && spawnPowerUp && !grabbedPowerUp
                 && ballSpeed > maxPSpeed)
             {
@@ -161,10 +163,9 @@ public class GameManager : MonoBehaviour
                     Instantiate(hitPowerUp, spawnPowerUpPos, Quaternion.identity);
                 }
             } else if (distanceTraveled % 50 != 0 && !spawnPowerUp) { spawnPowerUp = true; }
-            */
-#endregion
-
         }
+        */
+#endregion
     }
 
     public void InitPlanet()

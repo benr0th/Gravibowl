@@ -34,11 +34,12 @@ public class BGManager : MonoBehaviour
         var bg = SPrefs.GetInt("Background", 0);
 #endif
         var bgSprite = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
-        if (bg == 0)
-            bgSprite.sprite = bgs[0];
-        if (bg == 1)
-            bgSprite.sprite = bgs[1];
-        if (bg == 2)
-            bgSprite.sprite = bgs[2];
+        bgSprite.sprite = bg switch
+        {
+            0 => bgs[0],
+            1 => bgs[1],
+            2 => bgs[2],
+            _ => bgSprite.sprite
+        };
     }
 }

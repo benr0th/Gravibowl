@@ -56,12 +56,12 @@ public class GameOverScreen : MonoBehaviour
 
         if (GameManager.hasRespawned)
         {
-            coinsGained = (GameManager.distanceTraveled - GameManager.distanceTraveledLast) / 2;
+            // coinsGained = (GameManager.distanceTraveled - GameManager.distanceTraveledLast) / 2;
             GameManager.coins += coinsGained;
         } else
         {
             coinsGained = Mathf.Max(scoreManager.playerClass[0].pinScore, scoreManager.playerClass[1].pinScore) / 2;
-            GameManager.distanceTraveledLast = GameManager.distanceTraveled;
+            // GameManager.distanceTraveledLast = GameManager.distanceTraveled;
             GameManager.coins += coinsGained;
         }
 #if UNITY_WEBGL && !UNITY_EDITOR
