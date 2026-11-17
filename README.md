@@ -1,4 +1,6 @@
 # Gravibowl
 Mobile game where you use gravity to launch your ship to bowl.
 
-Google Play Store: https://play.google.com/store/apps/details?id=com.BRothStudios.Gravibowl
+~Google Play Store: https://play.google.com/store/apps/details?id=com.BRothStudios.Gravibowl~
+
+Itch.io: https://broth-studios.itch.io/gravibowl
